@@ -13,7 +13,7 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import FeatureUnion, Pipeline
-from sklearn.preprocessing import DictVectorizer
+from sklearn.feature_extraction import DictVectorizer
 
 from app.ml.feature_extractor import ColumnFeatures, extract_column_features
 from app.ml.pattern_store import PatternStore

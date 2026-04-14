@@ -10,6 +10,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
+from app.ml.allergen_detector import AllergenDatabase, IngredientAnalyzer, assess_allergen_risk
 from app.ml.column_classifier import ColumnClassifier
 from app.ml.field_extractor import FieldExtractor, TextBlock
 from app.ml.feature_extractor import extract_column_features, extract_pdf_text_blocks
@@ -25,6 +26,8 @@ class LocalNormalizer:
         self.models_dir = models_dir or Path("storage/ml/models")
         self.column_classifier = ColumnClassifier(pattern_store, self.models_dir)
         self.field_extractor = FieldExtractor(pattern_store)
+        self.allergen_db = AllergenDatabase()
+        self.ingredient_analyzer = IngredientAnalyzer()
 
     async def normalize(
         self,
@@ -91,6 +94,8 @@ class LocalNormalizer:
         ingredients = []
         steps = []
         scalar_fields = {}
+        ing_counter = 0
+        step_counter = 0
 
         for row in rows:
             # Map row to canonical fields
@@ -103,10 +108,12 @@ class LocalNormalizer:
             # Categorize as ingredient or step
             if "product_name" in canonical_row or "quantity" in canonical_row:
                 # Ingredient row
-                ingredients.append(self._build_ingredient(canonical_row, restaurant_id))
+                ing_counter += 1
+                ingredients.append(self._build_ingredient(canonical_row, restaurant_id, ing_counter))
             elif "action" in canonical_row or "step_number" in canonical_row:
                 # Step row
-                steps.append(self._build_step(canonical_row))
+                step_counter += 1
+                steps.append(self._build_step(canonical_row, step_counter))
 
             # Collect scalar fields (name, category, servings, etc.)
             for key in ["name", "category", "servings", "country", "region", "continent"]:
@@ -162,6 +169,8 @@ class LocalNormalizer:
 
         ingredients = []
         steps = []
+        ing_counter = 0
+        step_counter = 0
 
         # If tables exist, try to parse them
         if tables:
@@ -184,9 +193,11 @@ class LocalNormalizer:
                                 canonical_row[canonical] = row[i]
 
                     if "product_name" in canonical_row or "quantity" in canonical_row:
-                        ingredients.append(self._build_ingredient(canonical_row, restaurant_id))
+                        ing_counter += 1
+                        ingredients.append(self._build_ingredient(canonical_row, restaurant_id, ing_counter))
                     elif "action" in canonical_row or "step_number" in canonical_row:
-                        steps.append(self._build_step(canonical_row))
+                        step_counter += 1
+                        steps.append(self._build_step(canonical_row, step_counter))
 
         # Confidence calculation
         n_required = 4
@@ -215,9 +226,11 @@ class LocalNormalizer:
 
         return sheet
 
-    def _build_ingredient(self, canonical_row: dict, restaurant_id: str) -> Ingredient:
-        """Build an Ingredient from normalized row."""
-        line_number = self._parse_int(canonical_row.get("line_number", 0))
+    def _build_ingredient(self, canonical_row: dict, restaurant_id: str, default_line_number: int = 1) -> Ingredient:
+        """Build an Ingredient from normalized row with allergen detection."""
+        line_number = self._parse_int(canonical_row.get("line_number"))
+        if line_number is None:
+            line_number = default_line_number
         product_name = str(canonical_row.get("product_name", "Unknown"))
         quantity = self._parse_float(canonical_row.get("quantity", 0.0))
         unit = self.pattern_store.normalize_unit(
@@ -227,6 +240,21 @@ class LocalNormalizer:
         unit_price = self._parse_float(canonical_row.get("unit_price", 0.0))
         observations = canonical_row.get("observations")
 
+        # Allergen detection (MAIN OBJECTIVE)
+        allergen_text = f"{product_name} {observations or ''}".strip()
+        detected_allergens = self.allergen_db.detect_allergens(allergen_text)
+        allergen_list = sorted(list(detected_allergens))
+
+        # Risk assessment
+        risk_info = assess_allergen_risk(detected_allergens, quantity, unit)
+        allergen_risk = risk_info.get("overall_risk", "none")
+        allergen_confidence = risk_info.get("confidence", 0.0)
+
+        # Producer & transport extraction
+        producer = self.ingredient_analyzer.extract_producer(product_name)
+        origin = self.ingredient_analyzer.extract_origin(allergen_text)
+        storage_conditions = self.ingredient_analyzer.extract_storage_conditions(observations)
+
         return Ingredient(
             line_number=line_number,
             product_name=product_name,
@@ -234,12 +262,21 @@ class LocalNormalizer:
             unit=unit,
             unit_price=unit_price,
             observations=observations,
+            allergens=allergen_list,
+            allergen_risk=allergen_risk,
+            allergen_confidence=allergen_confidence,
+            producer=producer,
+            origin=origin,
+            storage_conditions=storage_conditions,
         )
 
-    def _build_step(self, canonical_row: dict) -> PreparationStep:
+    def _build_step(self, canonical_row: dict, default_step_number: int = 1) -> PreparationStep:
         """Build a PreparationStep from normalized row."""
+        step_number = self._parse_int(canonical_row.get("step_number"))
+        if step_number is None:
+            step_number = default_step_number
         return PreparationStep(
-            step_number=self._parse_int(canonical_row.get("step_number", 0)),
+            step_number=step_number,
             action=str(canonical_row.get("action", "Prepare")),
             product=canonical_row.get("product"),
             cut_type=canonical_row.get("cut_type"),

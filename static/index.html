@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BeSayfe — Restaurant Sheet Normalizer Debug UI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1c2128;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --orange: #e3b341;
+      --purple: #bc8cff;
+      --teal: #39d353;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'SF Mono', 'Fira Code', monospace; }
+    .surface { background: var(--surface); border: 1px solid var(--border); }
+    .surface2 { background: var(--surface2); border: 1px solid var(--border); }
+
+    /* Upload zone */
+    #dropzone {
+      border: 2px dashed var(--border);
+      transition: all 0.2s;
+    }
+    #dropzone.drag-over {
+      border-color: var(--accent);
+      background: rgba(88,166,255,0.06);
+    }
+
+    /* Pipeline steps */
+    .pipe-step { opacity: 0.35; transition: opacity 0.3s, transform 0.3s; }
+    .pipe-step.active { opacity: 1; transform: scale(1.05); }
+    .pipe-step.done { opacity: 0.85; }
+    .pipe-connector { color: var(--muted); }
+
+    /* Confidence bar */
+    .conf-bar-fill { transition: width 0.8s cubic-bezier(.4,0,.2,1); }
+
+    /* Tabs */
+    .tab-btn { border-bottom: 2px solid transparent; transition: all 0.15s; }
+    .tab-btn.active { border-color: var(--accent); color: var(--accent); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Badge */
+    .badge { font-size: 0.65rem; padding: 1px 6px; border-radius: 9999px; font-weight: 600; }
+    .badge-blue { background: rgba(88,166,255,0.15); color: var(--accent); }
+    .badge-green { background: rgba(63,185,80,0.15); color: var(--green); }
+    .badge-yellow { background: rgba(210,153,34,0.15); color: var(--yellow); }
+    .badge-red { background: rgba(248,81,73,0.15); color: var(--red); }
+    .badge-purple { background: rgba(188,140,255,0.15); color: var(--purple); }
+    .badge-muted { background: rgba(139,148,158,0.15); color: var(--muted); }
+
+    /* Table */
+    .debug-table th { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .debug-table td, .debug-table th { padding: 6px 10px; border-bottom: 1px solid var(--border); }
+    .debug-table tr:last-child td { border-bottom: none; }
+    .debug-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* JSON viewer */
+    .json-key { color: #79c0ff; }
+    .json-str { color: #a5d6ff; }
+    .json-num { color: #f78166; }
+    .json-bool { color: #ff7b72; }
+    .json-null { color: var(--muted); }
+
+    /* Spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { animation: spin 0.8s linear infinite; }
+
+    /* Pulse dot */
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .pulse { animation: pulse 1.5s ease-in-out infinite; }
+
+    /* Cost bar */
+    .cost-bar { height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; }
+    .cost-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--purple)); transition: width 0.6s; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* Language selector */
+    .lang-btn {
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      font-size: 0.75rem;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+    .lang-btn.active {
+      background: rgba(88,166,255,0.15);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<header class="surface border-b border-gray-800 px-6 py-3 flex items-center justify-between sticky top-0 z-50">
+  <div class="flex items-center gap-3">
+    <div class="text-lg font-bold tracking-tight" style="color:var(--accent)">BeSayfe</div>
+    <div style="color:var(--muted)" class="text-sm" data-i18n="header.subtitle">/ restaurant sheet normalizer</div>
+    <span class="badge badge-purple ml-2" data-i18n="header.debug">DEBUG UI</span>
+  </div>
+  <div class="flex items-center gap-4">
+    <div class="flex gap-2">
+      <button class="lang-btn active" onclick="setLanguage('en')">EN</button>
+      <button class="lang-btn" onclick="setLanguage('pt')">PT</button>
+    </div>
+    <div class="flex items-center gap-4 text-xs" style="color:var(--muted)">
+      <div id="status-dots" class="flex items-center gap-2">
+        <span class="pulse w-2 h-2 rounded-full inline-block" style="background:var(--yellow)"></span>
+        <span data-i18n="header.connecting">connecting…</span>
+      </div>
+      <div id="stat-corrections">— corrections</div>
+      <div id="stat-patterns">— patterns</div>
+      <div id="stat-restaurants">— restaurants</div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════ LAYOUT ═══════════════ -->
+<div class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+  <!-- LEFT COLUMN: upload + pipeline + status -->
+  <div class="lg:col-span-1 flex flex-col gap-4">
+
+    <!-- Upload card -->
+    <div class="surface rounded-xl p-5">
+      <h2 class="text-xs font-semibold uppercase tracking-widest mb-3" style="color:var(--muted)" data-i18n="upload.title">Upload File</h2>
+      <div id="dropzone" class="rounded-lg p-6 text-center cursor-pointer select-none" onclick="document.getElementById('fileInput').click()">
+        <div class="text-3xl mb-2">📄</div>
+        <div class="text-sm font-medium" data-i18n="upload.drop">Drop file here or click to browse</div>
+        <div class="text-xs mt-1" style="color:var(--muted)" data-i18n="upload.formats">PDF · CSV · XLSX</div>
+      </div>
+      <input type="file" id="fileInput" accept=".pdf,.csv,.xlsx" class="hidden" />
+      <div id="file-info" class="mt-3 text-xs hidden" style="color:var(--muted)"></div>
+      <button id="btn-normalize" disabled
+        class="mt-4 w-full py-2 rounded-lg text-sm font-semibold transition-all"
+        style="background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3)"
+        onclick="runNormalize()" data-i18n="upload.normalize">
+        Normalize →
+      </button>
+    </div>
+
+    <!-- Pipeline visualization -->
+    <div class="surface rounded-xl p-5">
+      <h2 class="text-xs font-semibold uppercase tracking-widest mb-4" style="color:var(--muted)" data-i18n="pipeline.title">Pipeline</h2>
+      <div class="flex flex-col gap-1">
+        <div class="pipe-step rounded-lg px-3 py-2 text-xs surface2" id="step-parse">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold" data-i18n="pipeline.parse">① Parse</span>
+            <span id="step-parse-badge" class="badge badge-muted">idle</span>
+          </div>
+          <div class="mt-1" style="color:var(--muted)" id="step-parse-detail" data-i18n="pipeline.parse_detail">PDF / CSV / XLSX → raw dict</div>
+        </div>
+        <div class="text-center text-xs" style="color:var(--border)">│</div>
+
+        <div class="pipe-step rounded-lg px-3 py-2 text-xs surface2" id="step-restaurant">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold" data-i18n="pipeline.restaurant">② Restaurant ID</span>
+            <span id="step-restaurant-badge" class="badge badge-muted">idle</span>
+          </div>
+          <div class="mt-1" style="color:var(--muted)" id="step-restaurant-detail" data-i18n="pipeline.restaurant_detail">Detect from filename</div>
+        </div>
+        <div class="text-center text-xs" style="color:var(--border)">│</div>
+
+        <div class="pipe-step rounded-lg px-3 py-2 text-xs surface2" id="step-classify">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold" data-i18n="pipeline.classify">③ Classify Columns</span>
+            <span id="step-classify-badge" class="badge badge-muted">idle</span>
+          </div>
+          <div class="mt-1" style="color:var(--muted)" id="step-classify-detail" data-i18n="pipeline.classify_detail">Synonym dict → ML model</div>
+        </div>
+        <div class="text-center text-xs" style="color:var(--border)">│</div>
+
+        <div class="pipe-step rounded-lg px-3 py-2 text-xs surface2" id="step-extract">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold" data-i18n="pipeline.extract">④ Extract Fields</span>
+            <span id="step-extract-badge" class="badge badge-muted">idle</span>
+          </div>
+          <div class="mt-1" style="color:var(--muted)" id="step-extract-detail" data-i18n="pipeline.extract_detail">Regex + spaCy NER</div>
+        </div>
+        <div class="text-center text-xs" style="color:var(--border)">│</div>
+
+        <div class="pipe-step rounded-lg px-3 py-2 text-xs surface2" id="step-build">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold" data-i18n="pipeline.build">⑤ Build Sheet</span>
+            <span id="step-build-badge" class="badge badge-muted">idle</span>
+          </div>
+          <div class="mt-1" style="color:var(--muted)" id="step-build-detail" data-i18n="pipeline.build_detail">Ingredients + steps + financials</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Column classifier tester -->
+    <div class="surface rounded-xl p-5">
+      <h2 class="text-xs font-semibold uppercase tracking-widest mb-3" style="color:var(--muted)" data-i18n="classifier.title">Column Classifier Test</h2>
+      <textarea id="header-input" rows="3" placeholder="product_name, qty, unidad, precio unitario, …"
+        class="w-full rounded-lg px-3 py-2 text-xs resize-none"
+        style="background:var(--surface2);border:1px solid var(--border);color:var(--text);outline:none"></textarea>
+      <button onclick="classifyHeaders()"
+        class="mt-2 w-full py-1.5 rounded-lg text-xs font-semibold"
+        style="background:rgba(188,140,255,0.15);color:var(--purple);border:1px solid rgba(188,140,255,0.3)" data-i18n="classifier.btn">
+        Classify →
+      </button>
+      <div id="classify-results" class="mt-3 text-xs"></div>
+    </div>
+
+    <!-- ML Status -->
+    <div class="surface rounded-xl p-5" id="ml-status-card">
+      <h2 class="text-xs font-semibold uppercase tracking-widest mb-3" style="color:var(--muted)" data-i18n="ml_status.title">ML Status</h2>
+      <div id="ml-status-body" class="text-xs" style="color:var(--muted)" data-i18n="ml_status.loading">Loading…</div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN: results -->
+  <div class="lg:col-span-2 flex flex-col gap-4">
+
+    <!-- Error banner -->
+    <div id="error-banner" class="hidden rounded-xl px-4 py-3 text-sm" style="background:rgba(248,81,73,0.12);border:1px solid rgba(248,81,73,0.3);color:var(--red)"></div>
+
+    <!-- Confidence + summary strip (shown after normalization) -->
+    <div id="summary-strip" class="surface rounded-xl p-5 hidden">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
+        <div class="text-center">
+          <div class="text-2xl font-bold" id="s-name" style="color:var(--accent)">—</div>
+          <div class="text-xs mt-1" style="color:var(--muted)" data-i18n="summary.name">dish name</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold" id="s-category" style="color:var(--green)">—</div>
+          <div class="text-xs mt-1" style="color:var(--muted)" data-i18n="summary.category">category</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold" id="s-servings" style="color:var(--orange)">—</div>
+          <div class="text-xs mt-1" style="color:var(--muted)" data-i18n="summary.servings">servings</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold" id="s-cost" style="color:var(--purple)">—</div>
+          <div class="text-xs mt-1" style="color:var(--muted)" data-i18n="summary.cost">total cost</div>
+        </div>
+      </div>
+      <!-- Confidence bar -->
+      <div class="flex items-center gap-3">
+        <span class="text-xs" style="color:var(--muted)" data-i18n="summary.confidence">Confidence</span>
+        <div class="flex-1 conf-bar-fill-wrapper rounded-full" style="height:8px;background:var(--border)">
+          <div id="conf-bar" class="conf-bar-fill rounded-full" style="height:8px;width:0%;background:linear-gradient(90deg,var(--accent),var(--purple))"></div>
+        </div>
+        <span id="conf-pct" class="text-xs font-bold" style="color:var(--accent)">0%</span>
+        <span id="conf-label" class="badge badge-muted">—</span>
+      </div>
+    </div>
+
+    <!-- Results tabs -->
+    <div class="surface rounded-xl overflow-hidden hidden" id="results-card">
+      <!-- Tab bar -->
+      <div class="flex border-b" style="border-color:var(--border)">
+        <button class="tab-btn active px-4 py-2.5 text-xs font-semibold" onclick="switchTab('allergens')" style="color:var(--red)">🚨 ALLERGENS</button>
+        <button class="tab-btn px-4 py-2.5 text-xs font-semibold" onclick="switchTab('ingredients')" data-i18n="tabs.ingredients">Ingredients</button>
+        <button class="tab-btn px-4 py-2.5 text-xs font-semibold" onclick="switchTab('steps')" data-i18n="tabs.steps">Steps</button>
+        <button class="tab-btn px-4 py-2.5 text-xs font-semibold" onclick="switchTab('raw')" data-i18n="tabs.raw">Raw Extraction</button>
+        <button class="tab-btn px-4 py-2.5 text-xs font-semibold" onclick="switchTab('columns')" data-i18n="tabs.columns">Column Map</button>
+        <button class="tab-btn px-4 py-2.5 text-xs font-semibold" onclick="switchTab('json')" data-i18n="tabs.json">JSON</button>
+        <button class="tab-btn px-4 py-2.5 text-xs font-semibold" onclick="switchTab('patterns')" data-i18n="tabs.patterns">Patterns</button>
+      </div>
+
+      <!-- ALLERGENS TAB (MAIN OBJECTIVE) -->
+      <div id="tab-allergens" class="tab-panel active p-4 overflow-auto" style="max-height:500px">
+        <div class="flex flex-col gap-4">
+          <!-- Risk banner -->
+          <div id="allergen-risk-banner" class="rounded-lg p-3" style="background:rgba(248,81,73,0.12);border:1px solid rgba(248,81,73,0.3)">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-semibold" style="color:var(--red)">Allergen Risk Assessment</span>
+              <span id="risk-badge" class="badge badge-red">critical</span>
+            </div>
+            <div id="risk-detail" class="text-xs" style="color:var(--red)">Loading…</div>
+          </div>
+
+          <!-- Critical allergens -->
+          <div>
+            <div class="text-xs font-semibold mb-2" style="color:var(--muted)">Critical Allergens</div>
+            <div id="critical-allergens" class="flex flex-wrap gap-2"></div>
+          </div>
+
+          <!-- All allergens -->
+          <div>
+            <div class="text-xs font-semibold mb-2" style="color:var(--muted)">All Detected Allergens</div>
+            <div id="all-allergens" class="flex flex-wrap gap-2"></div>
+          </div>
+
+          <!-- Ingredient sources -->
+          <div>
+            <div class="text-xs font-semibold mb-2" style="color:var(--muted)">Allergen Sources (Ingredients)</div>
+            <table class="debug-table w-full text-xs">
+              <thead><tr><th>Ingredient</th><th>Allergens</th><th>Risk</th><th>Producer</th></tr></thead>
+              <tbody id="allergen-sources"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- INGREDIENTS tab -->
+      <div id="tab-ingredients" class="tab-panel p-4 overflow-auto" style="max-height:500px">
+        <table class="debug-table w-full text-xs">
+          <thead><tr>
+            <th data-i18n="table.line">#</th><th data-i18n="table.product">Product</th><th class="text-right" data-i18n="table.qty">Qty</th>
+            <th data-i18n="table.unit">Unit</th><th class="text-right" data-i18n="table.unit_price">Unit Price</th>
+            <th class="text-right" data-i18n="table.line_cost">Line Cost</th><th data-i18n="table.bar">Cost Bar</th><th data-i18n="table.notes">Notes</th>
+          </tr></thead>
+          <tbody id="ingredients-body"></tbody>
+        </table>
+        <div class="mt-4 pt-3 border-t text-xs flex justify-between" style="border-color:var(--border)">
+          <span style="color:var(--muted)" data-i18n="ingredients.total">Total cost</span>
+          <span id="total-cost-disp" class="font-bold" style="color:var(--purple)">—</span>
+        </div>
+        <div class="text-xs flex justify-between">
+          <span style="color:var(--muted)" data-i18n="ingredients.per_serving">Cost per serving</span>
+          <span id="cost-per-serving-disp" class="font-bold" style="color:var(--accent)">—</span>
+        </div>
+      </div>
+
+      <!-- STEPS tab -->
+      <div id="tab-steps" class="tab-panel p-4 overflow-auto" style="max-height:500px">
+        <div id="steps-body" class="flex flex-col gap-2"></div>
+        <div id="steps-empty" class="text-xs text-center py-8" style="color:var(--muted)" data-i18n="steps.empty">No steps extracted</div>
+      </div>
+
+      <!-- RAW EXTRACTION tab -->
+      <div id="tab-raw" class="tab-panel p-4 overflow-auto" style="max-height:500px">
+        <div id="raw-body" class="text-xs"></div>
+      </div>
+
+      <!-- COLUMN MAP tab -->
+      <div id="tab-columns" class="tab-panel p-4 overflow-auto" style="max-height:500px">
+        <div class="text-xs mb-3" style="color:var(--muted)" data-i18n="columns.desc">Header → Canonical field classification results for this file</div>
+        <table class="debug-table w-full text-xs">
+          <thead><tr><th data-i18n="table.raw_header">Raw Header</th><th data-i18n="table.canonical">Canonical</th><th data-i18n="table.method">Method</th></tr></thead>
+          <tbody id="columns-body"></tbody>
+        </table>
+      </div>
+
+      <!-- JSON tab -->
+      <div id="tab-json" class="tab-panel p-4 overflow-auto" style="max-height:500px">
+        <div class="flex gap-2 mb-3">
+          <button onclick="copyJson()" class="text-xs px-3 py-1 rounded" style="background:var(--surface2);border:1px solid var(--border)" data-i18n="json.copy">Copy JSON</button>
+          <button onclick="downloadXlsx()" class="text-xs px-3 py-1 rounded" style="background:rgba(63,185,80,0.12);border:1px solid rgba(63,185,80,0.3);color:var(--green)" data-i18n="json.download">Download XLSX</button>
+        </div>
+        <pre id="json-body" class="text-xs rounded-lg p-4 overflow-auto" style="background:var(--surface2);max-height:420px"></pre>
+      </div>
+
+      <!-- PATTERNS tab -->
+      <div id="tab-patterns" class="tab-panel p-4 overflow-auto" style="max-height:500px">
+        <div class="flex gap-2 mb-3">
+          <button onclick="loadPatterns('synonyms')" class="tab-sub active-sub px-3 py-1 text-xs rounded" style="background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3)" data-i18n="patterns.synonyms">Synonyms</button>
+          <button onclick="loadPatterns('columns')" class="tab-sub px-3 py-1 text-xs rounded" style="background:var(--surface2);border:1px solid var(--border)" data-i18n="patterns.columns">Column Mappings</button>
+          <button onclick="loadPatterns('units')" class="tab-sub px-3 py-1 text-xs rounded" style="background:var(--surface2);border:1px solid var(--border)" data-i18n="patterns.units">Unit Vocab</button>
+          <button onclick="loadPatterns('pdf')" class="tab-sub px-3 py-1 text-xs rounded" style="background:var(--surface2);border:1px solid var(--border)" data-i18n="patterns.pdf">PDF Patterns</button>
+          <button onclick="loadPatterns('corrections')" class="tab-sub px-3 py-1 text-xs rounded" style="background:var(--surface2);border:1px solid var(--border)" data-i18n="patterns.corrections">Corrections</button>
+        </div>
+        <div id="patterns-body" class="text-xs"></div>
+      </div>
+    </div>
+
+    <!-- Sheets history -->
+    <div class="surface rounded-xl p-5" id="history-card">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xs font-semibold uppercase tracking-widest" style="color:var(--muted)" data-i18n="history.title">Recent Sheets</h2>
+        <button onclick="loadHistory()" class="text-xs px-2 py-0.5 rounded" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted)" data-i18n="history.refresh">Refresh</button>
+      </div>
+      <div id="history-body" class="text-xs" style="color:var(--muted)" data-i18n="history.loading">Loading…</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
+<script>
+// ── Translations ──────────────────────────────────────────────────
+const translations = {
+  en: {
+    'header.subtitle': '/ restaurant sheet normalizer',
+    'header.debug': 'DEBUG UI',
+    'header.connecting': 'connecting…',
+    'upload.title': 'Upload File',
+    'upload.drop': 'Drop file here or click to browse',
+    'upload.formats': 'PDF · CSV · XLSX',
+    'upload.normalize': 'Normalize →',
+    'pipeline.title': 'Pipeline',
+    'pipeline.parse': '① Parse',
+    'pipeline.parse_detail': 'PDF / CSV / XLSX → raw dict',
+    'pipeline.restaurant': '② Restaurant ID',
+    'pipeline.restaurant_detail': 'Detect from filename',
+    'pipeline.classify': '③ Classify Columns',
+    'pipeline.classify_detail': 'Synonym dict → ML model',
+    'pipeline.extract': '④ Extract Fields',
+    'pipeline.extract_detail': 'Regex + spaCy NER',
+    'pipeline.build': '⑤ Build Sheet',
+    'pipeline.build_detail': 'Ingredients + steps + financials',
+    'classifier.title': 'Column Classifier Test',
+    'classifier.btn': 'Classify →',
+    'ml_status.title': 'ML Status',
+    'ml_status.loading': 'Loading…',
+    'summary.name': 'dish name',
+    'summary.category': 'category',
+    'summary.servings': 'servings',
+    'summary.cost': 'total cost',
+    'summary.confidence': 'Confidence',
+    'tabs.ingredients': 'Ingredients',
+    'tabs.steps': 'Steps',
+    'tabs.raw': 'Raw Extraction',
+    'tabs.columns': 'Column Map',
+    'tabs.json': 'JSON',
+    'tabs.patterns': 'Patterns',
+    'table.line': '#',
+    'table.product': 'Product',
+    'table.qty': 'Qty',
+    'table.unit': 'Unit',
+    'table.unit_price': 'Unit Price',
+    'table.line_cost': 'Line Cost',
+    'table.bar': 'Cost Bar',
+    'table.notes': 'Notes',
+    'table.raw_header': 'Raw Header',
+    'table.canonical': 'Canonical',
+    'table.method': 'Method',
+    'ingredients.total': 'Total cost',
+    'ingredients.per_serving': 'Cost per serving',
+    'steps.empty': 'No steps extracted',
+    'columns.desc': 'Header → Canonical field classification results for this file',
+    'json.copy': 'Copy JSON',
+    'json.download': 'Download XLSX',
+    'patterns.synonyms': 'Synonyms',
+    'patterns.columns': 'Column Mappings',
+    'patterns.units': 'Unit Vocab',
+    'patterns.pdf': 'PDF Patterns',
+    'patterns.corrections': 'Corrections',
+    'history.title': 'Recent Sheets',
+    'history.refresh': 'Refresh',
+    'history.loading': 'Loading…',
+    'ml_status.classifier': 'Column Classifier',
+    'ml_status.training_examples': 'Training examples',
+    'ml_status.corrections': 'Total corrections',
+    'ml_status.pending': 'Pending corrections',
+    'ml_status.patterns': 'Total patterns',
+    'error.prefix': 'Error: ',
+  },
+  pt: {
+    'header.subtitle': '/ normalizador de fichas técnicas de restaurante',
+    'header.debug': 'INTERFACE DE DEBUG',
+    'header.connecting': 'conectando…',
+    'upload.title': 'Carregar Arquivo',
+    'upload.drop': 'Solte o arquivo aqui ou clique para procurar',
+    'upload.formats': 'PDF · CSV · XLSX',
+    'upload.normalize': 'Normalizar →',
+    'pipeline.title': 'Pipeline',
+    'pipeline.parse': '① Análise',
+    'pipeline.parse_detail': 'PDF / CSV / XLSX → dicionário bruto',
+    'pipeline.restaurant': '② ID do Restaurante',
+    'pipeline.restaurant_detail': 'Detectar pelo nome do arquivo',
+    'pipeline.classify': '③ Classificar Colunas',
+    'pipeline.classify_detail': 'Dicionário sinônimos → modelo ML',
+    'pipeline.extract': '④ Extrair Campos',
+    'pipeline.extract_detail': 'Regex + spaCy NER',
+    'pipeline.build': '⑤ Construir Planilha',
+    'pipeline.build_detail': 'Ingredientes + passos + financeiros',
+    'classifier.title': 'Teste de Classificador de Colunas',
+    'classifier.btn': 'Classificar →',
+    'ml_status.title': 'Status do ML',
+    'ml_status.loading': 'Carregando…',
+    'summary.name': 'nome do prato',
+    'summary.category': 'categoria',
+    'summary.servings': 'porções',
+    'summary.cost': 'custo total',
+    'summary.confidence': 'Confiança',
+    'tabs.ingredients': 'Ingredientes',
+    'tabs.steps': 'Passos',
+    'tabs.raw': 'Extração Bruta',
+    'tabs.columns': 'Mapa de Colunas',
+    'tabs.json': 'JSON',
+    'tabs.patterns': 'Padrões',
+    'table.line': '#',
+    'table.product': 'Produto',
+    'table.qty': 'Qtd',
+    'table.unit': 'Unidade',
+    'table.unit_price': 'Preço Unitário',
+    'table.line_cost': 'Custo da Linha',
+    'table.bar': 'Barra de Custo',
+    'table.notes': 'Notas',
+    'table.raw_header': 'Cabeçalho Bruto',
+    'table.canonical': 'Canônico',
+    'table.method': 'Método',
+    'ingredients.total': 'Custo total',
+    'ingredients.per_serving': 'Custo por porção',
+    'steps.empty': 'Nenhum passo extraído',
+    'columns.desc': 'Cabeçalho → Resultados de classificação de campos canônicos para este arquivo',
+    'json.copy': 'Copiar JSON',
+    'json.download': 'Baixar XLSX',
+    'patterns.synonyms': 'Sinônimos',
+    'patterns.columns': 'Mapeamentos de Colunas',
+    'patterns.units': 'Vocabulário de Unidades',
+    'patterns.pdf': 'Padrões de PDF',
+    'patterns.corrections': 'Correções',
+    'history.title': 'Planilhas Recentes',
+    'history.refresh': 'Atualizar',
+    'history.loading': 'Carregando…',
+    'ml_status.classifier': 'Classificador de Colunas',
+    'ml_status.training_examples': 'Exemplos de treinamento',
+    'ml_status.corrections': 'Total de correções',
+    'ml_status.pending': 'Correções pendentes',
+    'ml_status.patterns': 'Total de padrões',
+    'error.prefix': 'Erro: ',
+  }
+};
+
+let currentLang = localStorage.getItem('lang') || 'en';
+
+function t(key) {
+  return translations[currentLang]?.[key] || translations['en'][key] || key;
+}
+
+function setLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem('lang', lang);
+  document.documentElement.lang = lang;
+
+  // Update language button states
+  document.querySelectorAll('.lang-btn').forEach((btn, idx) => {
+    btn.classList.toggle('active', (idx === 0 && lang === 'en') || (idx === 1 && lang === 'pt'));
+  });
+
+  // Update all elements with data-i18n attributes
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    el.textContent = t(key);
+  });
+
+  // Update placeholders
+  const headerInput = document.getElementById('header-input');
+  if (headerInput) {
+    headerInput.placeholder = 'product_name, qty, unidad, precio unitario, …';
+  }
+}
+
+// Initialize language on load
+window.addEventListener('DOMContentLoaded', () => {
+  setLanguage(currentLang);
+});
+
+// ── Status polling ──────────────────────────────────────────────
+const API = '';
+let currentSheet = null;
+let patternsCache = null;
+
+async function loadStatus() {
+  try {
+    const r = await fetch(`${API}/api/v1/status`);
+    if (!r.ok) throw new Error(r.statusText);
+    const d = await r.json();
+    document.getElementById('stat-corrections').textContent = `${d.correction_count} corrections`;
+    document.getElementById('stat-patterns').textContent = `${d.pattern_count} patterns`;
+    document.getElementById('stat-restaurants').textContent = `${d.restaurant_count} restaurants`;
+    document.getElementById('status-dots').innerHTML =
+      `<span class="w-2 h-2 rounded-full inline-block" style="background:var(--green)"></span><span>API online</span>`;
+  } catch(e) {
+    document.getElementById('status-dots').innerHTML =
+      `<span class="pulse w-2 h-2 rounded-full inline-block" style="background:var(--red)"></span><span>API offline</span>`;
+  }
+}
+
+async function loadMLStatus() {
+  try {
+    const r = await fetch(`${API}/api/v1/debug/ml-status`);
+    const d = await r.json();
+    const cc = d.column_classifier;
+    const ps = d.pattern_store;
+    document.getElementById('ml-status-body').innerHTML = `
+      <div class="flex flex-col gap-1.5">
+        <div class="flex justify-between"><span>${t('ml_status.classifier')}</span>
+          <span class="badge ${cc.is_trained ? 'badge-green' : 'badge-yellow'}">${cc.is_trained ? 'trained' : 'cold-start'}</span></div>
+        <div class="flex justify-between"><span>${t('ml_status.training_examples')}</span><span>${cc.training_examples}</span></div>
+        <div class="flex justify-between"><span>${t('ml_status.corrections')}</span><span>${ps.total_corrections}</span></div>
+        <div class="flex justify-between"><span>${t('ml_status.pending')}</span>
+          <span class="${ps.pending_corrections > 0 ? 'badge badge-yellow' : ''}">${ps.pending_corrections}</span></div>
+        <div class="flex justify-between"><span>${t('ml_status.patterns')}</span><span>${ps.total_patterns}</span></div>
+        <div class="mt-2 text-xs px-2 py-1 rounded" style="background:var(--surface2);color:var(--muted);word-break:break-all">
+          db: ${ps.db_path}
+        </div>
+      </div>`;
+  } catch(e) {}
+}
+
+// ── File drag-and-drop ──────────────────────────────────────────
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) setFile(fileInput.files[0]); });
+
+let selectedFile = null;
+function setFile(f) {
+  selectedFile = f;
+  const ext = f.name.split('.').pop().toLowerCase();
+  const extColors = { pdf: 'badge-red', csv: 'badge-green', xlsx: 'badge-blue' };
+  document.getElementById('file-info').classList.remove('hidden');
+  document.getElementById('file-info').innerHTML =
+    `<span class="badge ${extColors[ext] || 'badge-muted'} mr-1">.${ext}</span> ${f.name} &nbsp;·&nbsp; ${(f.size/1024).toFixed(1)} KB`;
+  document.getElementById('btn-normalize').disabled = false;
+  document.getElementById('btn-normalize').style.opacity = '1';
+}
+
+// ── Normalize ───────────────────────────────────────────────────
+function setPipeStep(id, state, detail) {
+  const el = document.getElementById(`step-${id}`);
+  const badge = document.getElementById(`step-${id}-badge`);
+  const detailEl = document.getElementById(`step-${id}-detail`);
+  el.className = el.className.replace(/\bactive\b|\bdone\b/g, '').trim() + ` pipe-step ${state}`;
+  if (state === 'active') {
+    badge.className = 'badge badge-yellow'; badge.textContent = 'running';
+  } else if (state === 'done') {
+    badge.className = 'badge badge-green'; badge.textContent = 'done';
+  } else {
+    badge.className = 'badge badge-muted'; badge.textContent = 'idle';
+  }
+  if (detail) detailEl.textContent = detail;
+}
+
+function resetPipeline() {
+  ['parse','restaurant','classify','extract','build'].forEach(s => setPipeStep(s, ''));
+}
+
+async function runNormalize() {
+  if (!selectedFile) return;
+  hideError();
+  resetPipeline();
+  document.getElementById('summary-strip').classList.add('hidden');
+  document.getElementById('results-card').classList.add('hidden');
+
+  const btn = document.getElementById('btn-normalize');
+  btn.disabled = true;
+  btn.textContent = 'Processing…';
+
+  const fd = new FormData();
+  fd.append('file', selectedFile);
+
+  const ext = selectedFile.name.split('.').pop().toLowerCase();
+  setPipeStep('parse', 'active', `Parsing ${ext.toUpperCase()}…`);
+  await sleep(200);
+
+  let data;
+  try {
+    const r = await fetch(`${API}/api/v1/normalize`, { method: 'POST', body: fd });
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({ detail: r.statusText }));
+      throw new Error(err.detail || r.statusText);
+    }
+    data = await r.json();
+  } catch(e) {
+    showError(e.message);
+    resetPipeline();
+    btn.disabled = false; btn.textContent = t('upload.normalize');
+    return;
+  }
+
+  setPipeStep('parse', 'done', `Extracted ${summariseRaw(data.raw_extraction)}`);
+  await sleep(150);
+  setPipeStep('restaurant', 'active', 'Detecting restaurant from filename…');
+  await sleep(200);
+  setPipeStep('restaurant', 'done', `ID: ${data.source_file.split('_')[0]}`);
+  await sleep(150);
+
+  const headers = extractHeaders(data.raw_extraction, ext);
+  setPipeStep('classify', 'active', `Classifying ${headers.length} column(s)…`);
+
+  let colMap = [];
+  if (headers.length > 0) {
+    try {
+      const cr = await fetch(`${API}/api/v1/debug/classify-headers`, {
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(headers)
+      });
+      colMap = await cr.json();
+    } catch(e) {}
+  }
+  await sleep(200);
+  setPipeStep('classify', 'done', colMap.length > 0
+    ? colMap.map(c => `${c.header}→${c.canonical}`).join(', ').slice(0,60) + '…'
+    : 'No tabular headers detected');
+  await sleep(150);
+
+  setPipeStep('extract', 'active', 'Extracting scalar fields…');
+  await sleep(250);
+  const scalarHits = ['name','category','servings','country','region','continent']
+    .filter(k => data[k]).map(k => k);
+  setPipeStep('extract', 'done', scalarHits.length > 0
+    ? `Found: ${scalarHits.join(', ')}` : 'Defaults used');
+  await sleep(150);
+
+  setPipeStep('build', 'active', 'Building normalized sheet…');
+  await sleep(200);
+  setPipeStep('build', 'done',
+    `${data.ingredients.length} ingredients · ${data.steps.length} steps · confidence ${Math.round(data.confidence_score*100)}%`);
+
+  currentSheet = data;
+  renderSheet(data, colMap);
+
+  btn.disabled = false;
+  btn.textContent = t('upload.normalize');
+  loadStatus();
+  loadHistory();
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function summariseRaw(raw) {
+  if (!raw) return 'empty';
+  if (raw.full_text) return `${raw.full_text.length} chars text, ${(raw.tables||[]).length} tables`;
+  if (raw.sheets) return `${Object.keys(raw.sheets).length} sheet(s)`;
+  if (raw.raw_text) return `${raw.raw_text.length} chars CSV`;
+  return 'data extracted';
+}
+
+function extractHeaders(raw, ext) {
+  if (!raw) return [];
+  if (ext === 'xlsx' && raw.sheets) {
+    for (const s of Object.values(raw.sheets)) {
+      if (s.headers && s.headers.length) return s.headers;
+    }
+  }
+  if (ext === 'csv' && raw.raw_text) {
+    const firstLine = raw.raw_text.split('\n')[0] || '';
+    return firstLine.split(',').map(h => h.trim()).filter(Boolean);
+  }
+  if (ext === 'pdf' && raw.tables && raw.tables.length) {
+    return raw.tables[0][0] || [];
+  }
+  return [];
+}
+
+// ── Render sheet ────────────────────────────────────────────────
+function renderSheet(d, colMap) {
+  document.getElementById('summary-strip').classList.remove('hidden');
+  document.getElementById('results-card').classList.remove('hidden');
+  document.getElementById('s-name').textContent = d.name || '—';
+  document.getElementById('s-category').textContent = d.category || '—';
+  document.getElementById('s-servings').textContent = d.servings || '—';
+  document.getElementById('s-cost').textContent = d.total_cost ? `€${d.total_cost.toFixed(2)}` : '—';
+
+  const pct = Math.round((d.confidence_score || 0) * 100);
+  document.getElementById('conf-bar').style.width = pct + '%';
+  document.getElementById('conf-pct').textContent = pct + '%';
+  const confLabel = document.getElementById('conf-label');
+  if (pct >= 75) { confLabel.textContent = 'high'; confLabel.className = 'badge badge-green'; }
+  else if (pct >= 40) { confLabel.textContent = 'medium'; confLabel.className = 'badge badge-yellow'; }
+  else { confLabel.textContent = 'low'; confLabel.className = 'badge badge-red'; }
+
+  const maxCost = Math.max(...(d.ingredients || []).map(i => i.line_cost || 0), 0.01);
+  const tbody = document.getElementById('ingredients-body');
+  tbody.innerHTML = '';
+  (d.ingredients || []).forEach((ing, idx) => {
+    const pct = Math.round(((ing.line_cost || 0) / maxCost) * 100);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="text-right" style="color:var(--muted)">${ing.line_number || idx+1}</td>
+      <td class="font-medium">${esc(ing.product_name)}</td>
+      <td class="text-right">${ing.quantity}</td>
+      <td><span class="badge badge-blue">${esc(ing.unit)}</span></td>
+      <td class="text-right" style="color:var(--muted)">€${(ing.unit_price||0).toFixed(4)}</td>
+      <td class="text-right font-bold" style="color:var(--purple)">€${(ing.line_cost||0).toFixed(4)}</td>
+      <td style="width:80px"><div class="cost-bar"><div class="cost-bar-fill" style="width:${pct}%"></div></div></td>
+      <td style="color:var(--muted)">${esc(ing.observations||'')}</td>`;
+    tbody.appendChild(tr);
+  });
+  if (!d.ingredients || d.ingredients.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4" style="color:var(--muted)">${t('steps.empty')}</td></tr>`;
+  }
+  document.getElementById('total-cost-disp').textContent = `€${(d.total_cost||0).toFixed(4)}`;
+  document.getElementById('cost-per-serving-disp').textContent = `€${(d.cost_per_serving||0).toFixed(4)}`;
+
+  const stepsBody = document.getElementById('steps-body');
+  stepsBody.innerHTML = '';
+  const stepsEmpty = document.getElementById('steps-empty');
+  if (d.steps && d.steps.length > 0) {
+    stepsEmpty.style.display = 'none';
+    d.steps.forEach(step => {
+      const div = document.createElement('div');
+      div.className = 'rounded-lg px-3 py-2 surface2 flex gap-3 items-start';
+      div.innerHTML = `
+        <div class="rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0"
+             style="background:rgba(88,166,255,0.15);color:var(--accent)">${step.step_number}</div>
+        <div class="flex-1">
+          <div class="font-semibold">${esc(step.action)}</div>
+          <div class="flex flex-wrap gap-2 mt-1">
+            ${step.product ? `<span class="badge badge-muted">product: ${esc(step.product)}</span>` : ''}
+            ${step.cut_type ? `<span class="badge badge-muted">cut: ${esc(step.cut_type)}</span>` : ''}
+            ${step.time_minutes ? `<span class="badge badge-yellow">${step.time_minutes} min</span>` : ''}
+            ${step.observations ? `<span style="color:var(--muted)">${esc(step.observations)}</span>` : ''}
+          </div>
+        </div>`;
+      stepsBody.appendChild(div);
+    });
+  } else {
+    stepsEmpty.style.display = 'block';
+  }
+
+  renderRaw(d.raw_extraction);
+
+  const colBody = document.getElementById('columns-body');
+  colBody.innerHTML = '';
+  if (colMap.length > 0) {
+    colMap.forEach(c => {
+      const methodColors = {
+        synonym_exact: 'badge-green', synonym_substring: 'badge-blue',
+        ml_model: 'badge-purple', ml_fallback_ignore: 'badge-muted', no_model: 'badge-muted', empty: 'badge-muted'
+      };
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="font-mono">${esc(c.header)}</td>
+        <td><span class="badge ${c.canonical === 'IGNORE' ? 'badge-muted' : 'badge-green'}">${esc(c.canonical)}</span></td>
+        <td><span class="badge ${methodColors[c.method] || 'badge-muted'}">${esc(c.method)}</span></td>`;
+      colBody.appendChild(tr);
+    });
+  } else {
+    colBody.innerHTML = `<tr><td colspan="3" class="text-center py-4" style="color:var(--muted)">No column headers found (PDF with no tables?)</td></tr>`;
+  }
+
+  const jsonBody = document.getElementById('json-body');
+  jsonBody.innerHTML = syntaxHighlight(JSON.stringify(d, null, 2));
+
+  // Render allergen information (MAIN OBJECTIVE)
+  renderAllergens(d);
+
+  switchTab('allergens');
+}
+
+function renderAllergens(d) {
+  // Render allergen summary and risk assessment
+  const riskBanner = document.getElementById('allergen-risk-banner');
+  const riskBadge = document.getElementById('risk-badge');
+  const riskDetail = document.getElementById('risk-detail');
+
+  const riskColors = {
+    'critical': 'badge-red',
+    'high': 'badge-red',
+    'medium': 'badge-yellow',
+    'low': 'badge-muted',
+    'none': 'badge-green'
+  };
+
+  const riskLabels = {
+    'critical': 'CRITICAL - Contains major allergens',
+    'high': 'HIGH - Contains allergens',
+    'medium': 'MEDIUM - May cause reactions',
+    'low': 'LOW - Minimal allergen risk',
+    'none': 'SAFE - No known allergens'
+  };
+
+  riskBadge.className = `badge ${riskColors[d.allergen_risk_level]}`;
+  riskBadge.textContent = d.allergen_risk_level.toUpperCase();
+  riskDetail.textContent = riskLabels[d.allergen_risk_level] + ` · ${d.allergen_ingredients_count} ingredients contain allergens`;
+
+  if (d.allergen_risk_level === 'critical') {
+    riskBanner.style.background = 'rgba(248,81,73,0.15)';
+    riskBanner.style.borderColor = 'rgba(248,81,73,0.5)';
+  } else if (d.allergen_risk_level === 'high') {
+    riskBanner.style.background = 'rgba(248,81,73,0.1)';
+    riskBanner.style.borderColor = 'rgba(248,81,73,0.3)';
+  } else if (d.allergen_risk_level === 'medium') {
+    riskBanner.style.background = 'rgba(210,153,34,0.12)';
+    riskBanner.style.borderColor = 'rgba(210,153,34,0.3)';
+  } else {
+    riskBanner.style.background = 'rgba(63,185,80,0.12)';
+    riskBanner.style.borderColor = 'rgba(63,185,80,0.3)';
+  }
+
+  // Critical allergens
+  const criticalEl = document.getElementById('critical-allergens');
+  if (d.critical_allergens.length > 0) {
+    criticalEl.innerHTML = d.critical_allergens.map(a =>
+      `<span class="badge badge-red" style="font-weight:700">${esc(a.toUpperCase())}</span>`
+    ).join('');
+  } else {
+    criticalEl.innerHTML = '<span style="color:var(--muted);font-size:0.75rem">None detected</span>';
+  }
+
+  // All allergens
+  const allEl = document.getElementById('all-allergens');
+  if (d.all_allergens.length > 0) {
+    allEl.innerHTML = d.all_allergens.map(a => {
+      const isCritical = d.critical_allergens.includes(a);
+      return `<span class="badge ${isCritical ? 'badge-red' : 'badge-orange'}">${esc(a)}</span>`;
+    }).join('');
+  } else {
+    allEl.innerHTML = '<span style="color:var(--muted);font-size:0.75rem">None detected</span>';
+  }
+
+  // Allergen sources table
+  const sourcesBody = document.getElementById('allergen-sources');
+  sourcesBody.innerHTML = '';
+  const allergenic = (d.ingredients || []).filter(i => i.allergens && i.allergens.length > 0);
+
+  if (allergenic.length > 0) {
+    allergenic.forEach(ing => {
+      const riskColor = ing.allergen_risk === 'critical' ? 'badge-red' : 'badge-yellow';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="font-medium">${esc(ing.product_name)}</td>
+        <td class="flex flex-wrap gap-1">${ing.allergens.map(a => `<span class="badge badge-red text-xs">${esc(a)}</span>`).join('')}</td>
+        <td><span class="badge ${riskColor}">${esc(ing.allergen_risk)}</span></td>
+        <td style="color:var(--muted)">${ing.producer ? esc(ing.producer) : '—'}</td>`;
+      sourcesBody.appendChild(tr);
+    });
+  } else {
+    sourcesBody.innerHTML = `<tr><td colspan="4" class="text-center py-4" style="color:var(--muted)">No allergenic ingredients detected</td></tr>`;
+  }
+}
+
+function renderRaw(raw) {
+  const el = document.getElementById('raw-body');
+  if (!raw) { el.innerHTML = `<span style="color:var(--muted)">No raw extraction data</span>`; return; }
+
+  let html = '';
+
+  if (raw.full_text) {
+    html += `<div class="mb-3">
+      <div class="text-xs font-semibold mb-1" style="color:var(--muted)">Full Text (first 1000 chars)</div>
+      <pre class="rounded px-3 py-2 text-xs overflow-auto" style="background:var(--surface2);white-space:pre-wrap;max-height:150px">${esc(raw.full_text.slice(0,1000))}</pre>
+    </div>`;
+  }
+  if (raw.tables && raw.tables.length > 0) {
+    raw.tables.forEach((table, ti) => {
+      html += `<div class="mb-3"><div class="text-xs font-semibold mb-1" style="color:var(--muted)">Table ${ti+1} (${table.length} rows)</div>`;
+      html += `<div class="overflow-auto"><table class="debug-table text-xs w-full">`;
+      if (table[0]) {
+        html += `<thead><tr>${table[0].map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead>`;
+        html += `<tbody>${table.slice(1).map(row=>`<tr>${row.map(c=>`<td>${esc(String(c))}</td>`).join('')}</tr>`).join('')}</tbody>`;
+      }
+      html += `</table></div></div>`;
+    });
+  }
+
+  if (raw.raw_text) {
+    const lines = raw.raw_text.split('\n').slice(0,20);
+    html += `<div class="mb-3">
+      <div class="text-xs font-semibold mb-1" style="color:var(--muted)">CSV Preview (first 20 lines)</div>
+      <pre class="rounded px-3 py-2 text-xs overflow-auto" style="background:var(--surface2);white-space:pre-wrap;max-height:200px">${esc(lines.join('\n'))}</pre>
+    </div>`;
+  }
+
+  if (raw.sheets) {
+    Object.entries(raw.sheets).forEach(([name, sheet]) => {
+      const headers = sheet.headers || [];
+      const rows = (sheet.rows || []).slice(0, 20);
+      html += `<div class="mb-3"><div class="text-xs font-semibold mb-1" style="color:var(--muted)">Sheet: ${esc(name)} (${rows.length} rows shown)</div>`;
+      html += `<div class="overflow-auto"><table class="debug-table text-xs w-full">`;
+      if (headers.length) {
+        html += `<thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead>`;
+        html += `<tbody>${rows.map(row=>`<tr>${headers.map(h=>`<td>${esc(String(row[h]??''))}</td>`).join('')}</tr>`).join('')}</tbody>`;
+      }
+      html += `</table></div></div>`;
+    });
+  }
+
+  el.innerHTML = html || `<pre class="text-xs" style="color:var(--muted)">${esc(JSON.stringify(raw, null, 2).slice(0,2000))}</pre>`;
+}
+
+// ── Column classifier tester ─────────────────────────────────────
+async function classifyHeaders() {
+  const raw = document.getElementById('header-input').value;
+  const headers = raw.split(',').map(h => h.trim()).filter(Boolean);
+  if (!headers.length) return;
+  const container = document.getElementById('classify-results');
+  container.innerHTML = `<span style="color:var(--muted)">Classifying…</span>`;
+  try {
+    const r = await fetch(`${API}/api/v1/debug/classify-headers`, {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(headers)
+    });
+    const results = await r.json();
+    const methodColors = {
+      synonym_exact: 'badge-green', synonym_substring: 'badge-blue',
+      ml_model: 'badge-purple', ml_fallback_ignore: 'badge-muted', no_model: 'badge-muted'
+    };
+    container.innerHTML = results.map(c => `
+      <div class="flex items-center justify-between py-1 border-b" style="border-color:var(--border)">
+        <span class="font-mono">${esc(c.header)}</span>
+        <div class="flex items-center gap-2">
+          <span class="badge ${c.canonical==='IGNORE'?'badge-muted':'badge-green'}">${esc(c.canonical)}</span>
+          <span class="badge ${methodColors[c.method]||'badge-muted'}">${esc(c.method)}</span>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    container.innerHTML = `<span style="color:var(--red)">${t('error.prefix')}${esc(e.message)}</span>`;
+  }
+}
+
+// ── Patterns tab ─────────────────────────────────────────────────
+async function loadPatterns(view) {
+  if (!patternsCache) {
+    document.getElementById('patterns-body').innerHTML = `<span style="color:var(--muted)">${t('ml_status.loading')}</span>`;
+    try {
+      const r = await fetch(`${API}/api/v1/debug/patterns`);
+      patternsCache = await r.json();
+    } catch(e) {
+      document.getElementById('patterns-body').innerHTML = `<span style="color:var(--red)">Failed to load patterns</span>`;
+      return;
+    }
+  }
+
+  const el = document.getElementById('patterns-body');
+
+  if (view === 'synonyms') {
+    const entries = Object.entries(patternsCache.synonym_dict);
+    el.innerHTML = `<table class="debug-table w-full"><thead><tr><th>Raw Name</th><th>Canonical</th></tr></thead><tbody>
+      ${entries.map(([k,v]) => `<tr><td class="font-mono">${esc(k)}</td><td><span class="badge badge-green">${esc(v)}</span></td></tr>`).join('')}
+    </tbody></table>`;
+  } else if (view === 'columns') {
+    const rows = patternsCache.column_mappings;
+    el.innerHTML = rows.length ? `<table class="debug-table w-full"><thead><tr><th>Raw</th><th>Canonical</th><th>Format</th><th>Restaurant</th><th>Origin</th></tr></thead><tbody>
+      ${rows.map(r => `<tr><td class="font-mono">${esc(r.raw_name)}</td><td><span class="badge badge-green">${esc(r.canonical)}</span></td>
+        <td>${esc(r.source_fmt)}</td><td>${esc(r.restaurant||'—')}</td><td><span class="badge badge-muted">${esc(r.origin)}</span></td></tr>`).join('')}
+    </tbody></table>` : `<div class="text-center py-6" style="color:var(--muted)">No column mappings recorded yet</div>`;
+  } else if (view === 'units') {
+    el.innerHTML = `<table class="debug-table w-full"><thead><tr><th>Raw Unit</th><th>Canonical</th><th>Restaurant</th><th>Origin</th></tr></thead><tbody>
+      ${patternsCache.unit_vocabulary.map(r => `<tr><td class="font-mono">${esc(r.raw_unit)}</td>
+        <td><span class="badge badge-blue">${esc(r.canonical)}</span></td>
+        <td>${esc(r.restaurant||'—')}</td><td><span class="badge badge-muted">${esc(r.origin)}</span></td></tr>`).join('')}
+    </tbody></table>`;
+  } else if (view === 'pdf') {
+    el.innerHTML = `<table class="debug-table w-full"><thead><tr><th>Field</th><th>Pattern</th><th>Lang</th><th>Priority</th><th>Hits</th><th>Origin</th></tr></thead><tbody>
+      ${patternsCache.pdf_field_patterns.map(r => `<tr>
+        <td><span class="badge badge-yellow">${esc(r.field_name)}</span></td>
+        <td class="font-mono text-xs" style="max-width:200px;overflow:hidden">${esc(r.pattern)}</td>
+        <td>${esc(r.language)}</td><td>${r.priority}</td><td>${r.hit_count}</td>
+        <td><span class="badge badge-muted">${esc(r.origin)}</span></td></tr>`).join('')}
+    </tbody></table>`;
+  } else if (view === 'corrections') {
+    const rows = patternsCache.corrections;
+    el.innerHTML = rows.length ? `<table class="debug-table w-full"><thead><tr><th>ID</th><th>Sheet</th><th>Restaurant</th><th>Format</th><th>Applied</th><th>Created</th></tr></thead><tbody>
+      ${rows.map(r => `<tr><td>${r.id}</td><td class="font-mono">${esc((r.sheet_id||'').slice(0,8))}</td>
+        <td>${esc(r.restaurant_id||'—')}</td><td>${esc(r.source_fmt||'—')}</td>
+        <td><span class="badge ${r.applied ? 'badge-green' : 'badge-yellow'}">${r.applied ? 'yes' : 'pending'}</span></td>
+        <td style="color:var(--muted)">${esc(r.created_at||'')}</td></tr>`).join('')}
+    </tbody></table>` : `<div class="text-center py-6" style="color:var(--muted)">No corrections recorded yet</div>`;
+  }
+}
+
+// ── History ──────────────────────────────────────────────────────
+async function loadHistory() {
+  const el = document.getElementById('history-body');
+  try {
+    const r = await fetch(`${API}/api/v1/debug/sheets`);
+    const d = await r.json();
+    if (!d.sheets.length) {
+      el.innerHTML = `<div class="text-center py-4" style="color:var(--muted)">No sheets yet</div>`;
+      return;
+    }
+    el.innerHTML = `<div class="flex flex-col gap-2">
+      ${d.sheets.map(s => `
+        <div class="rounded-lg px-3 py-2 surface2 flex items-center justify-between cursor-pointer hover:opacity-90"
+             onclick="loadSheet('${esc(s.id)}')">
+          <div>
+            <div class="font-semibold">${esc(s.name)}</div>
+            <div style="color:var(--muted)">${esc(s.source_file)} · ${esc(s.source_format)}</div>
+          </div>
+          <div class="text-right flex flex-col items-end gap-1">
+            <span class="badge ${confidenceBadge(s.confidence_score)}">${Math.round(s.confidence_score*100)}%</span>
+            <span style="color:var(--muted)">${s.n_ingredients} ing · €${(s.total_cost||0).toFixed(2)}</span>
+          </div>
+        </div>`).join('')}
+    </div>`;
+  } catch(e) {
+    el.innerHTML = `<span style="color:var(--red)">Failed to load history</span>`;
+  }
+}
+
+async function loadSheet(id) {
+  try {
+    const r = await fetch(`${API}/api/v1/sheets/${id}`);
+    const d = await r.json();
+    currentSheet = d;
+    renderSheet(d, []);
+    resetPipeline();
+    ['parse','restaurant','classify','extract','build'].forEach(s => setPipeStep(s, 'done'));
+  } catch(e) {
+    showError(`Failed to load sheet: ${e.message}`);
+  }
+}
+
+function confidenceBadge(score) {
+  const pct = score * 100;
+  if (pct >= 75) return 'badge-green';
+  if (pct >= 40) return 'badge-yellow';
+  return 'badge-red';
+}
+
+// ── Tabs ─────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const idx = ['allergens','ingredients','steps','raw','columns','json','patterns'].indexOf(name);
+  document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+  document.getElementById(`tab-${name}`).classList.add('active');
+  if (name === 'patterns') loadPatterns('synonyms');
+}
+
+// ── Utils ────────────────────────────────────────────────────────
+function showError(msg) {
+  const el = document.getElementById('error-banner');
+  el.textContent = `${t('error.prefix')}${msg}`;
+  el.classList.remove('hidden');
+}
+function hideError() {
+  document.getElementById('error-banner').classList.add('hidden');
+}
+
+function copyJson() {
+  if (!currentSheet) return;
+  navigator.clipboard.writeText(JSON.stringify(currentSheet, null, 2));
+}
+
+function downloadXlsx() {
+  if (!currentSheet) return;
+  window.location.href = `${API}/api/v1/export/${currentSheet.id}`;
+}
+
+function esc(str) {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function syntaxHighlight(json) {
+  return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, (match) => {
+    let cls = 'json-num';
+    if (/^"/.test(match)) {
+      if (/:$/.test(match)) cls = 'json-key';
+      else cls = 'json-str';
+    } else if (/true|false/.test(match)) cls = 'json-bool';
+    else if (/null/.test(match)) cls = 'json-null';
+    return `<span class="${cls}">${match}</span>`;
+  });
+}
+
+// ── Init ─────────────────────────────────────────────────────────
+loadStatus();
+loadMLStatus();
+loadHistory();
+setInterval(loadStatus, 10000);
+</script>
+</body>
+</html>

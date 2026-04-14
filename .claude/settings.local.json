@@ -9,7 +9,11 @@
       "Bash(py --version)",
       "Bash(python -c \"import pdfplumber; print\\('pdfplumber available'\\)\")",
       "Bash(python:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(netstat -ano)",
+      "Bash(curl:*)",
+      "Bash(ipconfig)",
+      "Bash(netsh advfirewall:*)"
     ]
   }
 }
