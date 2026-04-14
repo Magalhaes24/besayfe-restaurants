@@ -335,6 +335,19 @@
           <span style="color:var(--muted)" data-i18n="ingredients.per_serving">Cost per serving</span>
           <span id="cost-per-serving-disp" class="font-bold" style="color:var(--accent)">—</span>
         </div>
+
+        <!-- Corrections panel -->
+        <div class="mt-6 pt-4 border-t" style="border-color:var(--border)">
+          <div class="flex items-center justify-between mb-3">
+            <div class="text-xs font-semibold" style="color:var(--muted)">CORRECTIONS & LEARNING</div>
+            <button id="btn-submit-corrections" onclick="submitCorrections()" disabled
+              class="text-xs px-3 py-1 rounded font-semibold transition-all"
+              style="background:rgba(63,185,80,0.15);color:var(--green);border:1px solid rgba(63,185,80,0.3)">
+              Submit Corrections
+            </button>
+          </div>
+          <div id="corrections-status" class="text-xs" style="color:var(--muted)">Make changes above, then submit to train the ML</div>
+        </div>
       </div>
 
       <!-- STEPS tab -->
@@ -566,6 +579,7 @@ window.addEventListener('DOMContentLoaded', () => {
 // ── Status polling ──────────────────────────────────────────────
 const API = '';
 let currentSheet = null;
+let currentSheetOriginal = null;
 let patternsCache = null;
 
 async function loadStatus() {
@@ -779,14 +793,22 @@ function renderSheet(d, colMap) {
   // Set dish name for ingredients tab
   document.getElementById('ingredients-dish-name').textContent = esc(d.name || 'Unknown Dish');
 
+  // Store original sheet for corrections
+  window.currentSheetOriginal = JSON.parse(JSON.stringify(d));
+
   const tbody = document.getElementById('ingredients-body');
   tbody.innerHTML = '';
   (d.ingredients || []).forEach((ing, idx) => {
     const pct = Math.round(((ing.line_cost || 0) / maxCost) * 100);
     const tr = document.createElement('tr');
+    tr.id = `ing-row-${idx}`;
+    tr.dataset.ingIndex = idx;
     tr.innerHTML = `
       <td class="text-right" style="color:var(--muted)">${ing.line_number || idx+1}</td>
-      <td class="font-medium">${esc(ing.product_name)}</td>
+      <td class="font-medium cursor-pointer hover:opacity-70" onclick="editIngredientName(${idx})" title="Click to edit">
+        <span id="ing-name-${idx}">${esc(ing.product_name)}</span>
+        <span style="color:var(--accent);margin-left:4px">✎</span>
+      </td>
       <td class="text-right">${ing.quantity}</td>
       <td><span class="badge badge-blue">${esc(ing.unit)}</span></td>
       <td class="text-right" style="color:var(--muted)">€${(ing.unit_price||0).toFixed(4)}</td>
@@ -1165,6 +1187,80 @@ function syntaxHighlight(json) {
     else if (/null/.test(match)) cls = 'json-null';
     return `<span class="${cls}">${match}</span>`;
   });
+}
+
+// ── Corrections & Learning ──────────────────────────────────────
+function editIngredientName(idx) {
+  const span = document.getElementById(`ing-name-${idx}`);
+  const currentName = span.textContent;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = currentName;
+  input.style.cssText = 'padding:4px;border-radius:4px;border:1px solid var(--accent);background:var(--surface2);color:var(--text);width:100%';
+  input.onblur = () => {
+    span.textContent = input.value || currentName;
+    if (input.value !== currentName) {
+      enableCorrectionSubmit();
+      // Update currentSheet
+      if (currentSheet && currentSheet.ingredients[idx]) {
+        currentSheet.ingredients[idx].product_name = input.value;
+      }
+    }
+  };
+  input.onkeypress = (e) => {
+    if (e.key === 'Enter') input.blur();
+    if (e.key === 'Escape') { span.textContent = currentName; }
+  };
+  span.textContent = '';
+  span.appendChild(input);
+  input.focus();
+  input.select();
+}
+
+function enableCorrectionSubmit() {
+  const btn = document.getElementById('btn-submit-corrections');
+  if (btn) btn.disabled = false;
+  const status = document.getElementById('corrections-status');
+  if (status) status.textContent = '✓ Changes detected - ready to submit';
+}
+
+async function submitCorrections() {
+  if (!currentSheet || !currentSheetOriginal) {
+    alert('No sheet loaded');
+    return;
+  }
+
+  const btn = document.getElementById('btn-submit-corrections');
+  const status = document.getElementById('corrections-status');
+
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+  status.textContent = 'Submitting corrections to ML...';
+
+  try {
+    const res = await fetch(`${API}/api/v1/corrections/${currentSheet.id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(currentSheet)
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      status.innerHTML = `<span style="color:var(--green)">✓ Submitted ${data.changes || 0} corrections. ML is learning...</span>`;
+      btn.textContent = 'Submit Corrections';
+      setTimeout(() => {
+        btn.disabled = true;
+        status.textContent = 'Make changes above, then submit to train the ML';
+      }, 3000);
+    } else {
+      status.textContent = 'Error: ' + data.detail;
+      btn.textContent = 'Submit Corrections';
+    }
+  } catch(e) {
+    status.textContent = 'Error submitting corrections: ' + e.message;
+    btn.textContent = 'Submit Corrections';
+  }
 }
 
 // ── Init ─────────────────────────────────────────────────────────

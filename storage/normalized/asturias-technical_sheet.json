@@ -16,7 +16,15 @@
       "unit": "7.8",
       "unit_price": 0.0,
       "line_cost": 0.0,
-      "observations": null
+      "observations": null,
+      "allergens": [
+        "eggs"
+      ],
+      "allergen_risk": "critical",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
     },
     {
       "line_number": 2,
@@ -25,7 +33,15 @@
       "unit": "8.9",
       "unit_price": 0.0,
       "line_cost": 0.0,
-      "observations": null
+      "observations": null,
+      "allergens": [
+        "eggs"
+      ],
+      "allergen_risk": "critical",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
     },
     {
       "line_number": 3,
@@ -34,7 +50,15 @@
       "unit": "12.1",
       "unit_price": 0.0,
       "line_cost": 0.0,
-      "observations": null
+      "observations": null,
+      "allergens": [
+        "molluscs"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.85,
+      "producer": "sal q.b.",
+      "origin": null,
+      "storage_conditions": null
     },
     {
       "line_number": 4,
@@ -43,7 +67,13 @@
       "unit": "9",
       "unit_price": 0.0,
       "line_cost": 0.0,
-      "observations": null
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
     },
     {
       "line_number": 5,
@@ -52,7 +82,13 @@
       "unit": "3.05",
       "unit_price": 0.0,
       "line_cost": 0.0,
-      "observations": null
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
     },
     {
       "line_number": 6,
@@ -61,7 +97,15 @@
       "unit": "8.3",
       "unit_price": 0.0,
       "line_cost": 0.0,
-      "observations": null
+      "observations": null,
+      "allergens": [
+        "sulphites"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.85,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
     },
     {
       "line_number": 7,
@@ -70,7 +114,13 @@
       "unit": "6.8",
       "unit_price": 0.0,
       "line_cost": 0.0,
-      "observations": null
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
     },
     {
       "line_number": 8,
@@ -79,7 +129,13 @@
       "unit": "9.1",
       "unit_price": 0.0,
       "line_cost": 0.0,
-      "observations": null
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
     },
     {
       "line_number": 9,
@@ -88,7 +144,16 @@
       "unit": "10",
       "unit_price": 0.0,
       "line_cost": 0.0,
-      "observations": null
+      "observations": null,
+      "allergens": [
+        "eggs",
+        "milk"
+      ],
+      "allergen_risk": "critical",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
     },
     {
       "line_number": 10,
@@ -97,7 +162,16 @@
       "unit": "1.25",
       "unit_price": 0.0,
       "line_cost": 0.0,
-      "observations": null
+      "observations": null,
+      "allergens": [
+        "milk",
+        "wheat"
+      ],
+      "allergen_risk": "critical",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
     }
   ],
   "steps": [],
@@ -105,7 +179,7 @@
   "cost_per_serving": 0.0,
   "source_file": "asturias-technical_sheet.xlsx",
   "source_format": "xlsx",
-  "normalized_at": "2026-04-14T11:05:16.139917",
+  "normalized_at": "2026-04-14T11:40:49.470186",
   "confidence_score": 0.15,
   "raw_extraction": {
     "sheets": {
@@ -369,5 +443,20 @@
       "Legenda Alergénios"
     ],
     "raw_text": "=== Sheet: Ficha Técnica ===\nDish | Category | Portion_Size_g | Yield_per_Batch | Ingredients_and_Quantities | Prep_Method | Cook_Time_min | Plating_Notes | Allergens | Calories_kcal | Cost_Per_Portion_EUR | Menu_Price_EUR | Food_Cost_% | Margin_EUR\nBitoque à Portuguesa | Carne | 450 | 10 | Novilho bife 180g; Batata palito 250g; Ovo 1 un; Alho 5g; Azeite 10ml; Arroz branco 120g; Sal q.b.; Pimenta q.b. | Grelhar bife ao ponto; fritar batata; estrelar ovo; molho rápido com alho e azeite. | 20 | Bife ao centro, ovo por cima, batata e arroz em lados opostos; molho por cima da carne. | ovo | 980 | 4.1 | 11.9 | 34.5 | 7.8\nBacalhau à Brás | Peixe | 380 | 12 | Bacalhau desfiado 150g; Batata palha 150g; Ovo 2 un; Cebola 80g; Alho 5g; Azeite 15ml; Salsa 2g; Azeitonas 20g; Sal q.b.; Pimenta q.b. | Refogar cebola/alho; juntar bacalhau; envolver batata e ovo batido; finalizar com salsa e azeitonas. | 18 | Montar em ninho; decorar com salsa picada e azeitonas pretas. | peixe, ovo | 720 | 3.6 | 12.5 | 28.8 | 8.9\nPolvo à Lagareiro | Peixe/Marisco | 520 | 8 | Polvo 350g; Batata a murro 250g; Alho 8g; Azeite 25ml; Louro 1 folha; Coentros 2g; Flor de sal q.b. | Cozer polvo; assar batata; levar ambos ao forno com alho, louro e azeite; finalizar com coentros. | 55 | Polvo laminado sobre batatas a murro; regar generosamente com azeite. | molusco | 850 | 7.8 | 19.9 | 39.2 | 12.1\nArroz de Pato | Carne | 450 | 14 | Pato desfiado 180g; Arroz carolino 120g; Chouriço 25g; Cebola 60g; Alho 5g; Caldo do pato 250ml; Louro 1; Azeite 10ml; Sal q.b. | Cozer pato; preparar arroz no caldo; envolver pato e chouriço; gratinar levemente. | 60 | Servir em tigela funda; fatias de chouriço por cima. | None | 780 | 4.5 | 13.5 | 33.3 | 9\nCaldo Verde | Sopa | 350 | 20 | Couve-galega 80g; Batata 180g; Cebola 40g; Alho 3g; Azeite 10ml; Chouriço 15g; Sal q.b. | Cozer batata/cebola; triturar; juntar couve em juliana e cozinhar; finalizar com azeite e rodelas de chouriço. | 35 | Servir bem quente em taça; fio de azeite final. | None | 220 | 0.85 | 3.9 | 21.8 | 3.05\nAmeijoas à Bulhão Pato | Entrada/Marisco | 400 | 10 | Amêijoas 300g; Alho 8g; Azeite 20ml; Coentros 3g; Vinho branco 50ml; Limão 1/4; Sal q.b.; Pimenta q.b. | Saltear alho em azeite; juntar amêijoas e vinho; terminar com coentros e limão. | 10 | Servir em frigideira de partilha com pão torrado à parte. | molusco, sulfitos | 360 | 3.2 | 11.5 | 27.8 | 8.3\nIscas de Cebolada | Carne/Entrada | 350 | 12 | Fígado de porco 220g; Cebola 120g; Vinagre 15ml; Alho 5g; Louro 1; Azeite 15ml; Sal e pimenta q.b. | Marinar fígado; saltear com cebola e alho; refrescar com vinagre. | 15 | Servir com cebolada por cima e batata cozida a acompanhar. | sulfitos | 540 | 2.1 | 8.9 | 23.6 | 6.8\nFeijoada à Transmontana | Prato de Tacho | 520 | 16 | Feijão 220g; Entrecosto 120g; Chouriço 40g; Morcela 30g; Couve 80g; Cenoura 50g; Cebola 60g; Alho 5g; Azeite 15ml; Louro 1; Sal q.b. | Cozinhar enchidos e carnes; juntar legumes e feijão; apurar lentamente. | 90 | Servir em prato fundo; acompanhar com arroz branco. | None | 980 | 3.8 | 12.9 | 29.5 | 9.1\nFrancesinha (Porto) | Sandes/Especialidade | 650 | 10 | Pão 2 fatias; Bife 120g; Salsicha fresca 70g; Linguiça 60g; Fiambre 40g; Queijo flamengo 4 fatias; Molho (cerveja, tomate, piripíri) 250ml; Ovo opcional. | Montar sandes com carnes e queijo; cobrir com molho quente; gratinar. | 25 | Servir com batata frita; opcionalmente coroar com ovo estrelado. | glúten, lactose, leite, ovo (opcional) | 1350 | 4.9 | 14.9 | 32.9 | 10\nPastel de Nata | Sobremesa | 90 | 24 | Massa folhada 50g; Leite 60ml; Nata 20ml; Açúcar 25g; Gemas 1 un; Farinha 5g; Casca de limão e canela. | Preparar creme com leite, nata, açúcar e gemas; enformar em massa folhada; assar alto. | 30 | Servir morno com canela em pó. | glúten, leite, lactose, ovo | 230 | 0.55 | 1.8 | 30.6 | 1.25\n=== Sheet: Legenda Alergénios ===\nAllergen Tag | Notes\nglúten | Contém cereais com glúten\nleite | Derivados de leite\nlactose | Açúcar do leite; subset de leite\novo | Ovos e derivados\npeixe | Peixes e derivados\nmolusco | Moluscos (polvo, amêijoa, etc.)\ncrustáceo | Crustáceos (camarão, lagosta, etc.)\namendoim | Amendoins\nfrutos de casca rija | Nozes, amêndoa, avelã, etc.\nsoja | Soja e derivados\nsésamo | Sementes de sésamo\nsulfitos | Dióxido de enxofre e sulfitos\naipo | Aipo\nmostarda | Mostarda\ntremoço | Tremoço\npeixe/ovo (opcional) | Etiqueta combinada para itens opcionais"
-  }
+  },
+  "all_allergens": [
+    "eggs",
+    "milk",
+    "molluscs",
+    "sulphites",
+    "wheat"
+  ],
+  "critical_allergens": [
+    "eggs",
+    "milk",
+    "wheat"
+  ],
+  "allergen_ingredients_count": 6,
+  "has_critical_allergen": true,
+  "allergen_risk_level": "critical"
 }
