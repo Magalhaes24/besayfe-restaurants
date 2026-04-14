@@ -304,7 +304,7 @@
 
           <!-- Ingredient sources -->
           <div>
-            <div class="text-xs font-semibold mb-2" style="color:var(--muted)">Allergen Sources (Ingredients)</div>
+            <div class="text-xs font-semibold mb-2" style="color:var(--muted)">Allergen Sources (Ingredients from <span id="allergen-dish-name" class="font-bold" style="color:var(--accent)">—</span>)</div>
             <table class="debug-table w-full text-xs">
               <thead><tr><th>Ingredient</th><th>Allergens</th><th>Risk</th><th>Producer</th></tr></thead>
               <tbody id="allergen-sources"></tbody>
@@ -315,6 +315,10 @@
 
       <!-- INGREDIENTS tab -->
       <div id="tab-ingredients" class="tab-panel p-4 overflow-auto" style="max-height:500px">
+        <div class="mb-3 pb-3 border-b" style="border-color:var(--border)">
+          <div class="text-xs font-semibold" style="color:var(--muted)">Dish</div>
+          <div class="text-sm font-bold mt-1" id="ingredients-dish-name" style="color:var(--accent)">—</div>
+        </div>
         <table class="debug-table w-full text-xs">
           <thead><tr>
             <th data-i18n="table.line">#</th><th data-i18n="table.product">Product</th><th class="text-right" data-i18n="table.qty">Qty</th>
@@ -772,6 +776,9 @@ function renderSheet(d, colMap) {
   else { confLabel.textContent = 'low'; confLabel.className = 'badge badge-red'; }
 
   const maxCost = Math.max(...(d.ingredients || []).map(i => i.line_cost || 0), 0.01);
+  // Set dish name for ingredients tab
+  document.getElementById('ingredients-dish-name').textContent = esc(d.name || 'Unknown Dish');
+
   const tbody = document.getElementById('ingredients-body');
   tbody.innerHTML = '';
   (d.ingredients || []).forEach((ing, idx) => {
@@ -851,6 +858,9 @@ function renderSheet(d, colMap) {
 }
 
 function renderAllergens(d) {
+  // Set dish name for allergens context
+  document.getElementById('allergen-dish-name').textContent = esc(d.name || 'Unknown Dish');
+
   // Render allergen summary and risk assessment
   const riskBanner = document.getElementById('allergen-risk-banner');
   const riskBadge = document.getElementById('risk-badge');
