@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>besayfe — Restaurant Sheet Normalizer Debug UI</title>
+  <title>BeSayfe — Restaurant Sheet Normalizer Debug UI</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
@@ -111,7 +111,7 @@
 <!-- ═══════════════ HEADER ═══════════════ -->
 <header class="surface border-b border-gray-800 px-6 py-3 flex items-center justify-between sticky top-0 z-50">
   <div class="flex items-center gap-3">
-    <div class="text-lg font-bold tracking-tight" style="color:var(--accent)">besayfe</div>
+    <div class="text-lg font-bold tracking-tight" style="color:var(--accent)">BeSayfe</div>
     <div style="color:var(--muted)" class="text-sm" data-i18n="header.subtitle">/ restaurant sheet normalizer</div>
     <span class="badge badge-purple ml-2" data-i18n="header.debug">DEBUG UI</span>
   </div>
@@ -1207,64 +1207,10 @@ function confidenceBadge(score) {
 function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  const idx = ['allergens','ingredients','steps','raw','columns','json','patterns','learning'].indexOf(name);
+  const idx = ['allergens','ingredients','steps','raw','columns','json','patterns'].indexOf(name);
   document.querySelectorAll('.tab-btn')[idx].classList.add('active');
   document.getElementById(`tab-${name}`).classList.add('active');
   if (name === 'patterns') loadPatterns('synonyms');
-  if (name === 'learning') loadLearningStatus();
-}
-
-async function loadLearningStatus() {
-  try {
-    const res = await fetch(`${API}/api/v1/learning-rules`);
-    if (!res.ok) return;
-    const rules = await res.json();
-
-    // Learning status badge
-    const badge = document.getElementById('learning-status-badge');
-    const detail = document.getElementById('learning-status-detail');
-    if (rules.total_allergen_rules > 0) {
-      badge.className = 'badge badge-green';
-      badge.textContent = 'LEARNING ACTIVE';
-      detail.style.color = 'var(--green)';
-      detail.textContent = `${rules.total_allergen_rules} allergen patterns learned • ${rules.learned_variants} ingredient variants • Confidence: ${rules.allergen_patterns[0]?.confidence || 0}`;
-    } else {
-      badge.textContent = 'UNTRAINED';
-      detail.textContent = 'No rules learned yet. Submit corrections with feedback to start learning.';
-    }
-
-    // Allergen rules
-    const rulesList = document.getElementById('allergen-rules-list');
-    if (rules.allergen_patterns.length > 0) {
-      rulesList.innerHTML = rules.allergen_patterns.map(r => `
-        <div class="rounded p-2" style="background:var(--surface2);border-left:3px solid ${r.confidence > 0.8 ? 'var(--green)' : 'var(--yellow)'}">
-          <div class="font-medium">${r.allergen.toUpperCase()}</div>
-          <div style="color:var(--muted);font-size:0.7rem">From: ${r.source} • Confidence: ${r.confidence}</div>
-          <div style="color:var(--muted);font-size:0.7rem">Accuracy: ${r.success_rate}</div>
-        </div>
-      `).join('');
-    } else {
-      rulesList.innerHTML = '<div style="color:var(--muted)">No patterns learned yet</div>';
-    }
-
-    // Metrics
-    const metrics = document.getElementById('learning-metrics');
-    metrics.innerHTML = `
-      <tr><td style="color:var(--muted)">Total Rules</td><td class="text-right font-bold">${rules.total_allergen_rules}</td></tr>
-      <tr><td style="color:var(--muted)">Variants</td><td class="text-right font-bold">${rules.learned_variants}</td></tr>
-      <tr><td style="color:var(--muted)">Compound Patterns</td><td class="text-right font-bold">${rules.total_compound_rules}</td></tr>
-    `;
-
-    // Variants
-    const variantsList = document.getElementById('variants-list');
-    if (Object.keys(rules.compound_patterns || {}).length > 0) {
-      variantsList.innerHTML = `<div style="color:var(--muted)">Learned for ${rules.total_compound_rules} restaurants/formats</div>`;
-    } else {
-      variantsList.innerHTML = '<div style="color:var(--muted)">No variants learned yet</div>';
-    }
-  } catch(e) {
-    console.log('Learning status fetch error:', e);
-  }
 }
 
 // ── Utils ────────────────────────────────────────────────────────

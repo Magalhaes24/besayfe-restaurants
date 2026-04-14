@@ -16,6 +16,7 @@ from app.ml.column_classifier import ColumnClassifier
 from app.ml.field_extractor import FieldExtractor, TextBlock
 from app.ml.feature_extractor import extract_column_features, extract_pdf_text_blocks
 from app.ml.pattern_store import PatternStore
+from app.ml.rule_engine import RuleEngine
 from app.models.schema import Ingredient, NormalizedMenuSheet, PreparationStep
 
 
@@ -29,6 +30,7 @@ class LocalNormalizer:
         self.field_extractor = FieldExtractor(pattern_store)
         self.allergen_db = AllergenDatabase()
         self.ingredient_analyzer = IngredientAnalyzer()
+        self.rule_engine = RuleEngine(pattern_store)  # Self-learning rule engine
 
     async def normalize(
         self,
@@ -139,6 +141,9 @@ class LocalNormalizer:
                 if key in canonical_row and key not in scalar_fields:
                     scalar_fields[key] = canonical_row[key]
 
+        # Apply learned rules to enhance ingredient detection
+        ingredients = self.rule_engine.apply_learned_rules(ingredients, language="pt")
+
         # Compute confidence
         n_required = 4
         n_filled = sum(1 for k in ["name", "category", "servings"] if k in scalar_fields and scalar_fields[k])
@@ -238,6 +243,9 @@ class LocalNormalizer:
                             # Single ingredient row
                             ing_counter += 1
                             ingredients.append(self._build_ingredient(canonical_row, restaurant_id, ing_counter))
+
+        # Apply learned rules to enhance ingredient detection
+        ingredients = self.rule_engine.apply_learned_rules(ingredients, language="pt")
 
         # Confidence calculation
         n_required = 4

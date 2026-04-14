@@ -200,6 +200,16 @@ async def submit_correction(sheet_id: str, data: dict = Body(...)):
         restaurant_id=corrected.source_file.split("_")[0] if "_" in corrected.source_file else None,
     )
 
+    # Learn from this correction (self-improving rules)
+    try:
+        normalizer = get_normalizer()
+        feedback_data = {f"ingredient_{i}": {"feedback": getattr(ing, "_ml_feedback", None)}
+                        for i, ing in enumerate(corrected.ingredients)}
+        normalizer.rule_engine.learn_from_correction(original, corrected_active, feedback_data)
+    except Exception as e:
+        # Log but don't fail - learning is non-critical
+        print(f"Warning: Failed to learn from correction: {e}")
+
     return {
         "status": "accepted",
         "sheet_id": sheet_id,
@@ -211,19 +221,39 @@ async def submit_correction(sheet_id: str, data: dict = Body(...)):
 @router.get("/status")
 async def get_status():
     """Get system learning status."""
-    from app.ml import get_pattern_store
+    from app.ml import get_pattern_store, get_normalizer
 
     store = get_pattern_store()
+    normalizer = get_normalizer()
+
+    # Get rule engine status
+    rule_confidence = normalizer.rule_engine.get_learning_confidence()
+    rules_summary = normalizer.rule_engine.get_rules_summary()
+
     return {
         "correction_count": store.get_correction_count(),
         "pattern_count": store.get_pattern_count(),
         "restaurant_count": store.get_restaurant_count(),
         "model_metrics": {
             "column_classifier": {
-                "is_trained": True,  # TODO: track actual status
+                "is_trained": True,
             },
         },
+        "learning_status": {
+            "confidence": rule_confidence,
+            "rules": rules_summary,
+            "is_self_improving": rule_confidence["allergen_rules"] > 0,
+        },
     }
+
+
+@router.get("/learning-rules")
+async def get_learning_rules():
+    """Get detailed information about learned rules."""
+    from app.ml import get_normalizer
+
+    normalizer = get_normalizer()
+    return normalizer.rule_engine.get_rules_summary()
 
 
 def _compute_diff(original: NormalizedMenuSheet, corrected: NormalizedMenuSheet, metadata: dict = None) -> dict:
