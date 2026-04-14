@@ -925,9 +925,10 @@ function renderAllergens(d) {
     'none': 'SAFE - No known allergens'
   };
 
-  riskBadge.className = `badge ${riskColors[d.allergen_risk_level]}`;
-  riskBadge.textContent = d.allergen_risk_level.toUpperCase();
-  riskDetail.textContent = riskLabels[d.allergen_risk_level] + ` · ${d.allergen_ingredients_count} ingredients contain allergens`;
+  const riskLevel = d.allergen_risk_level || 'none';
+  riskBadge.className = `badge ${riskColors[riskLevel]}`;
+  riskBadge.textContent = riskLevel.toUpperCase();
+  riskDetail.textContent = riskLabels[riskLevel] + ` · ${d.allergen_ingredients_count || 0} ingredients contain allergens`;
 
   if (d.allergen_risk_level === 'critical') {
     riskBanner.style.background = 'rgba(248,81,73,0.15)';
@@ -945,8 +946,9 @@ function renderAllergens(d) {
 
   // Critical allergens
   const criticalEl = document.getElementById('critical-allergens');
-  if (d.critical_allergens.length > 0) {
-    criticalEl.innerHTML = d.critical_allergens.map(a =>
+  const criticalAllergens = d.critical_allergens || [];
+  if (criticalAllergens.length > 0) {
+    criticalEl.innerHTML = criticalAllergens.map(a =>
       `<span class="badge badge-red" style="font-weight:700">${esc(a.toUpperCase())}</span>`
     ).join('');
   } else {
@@ -955,9 +957,10 @@ function renderAllergens(d) {
 
   // All allergens
   const allEl = document.getElementById('all-allergens');
-  if (d.all_allergens.length > 0) {
-    allEl.innerHTML = d.all_allergens.map(a => {
-      const isCritical = d.critical_allergens.includes(a);
+  const allAllergens = d.all_allergens || [];
+  if (allAllergens.length > 0) {
+    allEl.innerHTML = allAllergens.map(a => {
+      const isCritical = criticalAllergens.includes(a);
       return `<span class="badge ${isCritical ? 'badge-red' : 'badge-orange'}">${esc(a)}</span>`;
     }).join('');
   } else {
@@ -967,7 +970,9 @@ function renderAllergens(d) {
   // Allergen sources table
   const sourcesBody = document.getElementById('allergen-sources');
   sourcesBody.innerHTML = '';
-  const allergenic = (d.ingredients || []).filter(i => i.allergens && i.allergens.length > 0);
+  const allergenic = (d.ingredients || []).filter(i =>
+    !i._marked_for_deletion && i.allergens && i.allergens.length > 0
+  );
 
   if (allergenic.length > 0) {
     allergenic.forEach(ing => {
@@ -1238,6 +1243,44 @@ function editIngredientName(idx) {
   input.select();
 }
 
+function recalculateAllergenSummary(sheet) {
+  /**Recalculate allergen summary fields when ingredients change.*/
+  if (!sheet || !sheet.ingredients) return;
+
+  const activeIngredients = sheet.ingredients.filter(i => !i._marked_for_deletion);
+
+  let allAllergens = new Set();
+  let criticalAllergens = new Set();
+  let allergenCount = 0;
+
+  for (const ing of activeIngredients) {
+    if (ing.allergens && ing.allergens.length > 0) {
+      allergenCount++;
+      for (const allergen of ing.allergens) {
+        allAllergens.add(allergen);
+        // Critical allergens from schema
+        if (["milk", "eggs", "peanuts", "tree_nuts", "fish", "shellfish", "soy", "wheat"].includes(allergen)) {
+          criticalAllergens.add(allergen);
+        }
+      }
+    }
+  }
+
+  sheet.all_allergens = Array.from(allAllergens).sort();
+  sheet.critical_allergens = Array.from(criticalAllergens).sort();
+  sheet.allergen_ingredients_count = allergenCount;
+  sheet.has_critical_allergen = criticalAllergens.size > 0;
+
+  // Determine overall risk level
+  if (sheet.has_critical_allergen) {
+    sheet.allergen_risk_level = "critical";
+  } else if (allAllergens.size > 0) {
+    sheet.allergen_risk_level = "high";
+  } else {
+    sheet.allergen_risk_level = "none";
+  }
+}
+
 function addIngredientRow() {
   if (!currentSheet) return;
   const newIng = {
@@ -1257,6 +1300,7 @@ function addIngredientRow() {
     _is_new: true  // Mark as new so backend knows to add it
   };
   currentSheet.ingredients.push(newIng);
+  recalculateAllergenSummary(currentSheet);
   enableCorrectionSubmit();
   // Refresh the display
   const tab = document.getElementById('tab-ingredients');
@@ -1271,6 +1315,7 @@ function deleteIngredientRow(idx) {
 
   // Mark as deleted so backend knows to remove it
   currentSheet.ingredients[idx]._marked_for_deletion = true;
+  recalculateAllergenSummary(currentSheet);
   enableCorrectionSubmit();
 
   // Refresh the display
@@ -1292,6 +1337,7 @@ function tagIngredientFeedback(idx, feedback) {
     ing._ml_feedback = feedback;
   }
 
+  recalculateAllergenSummary(currentSheet);
   enableCorrectionSubmit();
 
   // Refresh the display
