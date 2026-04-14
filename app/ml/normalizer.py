@@ -6,6 +6,7 @@ Replaces ai_normalizer.py for offline, learning-based normalization.
 from __future__ import annotations
 
 import json
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -116,9 +117,22 @@ class LocalNormalizer:
                 step_counter += 1
                 steps.append(self._build_step(canonical_row, step_counter))
             elif product_name and len(product_name) > 1 and not self._is_step_action(product_name):
-                # Only add ingredients with non-empty product names (filter out garbage rows)
-                ing_counter += 1
-                ingredients.append(self._build_ingredient(canonical_row, restaurant_id, ing_counter))
+                # Check if this is a compound ingredient (multiple ingredients in one cell)
+                compound_ingredients = self._parse_compound_ingredient(product_name)
+                if compound_ingredients:
+                    # Multiple ingredients detected - create separate entries
+                    for compound_name, compound_qty, compound_unit in compound_ingredients:
+                        ing_counter += 1
+                        # Create a modified row for each compound ingredient
+                        compound_row = canonical_row.copy()
+                        compound_row["product_name"] = compound_name
+                        compound_row["quantity"] = compound_qty
+                        compound_row["unit"] = compound_unit
+                        ingredients.append(self._build_ingredient(compound_row, restaurant_id, ing_counter))
+                else:
+                    # Single ingredient row
+                    ing_counter += 1
+                    ingredients.append(self._build_ingredient(canonical_row, restaurant_id, ing_counter))
 
             # Collect scalar fields (name, category, servings, etc.)
             for key in ["name", "category", "servings", "country", "region", "continent"]:
@@ -208,9 +222,22 @@ class LocalNormalizer:
                         step_counter += 1
                         steps.append(self._build_step(canonical_row, step_counter))
                     elif product_name and len(product_name) > 1 and not self._is_step_action(product_name):
-                        # Only add ingredients with non-empty product names (filter out garbage rows)
-                        ing_counter += 1
-                        ingredients.append(self._build_ingredient(canonical_row, restaurant_id, ing_counter))
+                        # Check if this is a compound ingredient (multiple ingredients in one cell)
+                        compound_ingredients = self._parse_compound_ingredient(product_name)
+                        if compound_ingredients:
+                            # Multiple ingredients detected - create separate entries
+                            for compound_name, compound_qty, compound_unit in compound_ingredients:
+                                ing_counter += 1
+                                # Create a modified row for each compound ingredient
+                                compound_row = canonical_row.copy()
+                                compound_row["product_name"] = compound_name
+                                compound_row["quantity"] = compound_qty
+                                compound_row["unit"] = compound_unit
+                                ingredients.append(self._build_ingredient(compound_row, restaurant_id, ing_counter))
+                        else:
+                            # Single ingredient row
+                            ing_counter += 1
+                            ingredients.append(self._build_ingredient(canonical_row, restaurant_id, ing_counter))
 
         # Confidence calculation
         n_required = 4
@@ -296,6 +323,58 @@ class LocalNormalizer:
             time_minutes=self._parse_int(canonical_row.get("time_minutes")),
             observations=canonical_row.get("observations"),
         )
+
+    def _parse_compound_ingredient(self, product_text: str) -> list[tuple[str, float, str]]:
+        """
+        Parse compound ingredient text (multiple ingredients separated by semicolons).
+        Returns: list of (product_name, quantity, unit) tuples, or empty list if single ingredient.
+
+        Examples:
+        - "Novilho bife 180g; Batata palito 250g" → [("Novilho bife", 180, "g"), ("Batata palito", 250, "g")]
+        - "Ovo 1 un; Sal q.b." → [("Ovo", 1, "un"), ("Sal", 0, "q.b.")]
+        - "Single ingredient 100g" → [] (single ingredient, let caller handle normally)
+        """
+        if not product_text or ";" not in product_text:
+            return []
+
+        result = []
+        parts = product_text.split(";")
+
+        for part in parts:
+            part = part.strip()
+            if not part:
+                continue
+
+            # Parse ingredient: extract name, quantity, unit
+            # Pattern: "ProductName qty unit" or "ProductName qty" or "ProductName unit" or just "ProductName"
+            # Examples: "Novilho bife 180g", "Ovo 1 un", "Sal q.b.", "Coentros 3g"
+
+            # Try to match: text + optional(number + optional(unit))
+            # Use regex: (.*?)\s*([\d.]+)?\s*([a-záéíóúãõç]+\.?|ml|l|un|g|kg)?$
+            match = re.match(r'^(.*?)\s+([\d.]+)\s*([a-záéíóúãõçñ]+\.?|ml|l|un|g|kg|oz)?$', part, re.IGNORECASE)
+
+            if match:
+                name = match.group(1).strip()
+                qty_str = match.group(2)
+                unit = match.group(3) or "UN"
+                qty = self._parse_float(qty_str)
+            else:
+                # Try alternate pattern for "name q.b." format
+                match = re.match(r'^(.*?)\s+(q\.b\.|qs|quanto\s+baste)$', part, re.IGNORECASE)
+                if match:
+                    name = match.group(1).strip()
+                    qty = 0.0
+                    unit = "q.b."
+                else:
+                    # Just product name, no quantity info
+                    name = part
+                    qty = 0.0
+                    unit = "UN"
+
+            if name and len(name) > 1:
+                result.append((name, qty, unit))
+
+        return result
 
     @staticmethod
     def _parse_int(value) -> Optional[int]:
