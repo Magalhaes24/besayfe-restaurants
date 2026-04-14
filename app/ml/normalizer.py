@@ -105,15 +105,20 @@ class LocalNormalizer:
                 if canonical != "IGNORE":
                     canonical_row[canonical] = value
 
+            # Skip rows with no useful data
+            product_name = str(canonical_row.get("product_name", "")).strip() if "product_name" in canonical_row else ""
+            action = str(canonical_row.get("action", "")).strip() if "action" in canonical_row else ""
+
             # Categorize as ingredient or step
-            if "product_name" in canonical_row or "quantity" in canonical_row:
-                # Ingredient row
-                ing_counter += 1
-                ingredients.append(self._build_ingredient(canonical_row, restaurant_id, ing_counter))
-            elif "action" in canonical_row or "step_number" in canonical_row:
-                # Step row
+            # Prioritize: if it looks like an action, treat as step (even if in product_name field)
+            if action or self._is_step_action(product_name):
+                # This is a step row
                 step_counter += 1
                 steps.append(self._build_step(canonical_row, step_counter))
+            elif product_name and len(product_name) > 1 and not self._is_step_action(product_name):
+                # Only add ingredients with non-empty product names (filter out garbage rows)
+                ing_counter += 1
+                ingredients.append(self._build_ingredient(canonical_row, restaurant_id, ing_counter))
 
             # Collect scalar fields (name, category, servings, etc.)
             for key in ["name", "category", "servings", "country", "region", "continent"]:
@@ -192,12 +197,20 @@ class LocalNormalizer:
                             if canonical != "IGNORE":
                                 canonical_row[canonical] = row[i]
 
-                    if "product_name" in canonical_row or "quantity" in canonical_row:
-                        ing_counter += 1
-                        ingredients.append(self._build_ingredient(canonical_row, restaurant_id, ing_counter))
-                    elif "action" in canonical_row or "step_number" in canonical_row:
+                    # Skip rows with no useful data
+                    product_name = str(canonical_row.get("product_name", "")).strip() if "product_name" in canonical_row else ""
+                    action = str(canonical_row.get("action", "")).strip() if "action" in canonical_row else ""
+
+                    # Categorize as ingredient or step
+                    # Prioritize: if it looks like an action, treat as step (even if in product_name field)
+                    if action or self._is_step_action(product_name):
+                        # This is a step row
                         step_counter += 1
                         steps.append(self._build_step(canonical_row, step_counter))
+                    elif product_name and len(product_name) > 1 and not self._is_step_action(product_name):
+                        # Only add ingredients with non-empty product names (filter out garbage rows)
+                        ing_counter += 1
+                        ingredients.append(self._build_ingredient(canonical_row, restaurant_id, ing_counter))
 
         # Confidence calculation
         n_required = 4
@@ -293,6 +306,23 @@ class LocalNormalizer:
             return int(float(str(value)))
         except (ValueError, TypeError):
             return None
+
+    @staticmethod
+    def _is_step_action(text: str) -> bool:
+        """Check if text looks like a step action (cooking verb)."""
+        if not text:
+            return False
+        text_lower = text.lower().strip()
+        # Common cooking verbs (Portuguese, Spanish, English)
+        step_verbs = {
+            "temperar", "fritar", "aquecer", "cozer", "assar", "moer", "picar",
+            "misturar", "mexer", "deitar", "colocar", "juntar", "cobrir", "decorar",
+            "cozinhar", "cozedura", "acção", "accion", "action",
+            "fry", "cook", "heat", "boil", "roast", "grind", "chop", "mix",
+            "stir", "add", "place", "join", "cover", "decorate",
+            "freír", "cocinar", "calentar", "hervir", "asar", "moler", "picar",
+        }
+        return any(verb in text_lower for verb in step_verbs)
 
     @staticmethod
     def _parse_float(value) -> float:
