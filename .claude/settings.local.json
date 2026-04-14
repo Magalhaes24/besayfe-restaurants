@@ -13,7 +13,8 @@
       "Bash(netstat -ano)",
       "Bash(curl:*)",
       "Bash(ipconfig)",
-      "Bash(netsh advfirewall:*)"
+      "Bash(netsh advfirewall:*)",
+      "Bash(node -c static/index.html)"
     ]
   }
 }

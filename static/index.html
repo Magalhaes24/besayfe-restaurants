@@ -316,14 +316,23 @@
       <!-- INGREDIENTS tab -->
       <div id="tab-ingredients" class="tab-panel p-4 overflow-auto" style="max-height:500px">
         <div class="mb-3 pb-3 border-b" style="border-color:var(--border)">
-          <div class="text-xs font-semibold" style="color:var(--muted)">Dish</div>
-          <div class="text-sm font-bold mt-1" id="ingredients-dish-name" style="color:var(--accent)">—</div>
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-xs font-semibold" style="color:var(--muted)">Dish</div>
+              <div class="text-sm font-bold mt-1" id="ingredients-dish-name" style="color:var(--accent)">—</div>
+            </div>
+            <button onclick="addIngredientRow()" class="text-xs px-2 py-1 rounded font-semibold transition-all"
+              style="background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3)">
+              + Add Ingredient
+            </button>
+          </div>
         </div>
         <table class="debug-table w-full text-xs">
           <thead><tr>
             <th data-i18n="table.line">#</th><th data-i18n="table.product">Product</th><th class="text-right" data-i18n="table.qty">Qty</th>
             <th data-i18n="table.unit">Unit</th><th class="text-right" data-i18n="table.unit_price">Unit Price</th>
             <th class="text-right" data-i18n="table.line_cost">Line Cost</th><th data-i18n="table.bar">Cost Bar</th><th data-i18n="table.notes">Notes</th>
+            <th style="text-align:center;width:100px">ML Feedback</th><th style="text-align:center;width:40px">Action</th>
           </tr></thead>
           <tbody id="ingredients-body"></tbody>
         </table>
@@ -798,11 +807,16 @@ function renderSheet(d, colMap) {
 
   const tbody = document.getElementById('ingredients-body');
   tbody.innerHTML = '';
-  (d.ingredients || []).forEach((ing, idx) => {
+  const activeIngredients = (d.ingredients || []).filter(ing => !ing._marked_for_deletion);
+  activeIngredients.forEach((ing, idx) => {
     const pct = Math.round(((ing.line_cost || 0) / maxCost) * 100);
     const tr = document.createElement('tr');
     tr.id = `ing-row-${idx}`;
     tr.dataset.ingIndex = idx;
+    const feedback = ing._ml_feedback || 'neutral'; // neutral, good, bad
+    const feedbackColor = feedback === 'good' ? 'var(--green)' : feedback === 'bad' ? 'var(--red)' : 'var(--muted)';
+    const isNew = ing._is_new ? 'opacity-60' : '';
+    tr.className = isNew;
     tr.innerHTML = `
       <td class="text-right" style="color:var(--muted)">${ing.line_number || idx+1}</td>
       <td class="font-medium cursor-pointer hover:opacity-70" onclick="editIngredientName(${idx})" title="Click to edit">
@@ -814,11 +828,18 @@ function renderSheet(d, colMap) {
       <td class="text-right" style="color:var(--muted)">€${(ing.unit_price||0).toFixed(4)}</td>
       <td class="text-right font-bold" style="color:var(--purple)">€${(ing.line_cost||0).toFixed(4)}</td>
       <td style="width:80px"><div class="cost-bar"><div class="cost-bar-fill" style="width:${pct}%"></div></div></td>
-      <td style="color:var(--muted)">${esc(ing.observations||'')}</td>`;
+      <td style="color:var(--muted)">${esc(ing.observations||'')}</td>
+      <td style="text-align:center;color:${feedbackColor}">
+        <button onclick="tagIngredientFeedback(${idx}, 'good')" title="Correct detection" class="px-1 py-0" style="cursor:pointer;border:none;background:none;font-size:1rem">${feedback === 'good' ? '👍' : '👏'}</button>
+        <button onclick="tagIngredientFeedback(${idx}, 'bad')" title="Incorrect detection" class="px-1 py-0" style="cursor:pointer;border:none;background:none;font-size:1rem">${feedback === 'bad' ? '👎' : '❌'}</button>
+      </td>
+      <td style="text-align:center">
+        <button onclick="deleteIngredientRow(${idx})" title="Remove ingredient" class="px-1 py-0" style="cursor:pointer;border:none;background:none;color:var(--red);font-size:1rem">🗑</button>
+      </td>`;
     tbody.appendChild(tr);
   });
-  if (!d.ingredients || d.ingredients.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4" style="color:var(--muted)">${t('steps.empty')}</td></tr>`;
+  if (activeIngredients.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4" style="color:var(--muted)">${t('steps.empty')}</td></tr>`;
   }
   document.getElementById('total-cost-disp').textContent = `€${(d.total_cost||0).toFixed(4)}`;
   document.getElementById('cost-per-serving-disp').textContent = `€${(d.cost_per_serving||0).toFixed(4)}`;
@@ -1217,6 +1238,69 @@ function editIngredientName(idx) {
   input.select();
 }
 
+function addIngredientRow() {
+  if (!currentSheet) return;
+  const newIng = {
+    line_number: (currentSheet.ingredients || []).length + 1,
+    product_name: 'New Ingredient',
+    quantity: 1.0,
+    unit: 'UN',
+    unit_price: 0.0,
+    line_cost: 0.0,
+    observations: null,
+    allergens: [],
+    allergen_risk: 'none',
+    allergen_confidence: 0.0,
+    producer: null,
+    origin: null,
+    storage_conditions: null,
+    _is_new: true  // Mark as new so backend knows to add it
+  };
+  currentSheet.ingredients.push(newIng);
+  enableCorrectionSubmit();
+  // Refresh the display
+  const tab = document.getElementById('tab-ingredients');
+  if (tab && tab.classList.contains('active')) {
+    loadSheet(currentSheet);
+  }
+}
+
+function deleteIngredientRow(idx) {
+  if (!currentSheet || !currentSheet.ingredients[idx]) return;
+  if (!confirm('Remove this ingredient?')) return;
+
+  // Mark as deleted so backend knows to remove it
+  currentSheet.ingredients[idx]._marked_for_deletion = true;
+  enableCorrectionSubmit();
+
+  // Refresh the display
+  const tab = document.getElementById('tab-ingredients');
+  if (tab && tab.classList.contains('active')) {
+    loadSheet(currentSheet);
+  }
+}
+
+function tagIngredientFeedback(idx, feedback) {
+  if (!currentSheet || !currentSheet.ingredients[idx]) return;
+
+  const ing = currentSheet.ingredients[idx];
+  if (ing._ml_feedback === feedback) {
+    // Toggle off
+    delete ing._ml_feedback;
+  } else {
+    // Set feedback
+    ing._ml_feedback = feedback;
+  }
+
+  enableCorrectionSubmit();
+
+  // Refresh the display
+  const tab = document.getElementById('tab-ingredients');
+  if (tab && tab.classList.contains('active')) {
+    loadSheet(currentSheet);
+  }
+}
+
 function enableCorrectionSubmit() {
   const btn = document.getElementById('btn-submit-corrections');
   if (btn) btn.disabled = false;
@@ -1238,16 +1322,31 @@ async function submitCorrections() {
   status.textContent = 'Submitting corrections to ML...';
 
   try {
+    // Prepare correction data with metadata for ML learning
+    const correctionData = {
+      sheet: currentSheet,
+      metadata: {
+        added_ingredients: (currentSheet.ingredients || []).filter(i => i._is_new).length,
+        deleted_ingredients: (currentSheet.ingredients || []).filter(i => i._marked_for_deletion).length,
+        feedback_tagged: (currentSheet.ingredients || []).filter(i => i._ml_feedback).length,
+      }
+    };
+
     const res = await fetch(`${API}/api/v1/corrections/${currentSheet.id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(currentSheet)
+      body: JSON.stringify(correctionData)
     });
 
     const data = await res.json();
 
     if (res.ok) {
-      status.innerHTML = `<span style="color:var(--green)">✓ Submitted ${data.changes || 0} corrections. ML is learning...</span>`;
+      const summary = [];
+      if (correctionData.metadata.added_ingredients > 0) summary.push(`+${correctionData.metadata.added_ingredients} ingredients`);
+      if (correctionData.metadata.deleted_ingredients > 0) summary.push(`-${correctionData.metadata.deleted_ingredients} ingredients`);
+      if (correctionData.metadata.feedback_tagged > 0) summary.push(`${correctionData.metadata.feedback_tagged} feedback tags`);
+      const summaryText = summary.length > 0 ? ' (' + summary.join(', ') + ')' : '';
+      status.innerHTML = `<span style="color:var(--green)">✓ Submitted ${data.changes || 0} corrections${summaryText}. ML is learning...</span>`;
       btn.textContent = 'Submit Corrections';
       setTimeout(() => {
         btn.disabled = true;

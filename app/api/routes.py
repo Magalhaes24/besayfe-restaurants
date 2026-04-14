@@ -3,8 +3,9 @@ from __future__ import annotations
 import json
 
 import aiofiles
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, Body, File, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 
 from app.config import settings
 from app.exporter.xlsx_exporter import export_to_xlsx
@@ -18,6 +19,19 @@ router = APIRouter()
 
 ALLOWED_EXTENSIONS = {"pdf", "csv", "xlsx"}
 EXTENSION_TO_FORMAT = {"pdf": "pdf", "csv": "csv", "xlsx": "xlsx"}
+
+
+class CorrectionMetadata(BaseModel):
+    """Metadata for ML learning from corrections."""
+    added_ingredients: int = 0
+    deleted_ingredients: int = 0
+    feedback_tagged: int = 0
+
+
+class CorrectionSubmission(BaseModel):
+    """Wrapper for correction data with ML metadata."""
+    sheet: NormalizedMenuSheet
+    metadata: CorrectionMetadata = CorrectionMetadata()
 
 
 def _detect_format(filename: str) -> str:
@@ -120,11 +134,25 @@ async def _save_sheet(sheet: NormalizedMenuSheet) -> None:
 
 
 @router.post("/corrections/{sheet_id}")
-async def submit_correction(sheet_id: str, corrected: NormalizedMenuSheet):
+async def submit_correction(sheet_id: str, data: dict = Body(...)):
     """
     Submit a corrected version of a normalized sheet.
     Computes diff and records correction for model retraining.
+
+    Accepts either:
+    - A NormalizedMenuSheet (legacy format)
+    - A wrapper with sheet + metadata (new format with add/delete/feedback)
     """
+    # Extract sheet and metadata
+    if "sheet" in data:
+        # New format with metadata
+        corrected = NormalizedMenuSheet(**data["sheet"])
+        metadata = data.get("metadata", {})
+    else:
+        # Legacy format: direct sheet
+        corrected = NormalizedMenuSheet(**data)
+        metadata = {}
+
     # Load original
     json_path = settings.storage_dir / f"{sheet_id}.json"
     if not json_path.exists():
@@ -135,8 +163,19 @@ async def submit_correction(sheet_id: str, corrected: NormalizedMenuSheet):
 
     original = NormalizedMenuSheet(**original_data)
 
-    # Compute diff
-    diff = _compute_diff(original, corrected)
+    # Filter out deleted ingredients before comparison
+    corrected_active = NormalizedMenuSheet(
+        **{
+            **corrected.dict(),
+            "ingredients": [
+                i for i in corrected.ingredients
+                if not getattr(i, "_marked_for_deletion", False)
+            ]
+        }
+    )
+
+    # Compute diff (includes feedback tags in metadata)
+    diff = _compute_diff(original, corrected_active, metadata)
     if not diff:
         return {"status": "no_changes", "sheet_id": sheet_id}
 
@@ -150,8 +189,8 @@ async def submit_correction(sheet_id: str, corrected: NormalizedMenuSheet):
         diff_json=diff_json,
     )
 
-    # Save corrected version
-    await _save_sheet(corrected)
+    # Save corrected version (without metadata fields)
+    await _save_sheet(corrected_active)
 
     # Trigger async retraining
     await trainer.process_correction(
@@ -187,12 +226,14 @@ async def get_status():
     }
 
 
-def _compute_diff(original: NormalizedMenuSheet, corrected: NormalizedMenuSheet) -> dict:
+def _compute_diff(original: NormalizedMenuSheet, corrected: NormalizedMenuSheet, metadata: dict = None) -> dict:
     """
     Compute field-level differences between original and corrected.
     Returns dict of {field_path: {predicted, corrected}}.
+    Also includes feedback and addition/deletion metadata for ML learning.
     """
     diff = {}
+    metadata = metadata or {}
 
     # Compare scalar fields
     for field in [
@@ -210,23 +251,41 @@ def _compute_diff(original: NormalizedMenuSheet, corrected: NormalizedMenuSheet)
         if orig_val != corr_val:
             diff[field] = {"predicted": orig_val, "corrected": corr_val}
 
-    # Compare ingredients
+    # Compare ingredients (tracking additions/deletions/feedback)
     if original.ingredients != corrected.ingredients:
         diff["ingredients"] = {
             "predicted": len(original.ingredients),
             "corrected": len(corrected.ingredients),
+            "added": metadata.get("added_ingredients", 0),
+            "deleted": metadata.get("deleted_ingredients", 0),
+            "feedback_tags": metadata.get("feedback_tagged", 0),
         }
+
+        # Track ingredient-level changes
+        corrections_per_ing = []
         for i, (o_ing, c_ing) in enumerate(zip(original.ingredients, corrected.ingredients)):
-            if o_ing != c_ing:
-                if o_ing.unit != c_ing.unit:
-                    diff[f"ingredients.{i}.unit"] = {"predicted": o_ing.unit, "corrected": c_ing.unit}
-                if o_ing.quantity != c_ing.quantity:
-                    diff[f"ingredients.{i}.quantity"] = {"predicted": o_ing.quantity, "corrected": c_ing.quantity}
-                if o_ing.unit_price != c_ing.unit_price:
-                    diff[f"ingredients.{i}.unit_price"] = {
-                        "predicted": o_ing.unit_price,
-                        "corrected": c_ing.unit_price,
-                    }
+            ing_diff = {}
+            if o_ing.product_name != c_ing.product_name:
+                ing_diff["product_name"] = {"predicted": o_ing.product_name, "corrected": c_ing.product_name}
+            if o_ing.unit != c_ing.unit:
+                ing_diff["unit"] = {"predicted": o_ing.unit, "corrected": c_ing.unit}
+            if o_ing.quantity != c_ing.quantity:
+                ing_diff["quantity"] = {"predicted": o_ing.quantity, "corrected": c_ing.quantity}
+            if o_ing.unit_price != c_ing.unit_price:
+                ing_diff["unit_price"] = {
+                    "predicted": o_ing.unit_price,
+                    "corrected": c_ing.unit_price,
+                }
+            # Track ML feedback
+            feedback = getattr(c_ing, "_ml_feedback", None)
+            if feedback:
+                ing_diff["ml_feedback"] = feedback
+
+            if ing_diff:
+                corrections_per_ing.append({"index": i, "changes": ing_diff})
+
+        if corrections_per_ing:
+            diff["ingredient_corrections"] = corrections_per_ing
 
     # Compare steps
     if original.steps != corrected.steps:
