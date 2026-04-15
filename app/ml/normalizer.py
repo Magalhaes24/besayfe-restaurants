@@ -446,8 +446,31 @@ class LocalNormalizer:
             if ft_sheet and ft_sheet.ingredients:
                 return ft_sheet
 
-        if "TABELA DE ALERG" in pdf_text.upper():
-            # Try allergen table format
+        # First check if there's an allergen matrix in the tables (before text parsing)
+        allergen_sheet_from_table = None
+        if "TABELA DE ALERG" in pdf_text.upper() and tables:
+            # Try to parse allergen matrices from tables
+            for table in tables:
+                if table and len(table) >= 2:
+                    allergen_ingredients = self._try_parse_allergen_matrix(table, restaurant_id)
+                    if allergen_ingredients:
+                        allergen_sheet_from_table = NormalizedMenuSheet(
+                            name="Allergen Matrix",
+                            category="",
+                            servings=1,
+                            country="PT",
+                            region="",
+                            source_file=source_file,
+                            source_format="pdf",
+                            confidence_score=0.80,
+                            ingredients=allergen_ingredients,
+                            steps=[],
+                        )
+                        return allergen_sheet_from_table
+
+        # If no table matrix was found, try text-based allergen table parsing
+        if "TABELA DE ALERG" in pdf_text.upper() and not allergen_sheet_from_table:
+            # Try allergen table format from text
             allergen_sheet = self._try_parse_allergen_table(pdf_text, restaurant_id)
             if allergen_sheet and allergen_sheet.ingredients:
                 return allergen_sheet
@@ -464,6 +487,20 @@ class LocalNormalizer:
         step_counter = 0
 
         # If tables exist, try to parse them
+        # First check if any table is an allergen matrix
+        if tables:
+            for table_idx, table in enumerate(tables):
+                if not table or len(table) < 2:
+                    continue
+
+                # Check if this is an allergen matrix table
+                allergen_ingredients = self._try_parse_allergen_matrix(table, restaurant_id)
+                if allergen_ingredients:
+                    ingredients.extend(allergen_ingredients)
+                    # Mark this table as processed by removing it
+                    tables[table_idx] = None
+
+        # Process remaining tables with standard parsing
         if tables:
             for table in tables:
                 if not table:
@@ -753,6 +790,80 @@ class LocalNormalizer:
         else:
             # No number found, return defaults
             return 0.0, "UN"
+
+    def _try_parse_allergen_matrix(self, table: list, restaurant_id: str) -> Optional[list[Ingredient]]:
+        """
+        Try to parse allergen matrix table format.
+        Format: First column is product names, remaining columns are allergens with X/• marks.
+        Example: Headers [PRODUTO, GLÚTEN, OVOS, LEITE], Row [Pão, X, , X] means Pão has Glúten and Leite
+        """
+        if not table or len(table) < 2:
+            return None
+
+        headers = table[0]
+        rows = table[1:]
+
+        # Check if this looks like an allergen matrix
+        # Indicators: First column is "PRODUTO" or similar, other columns are allergen names
+        first_header = str(headers[0]).lower().strip() if headers else ""
+
+        is_allergen_matrix = False
+        if any(keyword in first_header for keyword in ['produto', 'product', 'prato', 'dish', 'item']):
+            # Check if other headers contain allergen names
+            allergen_keywords = ['glúten', 'ovo', 'leite', 'peixe', 'crustáceo', 'frutos', 'molusco',
+                                'amendoim', 'soja', 'aipo', 'mostarda', 'sulfito', 'sesamo']
+            remaining_headers = [str(h).lower() for h in headers[1:]]
+            allergen_count = sum(1 for h in remaining_headers if any(kw in h for kw in allergen_keywords))
+
+            if allergen_count >= 3:  # At least 3 allergen columns
+                is_allergen_matrix = True
+
+        if not is_allergen_matrix:
+            return None
+
+        # Parse the allergen matrix
+        ingredients = []
+        seen_products = set()
+
+        for row in rows:
+            if not row or len(row) < 2:
+                continue
+
+            product_name = str(row[0]).strip()
+
+            # Skip empty or header-like rows
+            if not product_name or len(product_name) < 2:
+                continue
+            if product_name.lower() in ['total', 'subtotal', 'nota', 'note', 'observação']:
+                continue
+            if product_name.lower() in seen_products:
+                continue
+
+            seen_products.add(product_name.lower())
+
+            # Extract allergens from this row (where there's an X or •)
+            detected_allergens = set()
+            for col_idx in range(1, min(len(row), len(headers))):
+                cell_value = str(row[col_idx]).strip()
+                # Check for X, •, ●, or other markers
+                if cell_value and cell_value.upper() in ['X', '●', '•', '✓', 'SIM', 'YES']:
+                    allergen_name = str(headers[col_idx]).strip()
+                    # Clean up allergen name (remove newlines, extra spaces)
+                    allergen_name = re.sub(r'\s+', ' ', allergen_name).lower()
+                    if allergen_name:
+                        detected_allergens.add(allergen_name)
+
+            # Create ingredient
+            ingredient = Ingredient(
+                product_name=product_name,
+                quantity=1,
+                unit="UN",
+                unit_price=0.0,
+                allergens=sorted(list(detected_allergens)) if detected_allergens else [],
+            )
+            ingredients.append(ingredient)
+
+        return ingredients if ingredients else None
 
     def _smart_split_semicolon(self, text: str) -> list[str]:
         """

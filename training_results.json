@@ -20,7 +20,7 @@
       "file": "5-vp-alergenios-balcao-07-abr_2026.pdf",
       "status": "success",
       "ingredients_count": 41,
-      "allergens_count": 7,
+      "allergens_count": 21,
       "product_name": "07/04/2026",
       "category": "Other"
     },
@@ -51,9 +51,9 @@
     {
       "file": "vira_alergenios.pdf",
       "status": "success",
-      "ingredients_count": 64,
-      "allergens_count": 59,
-      "product_name": "Allergen Menu Reference",
+      "ingredients_count": 23,
+      "allergens_count": 29,
+      "product_name": "Allergen Matrix",
       "category": ""
     }
   ],
@@ -62,7 +62,7 @@
     "total_pdfs": 7,
     "successful": 7,
     "failed": 0,
-    "total_ingredients": 207,
-    "total_allergens": 146
+    "total_ingredients": 166,
+    "total_allergens": 130
   }
 }
