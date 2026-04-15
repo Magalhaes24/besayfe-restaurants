@@ -1134,13 +1134,8 @@ class LocalNormalizer:
                     # Extract allergen markers from the original line
                     allergen_codes = re.findall(r'\s(C|PC|X|●|PV)(?:\s|$)', ' ' + line)
 
-                    # Detect allergens from product name first
+                    # Detect allergens from product name
                     detected_allergens = self.allergen_db.detect_allergens(product_name)
-
-                    # If no allergens detected but line has codes, mark as having allergens
-                    if allergen_codes and not detected_allergens:
-                        # Has allergen codes, so mark common allergens
-                        detected_allergens = {'unknown'}  # Will be detected by allergen_db
 
                     ingredient = Ingredient(
                         product_name=product_name,
