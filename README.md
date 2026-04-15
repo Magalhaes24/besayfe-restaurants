@@ -578,7 +578,7 @@ RETRAIN_AFTER_N_CORRECTIONS=2
 
 ## 📝 License
 
-[Add your license here]
+None
 
 ---
 
