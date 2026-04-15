@@ -1,0 +1,1100 @@
+{
+  "id": "bb54aa9f-5cc6-4635-9d62-ee1a5a2509a0",
+  "name": "Allergen Menu Reference",
+  "category": "",
+  "country": "PT",
+  "region": "",
+  "continent": null,
+  "prep_time_minutes": null,
+  "cooking_time_minutes": null,
+  "servings": 1,
+  "ingredients": [
+    {
+      "line_number": 1,
+      "product_name": "FRUTOS",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "PRODUTO GLÚTEN OVOS AMENDOINS SOJA PEIXE CRUSTÁCEOS AIPO LEITE MOLUSCOS MOSTARDA SULFITOS",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "celery",
+        "eggs",
+        "fish",
+        "milk",
+        "mustard",
+        "peanuts",
+        "soy",
+        "wheat"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "CASCA RIJA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "RECEITAS DE FRANGO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MOLHO DA CASA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "TRUFA E PARMESÃO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MOLHO DE TRUFA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "QUEIJO PARMESÃO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "milk"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "QUEIJO E BACON",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "milk"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MOLHO DE QUEIJO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "milk"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "ABACATE E IOGURTE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "milk"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "CREME DE ABACATE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "milk"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "OVO ESTRELADO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "eggs"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MOLHO VITOQUE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "VIRADA TRADICIONAL",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "BATATAS TIPO LEITÃO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "CEBOLA CROCANTE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "VIRADA PICANTE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "VIRADA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "VIRADA ABACATE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "IOGURTE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "milk"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "VIRADA OVO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "eggs"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "VITOQUE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "BEBIDAS",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "CERVEJA, LIVRA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "VINHO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "sulphites"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "PC - PODE CONTER",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "à data da sua publicação; poderão sofrer alterações sem aviso prévio. Não nos responsabilizamos pela imprecisão ou insuficiência de algumas delas.",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "PAG. 2/2 - V24.03B",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "ACOMPANHAMENTOS",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "CHURROS DE BATATA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "BATATA DOCE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "SEMENTES DE ABÓBORA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "ARROZ TORRADO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "CEBOLA FRITA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "OUTROS PRODUTOS",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "SALADA RICA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "ENTALADO DA CASA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "PÃO ENTALADOS",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MAIO. VIRA(C/PICLES)",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "ENTALADO PICANTE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MAIONESE PICANTE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "eggs"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "ENTALAD. LIMA PICANTE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MAIO. LIMA PICANTE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "ENTALADO TRUFA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MAION. DE TRUFA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "PÃO RÚSTICO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "CROQUETES",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MOSTARDA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "mustard"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "SOBREMESAS",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "LV. BABA DE CAMELO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "LV. DE SERRADURA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "BOLACHA MARIA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "TARTE DE AMENDOA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "TARTE DE CHOCOLATE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "TARTE DE LIMÃO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "CARAMELO CROCANTE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MOLHOS",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "VINAGRETA GASPACHO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "PIRI-PIRI ZÉZÉ",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MAIONESE LIMA PICANTE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "eggs"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MAIONESE VIRA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "eggs"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MAIO. TRUFA PARMESÃO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    }
+  ],
+  "steps": [],
+  "total_cost": 0.0,
+  "cost_per_serving": 0.0,
+  "source_file": "allergen_table",
+  "source_format": "pdf",
+  "normalized_at": "2026-04-15T10:37:03.470444",
+  "confidence_score": 0.75,
+  "raw_extraction": {},
+  "all_allergens": [
+    "celery",
+    "eggs",
+    "fish",
+    "milk",
+    "mustard",
+    "peanuts",
+    "soy",
+    "sulphites",
+    "unknown",
+    "wheat"
+  ],
+  "critical_allergens": [
+    "eggs",
+    "fish",
+    "milk",
+    "peanuts",
+    "soy",
+    "wheat"
+  ],
+  "allergen_ingredients_count": 52,
+  "has_critical_allergen": true,
+  "allergen_risk_level": "critical"
+}

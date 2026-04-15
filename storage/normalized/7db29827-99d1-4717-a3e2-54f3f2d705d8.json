@@ -1,0 +1,1357 @@
+{
+  "id": "7db29827-99d1-4717-a3e2-54f3f2d705d8",
+  "name": "Allergen Menu Reference",
+  "category": "",
+  "country": "PT",
+  "region": "",
+  "continent": null,
+  "prep_time_minutes": null,
+  "cooking_time_minutes": null,
+  "servings": 1,
+  "ingredients": [
+    {
+      "line_number": 1,
+      "product_name": "MENUS",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Grelhado",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Hambúrguer",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Com molho",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Molho h3",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Tuga",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Molho tuga",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Ovo estrelado",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "eggs"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Champignon",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Molho champignon",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Cheese",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "milk"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Molho de queijo",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "milk"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Cebola salteada",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Maionese mostarda antiga",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "eggs",
+        "mustard"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Med",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Parmesão",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Carbonara",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Molho carbonara",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Bacon aos cubos",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Benedict",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Espinafres salteados",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Molho holandês",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Ovo escalfado",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "eggs"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "French",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Cebola confitada",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Superbread",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Pão focaccia",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "GLÚTEN CRUSTÁ-CEOS OVOS PEIXES AMEN-DOINS SOJA LEITE FRUT R O IJ S A D E C. AIPO MOSTARDA SÉ S S . A D M E O SULFITOS TREMOÇO MOLUSCOS",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "celery",
+        "eggs",
+        "lupin",
+        "milk",
+        "mustard",
+        "soy",
+        "wheat"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MENUS NO PÃO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Grelhado no pão",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Pão h3",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Tuga no pão",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Med no pão",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Carbonara no pão",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Cheese no pão",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "milk"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Cheese Bacon no pão",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "milk"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Benedict no pão",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "GLÚTEN CR C U E S O T S Á - OVOS PEIXES AMEN-DOINS SOJA LEITE FRUT R O IJ S A D E C. AIPO MOS-TARDA SÉ S S . A D M E O SULFITOS TREMOÇO MOLUSCOS",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "celery",
+        "eggs",
+        "lupin",
+        "milk",
+        "soy",
+        "wheat"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Pica-Pau (Refresh)",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Molho Pica-Pau",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Mix de pickles e azeitonas",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Croquetes*",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Croquetes de carne",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Molho de iogurte",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "milk"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Mostarda amarela",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "mustard"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Salada BLT*",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Bacon",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Vinagreta h3",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Crocante de cebola",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "ACOMPANHAMENTOS",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Arroz Thai",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Salada c/ vinagreta h3",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Esparregado",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Pão de Mafra",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "BEBIDAS",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Limonadas",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Chás",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Outras",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Cerveja",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Vinho",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "sulphites"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "*Exclusivo nos restaurantes do Cais Sodré, Campo de Ourique e Mercado da Vila",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "SOBREMESAS",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "M. mousse doce de leite",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "milk"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "M. mousse de avelã e choc.",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "tree_nuts"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Mousse de chocolate h3",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Everydae de morango*",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Gelado de nata",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Bolacha Maria",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Everydae de maracujá*",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Everydae de caramelo*",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Topping de caramelo",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Pavlova de morango*",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Suspiro",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Pavlova de maracujá*",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Bolo de chocolate*",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "Bolo de chocolate",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "unknown"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "*Exclusivo nos restaurantes do Parque das Nações, Cais Sodré, Campo de Ourique e Mercado da Vila",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "rejeitamos, no entanto, a possibilidade de ocorrência de contaminações cruzadas.",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "LEGENDA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    }
+  ],
+  "steps": [],
+  "total_cost": 0.0,
+  "cost_per_serving": 0.0,
+  "source_file": "allergen_table",
+  "source_format": "pdf",
+  "normalized_at": "2026-04-15T10:36:55.103626",
+  "confidence_score": 0.75,
+  "raw_extraction": {},
+  "all_allergens": [],
+  "critical_allergens": [],
+  "allergen_ingredients_count": 0,
+  "has_critical_allergen": false,
+  "allergen_risk_level": "none"
+}

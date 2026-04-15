@@ -1,0 +1,447 @@
+{
+  "id": "883172_PURÉ BATATA DOCE CONGELADO SACO 2,5KG",
+  "name": "ESPECIFICAÇÃO Revisão: 0",
+  "category": "Other",
+  "country": null,
+  "region": null,
+  "continent": null,
+  "prep_time_minutes": null,
+  "cooking_time_minutes": null,
+  "servings": 1,
+  "ingredients": [],
+  "steps": [],
+  "total_cost": 0.0,
+  "cost_per_serving": 0.0,
+  "source_file": "883172_PURÉ BATATA DOCE CONGELADO SACO 2,5KG.pdf",
+  "source_format": "pdf",
+  "normalized_at": "2026-04-15T10:36:48.411593",
+  "confidence_score": 0.15,
+  "raw_extraction": {
+    "full_text": "ESPECIFICAÇÃO Revisão: 0\nData: Março 2019\nPURÉ DE BATATA DOCE 2500 g\nDESCRIÇÃO DO PRODUTO\nRefeição produzida de acordo com o método de produção Cook and\nBreve descrição do produto Freeze (Confeção -> Embalagem a vácuo -> (Ultra)congelação -\n>Conservação a temperatura inferior ou igual a -18ºC).\nDenominação de venda Puré de Batata Doce ultracongelado 4x2500 g\nMarca -\nGramagem 10000\nROTULAGEM NA UNIDADE DE VENDA\nDenominação de venda Puré de Batata Doce ultracongelado 4x2500 g\nIngredientes 100% Batata doce laranja assada\nProceder à descongelação a uma temperatura compreendida entre os 0 e\nos 5ºC, até 24h antes da sua utilização. Após abertura, consumir no\nInstruções de uso/Modo de preparação próprio dia. Deverá ser confirmado, com equipamento adequado, que a\ntemperatura interior do produto, após regeneração atingiu, no mínimo,\n75ºC.\nProduto a ser transportado e conservado a temperatura inferior ou igual a\n-18ºC, em câmara de conservação de ultracongelados, durante o seu\nConselhos de conservação/Modo de conservação (uso previsto)\ntempo de vida útil (enquanto inviolado) e regenerado no local de\nconsumo.\nPeso líquido (g) 10000\n\"Manter a -18ºC\"\n\"Não voltar a congelar uma vez descongelado\"\nCódigo de barra/EAN13 5602128096238\nSimbologia Sim Não\nx\nx\ne (Metrologia Industrial) x\nApós a data de produção: 547 dias\nValidade (codificação) Após descongelação (embalagem inviolada e mantida em refrigeração):\n24 horas\nCARACTERÍSTICAS FÍSICAS/ORGANOLÉPTICAS\nCor Caraterística\nOdor Caraterístico\nSabor Caraterístico\nTextura Característica\nCARACTERÍSTICAS QUÍMICAS\nMetais pesados\nConforme legislação vigente\nResiduos de pesticidas\nIrradiação Ausência\nOGM´s Ausência\nALERGÉNEOS\nSim Não\nCereais que contêm glúten x\nCrustaceos e produtos à base de crustaceos x\nOvos e produtos à base de ovos x\nPeixe e produtos à base de peixe x\nAmendoins e produtos à base de amendoins x\nSoja e produtos à base de soja x\nLeite e produtos à base de leite (incluindo lactose) x\nFrutos de casca rija e produtos à base de frutos de casca rija x\nAipos e produtos à base de aipos x\nMostarda e produtos à base de mostarda x\nSementes de sésamos e produtos à base de sementes de sésamo x\nDióxido de enxofre e sulfitos em concentrações superiores a 10mg/Kg ou 10 mg/L\nx\nexpressos em SO2\nMoluscos e produtos à base de moluscos x\nTremoço e produtos à base de tremoço x\nPode conter vestígios de: CRUSTÁCEOS, LEITE, GLÚTEN, AIPO, SOJA, OVO, MOSTARDA, SÉSAMO, AMENDOIM, SULFITOS, TREMOÇO, FRUTOS DE CASCA\nRIJA e MOLUSCOS.\n001B\n1\n\nESPECIFICAÇÃO Revisão: 0\nData: Março 2019\nPURÉ DE BATATA DOCE 2500 g\nPOSSÍVEIS GRUPOS SENSÍVEIS\nPessoas com alergia ou intolerância a qualquer um ingredientes presentes e/ou alergénios, grávidas, idosos, crianças e pessoas com o sistema imunitário\ncomprometido.\nCARACTERÍSTICAS MICROBIOLÓGICAS\nCritérios Limite máximo admissível (ufc/g)\nListeria monocytogenes ≤100\nCARACTERÍSTICAS NUTRICIONAIS\nValores médios por 100 g de produto\nEnergia (KJ/Kcal) 428 101\nLípidos (g) 0,60\ndos quais saturados (g) 0,20\nHidratos de Carbono (g) 21,50\ndos quais açúcares (g) 5,80\nFibra (g) 2,50\nProteínas (g) 1,20\nSal (g) 0,05\nDADOS LOGÍSTICOS\ng/unidade 2500\nUnidades/Caixa 4\nCaixa/Palete 24\ng/caixa 10000\nKg/Palete 240\nITF 14 ´15602128096235\nAltura da palete (m) 0,621\nMedidas da caixa master\nComprimento (mm) 292\nLargura (mm) 214\nAltura (mm) 159\nROTULAGEM NA EMBALAGEM SECUNDÁRIA\nDenominação de venda: Puré de Batata Doce ultracongelado 4x2500 g\nPeso líquido (g): 10000\nCódigo de barras/ITF14 ´15602128096235\nApós a data de produção: 547 dias\nValidade (codificação) Após descongelação (embalagem inviolada e mantida em refrigeração):\n24 horas\n001B\n2",
+    "tables": [
+      [
+        [
+          "PURÉ DE BATATA DOCE 2500 g",
+          null,
+          null
+        ],
+        [
+          "DESCRIÇÃO DO PRODUTO",
+          null,
+          null
+        ],
+        [
+          "Breve descrição do produto",
+          "Refeição produzida de acordo com o método de produção Cook and\nFreeze (Confeção -> Embalagem a vácuo -> (Ultra)congelação -\n>Conservação a temperatura inferior ou igual a -18ºC).",
+          null
+        ],
+        [
+          "Denominação de venda",
+          "Puré de Batata Doce ultracongelado 4x2500 g",
+          null
+        ],
+        [
+          "Marca",
+          "-",
+          null
+        ],
+        [
+          "Gramagem",
+          "10000",
+          null
+        ],
+        [
+          "ROTULAGEM NA UNIDADE DE VENDA",
+          null,
+          null
+        ],
+        [
+          "Denominação de venda",
+          "Puré de Batata Doce ultracongelado 4x2500 g",
+          null
+        ],
+        [
+          "Ingredientes",
+          "100% Batata doce laranja assada",
+          null
+        ],
+        [
+          "Instruções de uso/Modo de preparação",
+          "Proceder à descongelação a uma temperatura compreendida entre os 0 e\nos 5ºC, até 24h antes da sua utilização. Após abertura, consumir no\npróprio dia. Deverá ser confirmado, com equipamento adequado, que a\ntemperatura interior do produto, após regeneração atingiu, no mínimo,\n75ºC.",
+          null
+        ],
+        [
+          "Conselhos de conservação/Modo de conservação (uso previsto)",
+          "Produto a ser transportado e conservado a temperatura inferior ou igual a\n-18ºC, em câmara de conservação de ultracongelados, durante o seu\ntempo de vida útil (enquanto inviolado) e regenerado no local de\nconsumo.",
+          null
+        ],
+        [
+          "Peso líquido (g)",
+          "10000",
+          null
+        ],
+        [
+          "\"Manter a -18ºC\"",
+          null,
+          null
+        ],
+        [
+          "\"Não voltar a congelar uma vez descongelado\"",
+          null,
+          null
+        ],
+        [
+          "Código de barra/EAN13",
+          "5602128096238",
+          null
+        ],
+        [
+          "Simbologia",
+          "Sim",
+          "Não"
+        ],
+        [
+          "",
+          "x",
+          ""
+        ],
+        [
+          "",
+          "",
+          "x"
+        ],
+        [
+          "e (Metrologia Industrial)",
+          "x",
+          ""
+        ],
+        [
+          "Validade (codificação)",
+          "Após a data de produção: 547 dias\nApós descongelação (embalagem inviolada e mantida em refrigeração):\n24 horas",
+          null
+        ],
+        [
+          "CARACTERÍSTICAS FÍSICAS/ORGANOLÉPTICAS",
+          null,
+          null
+        ],
+        [
+          "Cor",
+          "Caraterística",
+          null
+        ],
+        [
+          "Odor",
+          "Caraterístico",
+          null
+        ],
+        [
+          "Sabor",
+          "Caraterístico",
+          null
+        ],
+        [
+          "Textura",
+          "Característica",
+          null
+        ],
+        [
+          "CARACTERÍSTICAS QUÍMICAS",
+          null,
+          null
+        ],
+        [
+          "Metais pesados",
+          "Conforme legislação vigente",
+          null
+        ],
+        [
+          "Residuos de pesticidas",
+          null,
+          null
+        ],
+        [
+          "Irradiação",
+          "Ausência",
+          null
+        ],
+        [
+          "OGM´s",
+          "Ausência",
+          null
+        ],
+        [
+          "ALERGÉNEOS",
+          null,
+          null
+        ],
+        [
+          "",
+          "Sim",
+          "Não"
+        ],
+        [
+          "Cereais que contêm glúten",
+          "",
+          "x"
+        ],
+        [
+          "Crustaceos e produtos à base de crustaceos",
+          "",
+          "x"
+        ],
+        [
+          "Ovos e produtos à base de ovos",
+          "",
+          "x"
+        ],
+        [
+          "Peixe e produtos à base de peixe",
+          "",
+          "x"
+        ],
+        [
+          "Amendoins e produtos à base de amendoins",
+          "",
+          "x"
+        ],
+        [
+          "Soja e produtos à base de soja",
+          "",
+          "x"
+        ],
+        [
+          "Leite e produtos à base de leite (incluindo lactose)",
+          "",
+          "x"
+        ],
+        [
+          "Frutos de casca rija e produtos à base de frutos de casca rija",
+          "",
+          "x"
+        ],
+        [
+          "Aipos e produtos à base de aipos",
+          "",
+          "x"
+        ],
+        [
+          "Mostarda e produtos à base de mostarda",
+          "",
+          "x"
+        ],
+        [
+          "Sementes de sésamos e produtos à base de sementes de sésamo",
+          "",
+          "x"
+        ],
+        [
+          "Dióxido de enxofre e sulfitos em concentrações superiores a 10mg/Kg ou 10 mg/L\nexpressos em SO2",
+          "",
+          "x"
+        ],
+        [
+          "Moluscos e produtos à base de moluscos",
+          "",
+          "x"
+        ],
+        [
+          "Tremoço e produtos à base de tremoço",
+          "",
+          "x"
+        ],
+        [
+          "",
+          null,
+          null
+        ],
+        [
+          "Pode conter vestígios de: CRUSTÁCEOS, LEITE, GLÚTEN, AIPO, SOJA, OVO, MOSTARDA, SÉSAMO, AMENDOIM, SULFITOS, TREMOÇO, FRUTOS DE CASCA\nRIJA e MOLUSCOS.",
+          null,
+          null
+        ]
+      ],
+      [
+        [
+          "PURÉ DE BATATA DOCE 2500 g",
+          null,
+          null
+        ],
+        [
+          "POSSÍVEIS GRUPOS SENSÍVEIS",
+          null,
+          null
+        ],
+        [
+          "Pessoas com alergia ou intolerância a qualquer um ingredientes presentes e/ou alergénios, grávidas, idosos, crianças e pessoas com o sistema imunitário\ncomprometido.",
+          null,
+          null
+        ],
+        [
+          "CARACTERÍSTICAS MICROBIOLÓGICAS",
+          null,
+          null
+        ],
+        [
+          "Critérios",
+          "Limite máximo admissível (ufc/g)",
+          null
+        ],
+        [
+          "Listeria monocytogenes",
+          "≤100",
+          null
+        ],
+        [
+          "CARACTERÍSTICAS NUTRICIONAIS",
+          null,
+          null
+        ],
+        [
+          "Valores médios por 100 g de produto",
+          null,
+          null
+        ],
+        [
+          "Energia (KJ/Kcal)",
+          "428",
+          "101"
+        ],
+        [
+          "Lípidos (g)",
+          "0,60",
+          null
+        ],
+        [
+          "dos quais saturados (g)",
+          "0,20",
+          null
+        ],
+        [
+          "Hidratos de Carbono (g)",
+          "21,50",
+          null
+        ],
+        [
+          "dos quais açúcares (g)",
+          "5,80",
+          null
+        ],
+        [
+          "Fibra (g)",
+          "2,50",
+          null
+        ],
+        [
+          "Proteínas (g)",
+          "1,20",
+          null
+        ],
+        [
+          "Sal (g)",
+          "0,05",
+          null
+        ],
+        [
+          "DADOS LOGÍSTICOS",
+          null,
+          null
+        ],
+        [
+          "g/unidade",
+          "2500",
+          null
+        ],
+        [
+          "Unidades/Caixa",
+          "4",
+          null
+        ],
+        [
+          "Caixa/Palete",
+          "24",
+          null
+        ],
+        [
+          "g/caixa",
+          "10000",
+          null
+        ],
+        [
+          "Kg/Palete",
+          "240",
+          null
+        ],
+        [
+          "ITF 14",
+          "´15602128096235",
+          null
+        ],
+        [
+          "Altura da palete (m)",
+          "0,621",
+          null
+        ],
+        [
+          "Medidas da caixa master",
+          null,
+          null
+        ],
+        [
+          "Comprimento (mm)",
+          "292",
+          null
+        ],
+        [
+          "Largura (mm)",
+          "214",
+          null
+        ],
+        [
+          "Altura (mm)",
+          "159",
+          null
+        ],
+        [
+          "ROTULAGEM NA EMBALAGEM SECUNDÁRIA",
+          null,
+          null
+        ],
+        [
+          "Denominação de venda:",
+          "Puré de Batata Doce ultracongelado 4x2500 g",
+          null
+        ],
+        [
+          "Peso líquido (g):",
+          "10000",
+          null
+        ],
+        [
+          "Código de barras/ITF14",
+          "´15602128096235",
+          null
+        ],
+        [
+          "Validade (codificação)",
+          "Após a data de produção: 547 dias\nApós descongelação (embalagem inviolada e mantida em refrigeração):\n24 horas",
+          null
+        ]
+      ]
+    ],
+    "page_count": 2,
+    "metadata": {
+      "Producer": "Nitro PDF PrimoPDF",
+      "CreationDate": "D:20190311181400+00'00'",
+      "ModDate": "D:20190311181400+00'00'",
+      "Title": "(Pur\\351 de Batata Doce 4x2500 g.xls)",
+      "Creator": "PrimoPDF http://www.primopdf.com",
+      "Author": "ana.casado"
+    }
+  },
+  "all_allergens": [],
+  "critical_allergens": [],
+  "allergen_ingredients_count": 0,
+  "has_critical_allergen": false,
+  "allergen_risk_level": "none"
+}

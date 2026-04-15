@@ -837,8 +837,8 @@ class LocalNormalizer:
             # Extract ingredients - multiple format variations
             ingredients_text = ""
 
-            # Pattern 1: Look for continuous lines with semicolon-separated ingredients
-            # This handles PDFs where ingredients span multiple lines with semicolons
+            # Pattern 1: Look for continuous lines with semicolon or comma-separated ingredients
+            # This handles PDFs where ingredients span multiple lines with delimiters
             lines = text.split('\n')
             for i, line in enumerate(lines):
                 if 'ingredientes' in line.lower():
@@ -853,13 +853,14 @@ class LocalNormalizer:
                         collected.append(l)
 
                     ingredients_text = ' '.join(collected)
-                    if ';' in ingredients_text:
+                    # Check if we have a list (either semicolon or comma separated)
+                    if ';' in ingredients_text or ',' in ingredients_text:
                         break
 
             # Pattern 2: "Listagem de ingredientes" / "Composição" section
-            if not ingredients_text or ingredients_text.count(';') < 2:
+            if not ingredients_text or (ingredients_text.count(';') < 2 and ingredients_text.count(',') < 2):
                 match = re.search(
-                    r"(?:Listagem de ingredientes|Composição do produto)[:\s]*\n([^A-Z]*?)(?:\n[A-Z]|$)",
+                    r"(?:Listagem de ingredientes|Composição do produto)[:\s]*\n([^\n]+)",
                     text,
                     re.IGNORECASE | re.MULTILINE
                 )
@@ -878,15 +879,36 @@ class LocalNormalizer:
                     ingredients_text = match.group(1).strip()
 
             if ingredients_text:
-                # Split by semicolon but respect parentheses
-                parts = self._smart_split_semicolon(ingredients_text)
+                # Decide whether to split by semicolon or comma
+                # Prefer semicolon if it appears more often, otherwise use comma
+                semicolon_count = ingredients_text.count(';')
+                comma_count = ingredients_text.count(',')
+
+                if semicolon_count > comma_count:
+                    # Split by semicolon but respect parentheses
+                    parts = self._smart_split_semicolon(ingredients_text)
+                else:
+                    # Split by comma (simpler, less nesting in ingredient lists)
+                    parts = [p.strip() for p in ingredients_text.split(',')]
 
                 for ingredient_text in parts:
                     # Clean up the ingredient text
                     product_name = ingredient_text.strip()
 
-                    # Remove "ingredientes:" prefix if present
-                    product_name = re.sub(r'^ingredientes\s*[:( ]*', '', product_name, flags=re.IGNORECASE).strip()
+                    # Remove prefixes like "ingredientes:" or "Listagem de ingredientes:"
+                    product_name = re.sub(r'^(?:listagem\s+de\s+)?ingredientes\s*[:( ]*', '', product_name, flags=re.IGNORECASE).strip()
+                    product_name = re.sub(r'^composição(?:\s+do\s+produto)?\s*[:( ]*', '', product_name, flags=re.IGNORECASE).strip()
+
+                    # Stop at sentence boundaries if found (. ! ?)
+                    # This prevents capturing text like "goma xantana. Necessidade de..."
+                    for punct in ['.', '!', '?']:
+                        if punct in product_name:
+                            # Only keep the part before the punctuation if what follows looks like text, not description
+                            parts_by_punct = product_name.split(punct, 1)
+                            if len(parts_by_punct) == 2 and len(parts_by_punct[1].strip()) > 5:
+                                # There's significant text after punct, keep only before
+                                product_name = parts_by_punct[0].strip()
+                            break
 
                     # Remove trailing parenthetical content but keep the main ingredient
                     # The strategy: keep text before first paren if it's meaningful (>3 chars)
