@@ -1,0 +1,68 @@
+{
+  "processed": [
+    {
+      "file": "06.00008_Picante Verde.pdf",
+      "status": "success",
+      "ingredients_count": 12,
+      "allergens_count": 0,
+      "product_name": "FT. 06.00008",
+      "category": "Other"
+    },
+    {
+      "file": "06.00013_Molho da Casa.pdf",
+      "status": "success",
+      "ingredients_count": 12,
+      "allergens_count": 2,
+      "product_name": "FT. 06.00013",
+      "category": "Other"
+    },
+    {
+      "file": "5-vp-alergenios-balcao-07-abr_2026.pdf",
+      "status": "success",
+      "ingredients_count": 41,
+      "allergens_count": 7,
+      "product_name": "07/04/2026",
+      "category": "Other"
+    },
+    {
+      "file": "883172_PURÉ BATATA DOCE CONGELADO SACO 2,5KG.pdf",
+      "status": "success",
+      "ingredients_count": 0,
+      "allergens_count": 0,
+      "product_name": "ESPECIFICAÇÃO Revisão: 0",
+      "category": "Other"
+    },
+    {
+      "file": "FT162C_tarte_chocolate.pdf",
+      "status": "success",
+      "ingredients_count": 0,
+      "allergens_count": 0,
+      "product_name": "FICHA TÉCNICA / PRODUTO",
+      "category": "Other"
+    },
+    {
+      "file": "tabela_alergenios_h3.pdf",
+      "status": "success",
+      "ingredients_count": 0,
+      "allergens_count": 0,
+      "product_name": "TABELA DE ALERGÉNIOS",
+      "category": "Other"
+    },
+    {
+      "file": "vira_alergenios.pdf",
+      "status": "success",
+      "ingredients_count": 85,
+      "allergens_count": 21,
+      "product_name": "TABELA DE ALERGÉNIOS",
+      "category": "Other"
+    }
+  ],
+  "errors": [],
+  "statistics": {
+    "total_pdfs": 7,
+    "successful": 7,
+    "failed": 0,
+    "total_ingredients": 150,
+    "total_allergens": 30
+  }
+}

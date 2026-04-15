@@ -1,0 +1,76 @@
+
+======================================================================
+TRAINING ON TECHNICAL SHEET EXAMPLES
+======================================================================
+Found 7 PDF files to process
+
+
+[1/7] Processing: 06.00008_Picante Verde.pdf
+----------------------------------------------------------------------
+[OK] SUCCESS
+  Product: FT. 06.00008
+  Ingredients: 12
+  Allergens: 0
+
+[2/7] Processing: 06.00013_Molho da Casa.pdf
+----------------------------------------------------------------------
+[OK] SUCCESS
+  Product: FT. 06.00013
+  Ingredients: 12
+  Allergens: 2
+
+[3/7] Processing: 5-vp-alergenios-balcao-07-abr_2026.pdf
+----------------------------------------------------------------------
+[OK] SUCCESS
+  Product: 07/04/2026
+  Ingredients: 41
+  Allergens: 7
+
+[4/7] Processing file 4
+----------------------------------------------------------------------
+[OK] SUCCESS
+  Product: ESPECIFICAÇÃO Revisão: 0
+  Ingredients: 0
+  Allergens: 0
+
+[5/7] Processing: FT162C_tarte_chocolate.pdf
+----------------------------------------------------------------------
+[OK] SUCCESS
+  Product: FICHA TÉCNICA / PRODUTO
+  Ingredients: 0
+  Allergens: 0
+
+[6/7] Processing: tabela_alergenios_h3.pdf
+----------------------------------------------------------------------
+[OK] SUCCESS
+  Product: TABELA DE ALERGÉNIOS
+  Ingredients: 0
+  Allergens: 0
+
+[7/7] Processing: vira_alergenios.pdf
+----------------------------------------------------------------------
+[OK] SUCCESS
+  Product: TABELA DE ALERGÉNIOS
+  Ingredients: 85
+  Allergens: 21
+
+======================================================================
+TRAINING SUMMARY
+======================================================================
+Processed: 7/7
+Failed: 0
+Total Ingredients Learned: 150
+Total Allergen-Ingredient Pairs: 30
+
+Learning Statistics:
+  Rules Learned: 0
+  Avg Rule Confidence: 0.00%
+
+Semantic Graph:
+  Total Tokens: 162
+  Ingredients: 149
+  Allergens: 13
+  Relationships: 126
+  Avg Relationship Strength: 91.94%
+
+Results saved to training_results.json

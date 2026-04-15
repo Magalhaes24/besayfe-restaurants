@@ -435,9 +435,22 @@ class LocalNormalizer:
         source_file: str,
         restaurant_id: str,
     ) -> NormalizedMenuSheet:
-        """Normalize PDF using field extractor + optional table detection."""
+        """Normalize PDF using format-specific parsers and field extractor."""
         pdf_text = raw_content.get("full_text", "")
         tables = raw_content.get("tables", [])
+
+        # Try format-specific parsing first
+        if "FT." in pdf_text or "FICHA" in pdf_text:
+            # Try FT format (Ficha Tecnica) parsing
+            ft_sheet = self._try_parse_ft_format(pdf_text, restaurant_id)
+            if ft_sheet and ft_sheet.ingredients:
+                return ft_sheet
+
+        if "TABELA DE ALERG" in pdf_text.upper():
+            # Try allergen table format
+            allergen_sheet = self._try_parse_allergen_table(pdf_text, restaurant_id)
+            if allergen_sheet and allergen_sheet.ingredients:
+                return allergen_sheet
 
         # Extract text blocks
         text_blocks = extract_pdf_text_blocks(pdf_text)
@@ -740,3 +753,256 @@ class LocalNormalizer:
         else:
             # No number found, return defaults
             return 0.0, "UN"
+
+    def _smart_split_semicolon(self, text: str) -> list[str]:
+        """
+        Split by semicolon while respecting parentheses.
+        Handles cases like: "chocolate (cacau; dextrose; açúcar); sal"
+        Returns parts as a list, skipping empty parts.
+        """
+        parts = []
+        current = []
+        paren_depth = 0
+
+        for char in text:
+            if char == '(':
+                paren_depth += 1
+                current.append(char)
+            elif char == ')':
+                paren_depth -= 1
+                current.append(char)
+            elif char == ';' and paren_depth == 0:
+                # Split here
+                part = ''.join(current).strip()
+                if part:
+                    parts.append(part)
+                current = []
+            else:
+                current.append(char)
+
+        # Add the last part
+        if current:
+            part = ''.join(current).strip()
+            if part:
+                parts.append(part)
+
+        return parts
+
+    def _try_parse_ft_format(self, text: str, restaurant_id: str) -> Optional[NormalizedMenuSheet]:
+        """
+        Try to parse FT (Ficha Tecnica) format technical sheets.
+        Handles both "FT. XXXXX" and "FICHA TÉCNICA / PRODUTO" formats.
+        """
+        try:
+            sheet = NormalizedMenuSheet(
+                name="",
+                category="",
+                servings=1,
+                country="PT",
+                region="",
+                restaurant_id=restaurant_id,
+                source_file="ft_format",
+                ingredients=[],
+                steps=[],
+            )
+
+            # Extract product name - try multiple patterns
+            patterns = [
+                (r"(?:Nome do artigo|artigo)[:\s]+([^\n]+)", 1),
+                (r"FICHA T[ÉE]CNICA[^\n]*\n([^\n]+)", 1),
+                (r"^(?!TABELA|GLÚTEN)([A-Z][^\n]{3,}?)(?:\n|$)", 1),
+            ]
+
+            for pattern, group in patterns:
+                match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
+                if match:
+                    name = match.group(group).strip()
+                    if name and len(name) > 2 and not name.startswith(('TABELA', 'FICHA')):
+                        sheet.name = name[:100]
+                        break
+
+            # Extract ingredients - multiple format variations
+            ingredients_text = ""
+
+            # Pattern 1: Look for continuous lines with semicolon-separated ingredients
+            # This handles PDFs where ingredients span multiple lines with semicolons
+            lines = text.split('\n')
+            for i, line in enumerate(lines):
+                if 'ingredientes' in line.lower():
+                    # Collect this line and the next few lines until we hit a non-ingredient line
+                    collected = []
+                    for j in range(i, min(i + 5, len(lines))):
+                        l = lines[j].strip()
+                        if not l:
+                            break
+                        if j > i and any(kw in l.lower() for kw in ['contém', 'pode conter', 'ddm', 'conservação']):
+                            break
+                        collected.append(l)
+
+                    ingredients_text = ' '.join(collected)
+                    if ';' in ingredients_text:
+                        break
+
+            # Pattern 2: "Listagem de ingredientes" / "Composição" section
+            if not ingredients_text or ingredients_text.count(';') < 2:
+                match = re.search(
+                    r"(?:Listagem de ingredientes|Composição do produto)[:\s]*\n([^A-Z]*?)(?:\n[A-Z]|$)",
+                    text,
+                    re.IGNORECASE | re.MULTILINE
+                )
+                if match:
+                    ingredients_text = match.group(1).strip()
+
+            # Pattern 3: Lines before "ingredientes:" label (common in some FT formats)
+            if not ingredients_text or ingredients_text.count(';') < 2:
+                # Look for semicolon-separated text in the lines before "ingredientes"
+                match = re.search(
+                    r"([^:\n]*;[^:\n]*(?:;[^:\n]*)+)(?:\s*\n\s*ingredientes)",
+                    text,
+                    re.IGNORECASE | re.MULTILINE
+                )
+                if match:
+                    ingredients_text = match.group(1).strip()
+
+            if ingredients_text:
+                # Split by semicolon but respect parentheses
+                parts = self._smart_split_semicolon(ingredients_text)
+
+                for ingredient_text in parts:
+                    # Clean up the ingredient text
+                    product_name = ingredient_text.strip()
+
+                    # Remove "ingredientes:" prefix if present
+                    product_name = re.sub(r'^ingredientes\s*[:( ]*', '', product_name, flags=re.IGNORECASE).strip()
+
+                    # Remove trailing parenthetical content but keep the main ingredient
+                    # The strategy: keep text before first paren if it's meaningful (>3 chars)
+                    if '(' in product_name:
+                        before_paren = product_name.split('(')[0].strip()
+                        # Keep text before paren if it's a real ingredient name (has letters, not just codes)
+                        if len(before_paren) > 2 and any(c.isalpha() for c in before_paren):
+                            product_name = before_paren
+                        else:
+                            # Text before paren is too short/useless, skip this ingredient
+                            continue
+
+                    # Remove percentage numbers (e.g., "10%", "1,5%")
+                    product_name = re.sub(r'[\d,]+\s*%', '', product_name).strip()
+
+                    # Remove E-codes for additives (E300, E301, etc.)
+                    product_name = re.sub(r'\bE\d{3}(?:\s+e\s+E\d{3})*', '', product_name, flags=re.IGNORECASE).strip()
+
+                    # Remove extra spaces
+                    product_name = re.sub(r'\s+', ' ', product_name).strip()
+
+                    # Skip empty or too-short names
+                    if not product_name or len(product_name) < 2 or product_name[0].isdigit():
+                        continue
+
+                    # Skip if only numbers/codes left
+                    if not any(c.isalpha() for c in product_name):
+                        continue
+
+                    # Skip common non-ingredient labels
+                    if any(skip in product_name.lower() for skip in ['contém', 'pode conter', 'conservação', 'transporte', 'armazenagem']):
+                        continue
+
+                    # Detect allergens
+                    detected_allergens = self.allergen_db.detect_allergens(product_name)
+                    quantity, unit = self._parse_quantity_and_unit(product_name)
+
+                    ingredient = Ingredient(
+                        product_name=product_name,
+                        quantity=quantity,
+                        unit=unit,
+                        allergens=sorted(list(detected_allergens)),
+                    )
+                    sheet.ingredients.append(ingredient)
+
+            return sheet if sheet.ingredients else None
+
+        except Exception as e:
+            return None
+
+    def _try_parse_allergen_table(self, text: str, restaurant_id: str) -> Optional[NormalizedMenuSheet]:
+        """
+        Try to parse allergen table format.
+        Handles both bullet lists and menu-with-allergen-codes formats.
+        Example: "Grelhado PC C" means Grelhado with allergen codes PC and C
+        """
+        try:
+            sheet = NormalizedMenuSheet(
+                name="Allergen Menu Reference",
+                category="",
+                servings=1,
+                country="PT",
+                region="",
+                restaurant_id=restaurant_id,
+                source_file="allergen_table",
+                ingredients=[],
+                steps=[],
+            )
+
+            lines = text.split('\n')
+            seen_products = set()
+
+            for line in lines:
+                line = line.strip()
+
+                # Skip empty lines, headers, and table markers
+                if not line or len(line) < 4:
+                    continue
+                if any(x in line.upper() for x in ['TABELA', 'GLUTEN', 'CRUSTACEO', 'ALERG', 'PAGE']):
+                    continue
+
+                # Check if line looks like a product entry
+                # It should have a product name and optionally allergen markers (C, PC, X, etc.)
+                # Pattern: ProductName followed by space-separated codes like "C", "PC", "X"
+
+                # Remove trailing allergen codes to extract product name
+                # Allergen codes are typically: C, PC, X, ●, separated by spaces
+                product_line = re.sub(r'\s+(C|PC|X|●|PV)\s*$', '', line)
+                product_line = re.sub(r'(\s+(C|PC|X|●)\s*)+$', '', product_line)
+
+                product_name = product_line.strip()
+
+                # Filter out non-product entries
+                if not product_name or product_name[0].isdigit():
+                    continue
+                if len(product_name) < 3:
+                    continue
+                if product_name.upper().endswith(('ALERGENO', 'ALERGÉNIOS', 'MENU', 'PÁGINA')):
+                    continue
+
+                # Skip if already processed
+                if product_name.lower() in seen_products:
+                    continue
+                seen_products.add(product_name.lower())
+
+                # Clean up product name
+                product_name = re.sub(r'\s+', ' ', product_name).strip()
+
+                if len(product_name) > 2:
+                    # Extract allergen markers from the original line
+                    allergen_codes = re.findall(r'\s(C|PC|X|●|PV)(?:\s|$)', ' ' + line)
+
+                    # Detect allergens from product name first
+                    detected_allergens = self.allergen_db.detect_allergens(product_name)
+
+                    # If no allergens detected but line has codes, mark as having allergens
+                    if allergen_codes and not detected_allergens:
+                        # Has allergen codes, so mark common allergens
+                        detected_allergens = {'unknown'}  # Will be detected by allergen_db
+
+                    ingredient = Ingredient(
+                        product_name=product_name,
+                        quantity=1,
+                        unit="UN",
+                        allergens=sorted(list(detected_allergens)) if detected_allergens else [],
+                    )
+                    sheet.ingredients.append(ingredient)
+
+            return sheet if sheet.ingredients else None
+
+        except Exception as e:
+            return None

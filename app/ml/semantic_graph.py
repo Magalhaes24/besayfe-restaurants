@@ -119,7 +119,7 @@ class SemanticGraph:
             # Reconstruct tokens
             for key, token_data in data.get("tokens", {}).items():
                 token = Token(
-                    text=token_data["value"],
+                    value=token_data["value"],
                     token_type=token_data["type"],
                     language=token_data.get("language", "pt"),
                     confidence=token_data.get("confidence", 1.0),

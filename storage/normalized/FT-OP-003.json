@@ -1,0 +1,427 @@
+{
+  "id": "FT-OP-003",
+  "name": "Steak Tartar Classico",
+  "category": "CARNES - HACCP OBRIGATORIO",
+  "country": null,
+  "region": null,
+  "continent": null,
+  "prep_time_minutes": null,
+  "cooking_time_minutes": null,
+  "servings": 1,
+  "ingredients": [
+    {
+      "line_number": 1,
+      "product_name": "Lombo bovino premium",
+      "quantity": 150.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "ovo",
+        "mostarda",
+        "gluten"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 2,
+      "product_name": "Alcaparra dessalgada picada",
+      "quantity": 15.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "ovo",
+        "mostarda",
+        "gluten"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": "picada",
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 3,
+      "product_name": "Pepino em conserva picado",
+      "quantity": 20.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "ovo",
+        "mostarda",
+        "gluten"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 4,
+      "product_name": "Chalota picada fina",
+      "quantity": 20.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "ovo",
+        "mostarda",
+        "gluten"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": "fina",
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 5,
+      "product_name": "Mostarda Dijon",
+      "quantity": 10.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "ovo",
+        "mostarda",
+        "gluten"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.85,
+      "producer": "Dijon",
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 6,
+      "product_name": "Molho Worcestershire",
+      "quantity": 5.0,
+      "unit": "ML",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "ovo",
+        "mostarda",
+        "gluten"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 7,
+      "product_name": "Tabasco",
+      "quantity": 3.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "ovo",
+        "mostarda",
+        "gluten"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 8,
+      "product_name": "Gema de ovo pasteurizado",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "ovo",
+        "mostarda",
+        "gluten"
+      ],
+      "allergen_risk": "critical",
+      "allergen_confidence": 0.95,
+      "producer": "ovo pasteurizado",
+      "origin": null,
+      "storage_conditions": null
+    }
+  ],
+  "steps": [
+    {
+      "step_number": 1,
+      "action": "Limpar completamente o lombo (sem gordura ou tendao). Picar a faca em cubos de 3mm. NUNCA usar picador.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 2,
+      "action": "Misturar todos os condimentos numa bowl gelada. Adicionar a carne e incorporar delicadamente.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 3,
+      "action": "Provar e ajustar tempero. Fazer no maximo 10 min antes do servico.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 4,
+      "action": "Empratar com aro de 8cm. Criar cavidade central e dispor a gema. Servir com torradas ou chips.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 5,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 6,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 7,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 8,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 9,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 10,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 11,
+      "action": "0-4C - Servir imediatamente",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 12,
+      "action": "Ovo - Mostarda - Gluten",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    }
+  ],
+  "total_cost": 0.0,
+  "cost_per_serving": 0.0,
+  "source_file": "FT-OP-003.xlsx",
+  "source_format": "xlsx",
+  "normalized_at": "2026-04-15T09:27:00.578993",
+  "confidence_score": 0.3,
+  "raw_extraction": {
+    "sheets": {
+      "Ficha Tecnica": {
+        "headers": [
+          "FICHA TECNICA OPERACIONAL",
+          null
+        ],
+        "rows": [
+          {
+            "FICHA TECNICA OPERACIONAL": "Codigo",
+            "None": "FT-OP-003"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Nome",
+            "None": "Steak Tartar Classico"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Categoria",
+            "None": "CARNES - HACCP OBRIGATORIO"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Chef",
+            "None": "Marco Oliveira"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Estacao",
+            "None": "Cozinha Fria"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Porcoes",
+            "None": "1"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Tempo de Preparo",
+            "None": "15min"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Tempo de Cozimento",
+            "None": "0min"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Dificuldade",
+            "None": "3/5"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "INGREDIENTES",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Ingrediente",
+            "None": "Quantidade"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Lombo bovino premium",
+            "None": "150g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Alcaparra dessalgada picada",
+            "None": "15g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Pepino em conserva picado",
+            "None": "20g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Chalota picada fina",
+            "None": "20g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Mostarda Dijon",
+            "None": "10g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Molho Worcestershire",
+            "None": "5ml"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Tabasco",
+            "None": "3 gotas"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Gema de ovo pasteurizado",
+            "None": "1 un"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "MODO DE PREPARO",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "No.",
+            "None": "Passo"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "1",
+            "None": "Limpar completamente o lombo (sem gordura ou tendao). Picar a faca em cubos de 3mm. NUNCA usar picador."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "2",
+            "None": "Misturar todos os condimentos numa bowl gelada. Adicionar a carne e incorporar delicadamente."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "3",
+            "None": "Provar e ajustar tempero. Fazer no maximo 10 min antes do servico."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "4",
+            "None": "Empratar com aro de 8cm. Criar cavidade central e dispor a gema. Servir com torradas ou chips."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "EQUIPAMENTOS",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Item",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Faca de chef afiada",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Bowl inox gelada (gelo)",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Aro de empratar 8cm",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Termometro sonda",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Armazenamento",
+            "None": "0-4C - Servir imediatamente"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Alergenios",
+            "None": "Ovo - Mostarda - Gluten"
+          }
+        ],
+        "row_count": 33
+      }
+    },
+    "sheet_names": [
+      "Ficha Tecnica"
+    ],
+    "raw_text": "=== Sheet: Ficha Tecnica ===\nFICHA TECNICA OPERACIONAL | None\nCodigo | FT-OP-003\nNome | Steak Tartar Classico\nCategoria | CARNES - HACCP OBRIGATORIO\nChef | Marco Oliveira\nEstacao | Cozinha Fria\nPorcoes | 1\nTempo de Preparo | 15min\nTempo de Cozimento | 0min\nDificuldade | 3/5\nINGREDIENTES | None\nIngrediente | Quantidade\nLombo bovino premium | 150g\nAlcaparra dessalgada picada | 15g\nPepino em conserva picado | 20g\nChalota picada fina | 20g\nMostarda Dijon | 10g\nMolho Worcestershire | 5ml\nTabasco | 3 gotas\nGema de ovo pasteurizado | 1 un\nMODO DE PREPARO | None\nNo. | Passo\n1 | Limpar completamente o lombo (sem gordura ou tendao). Picar a faca em cubos de 3mm. NUNCA usar picador.\n2 | Misturar todos os condimentos numa bowl gelada. Adicionar a carne e incorporar delicadamente.\n3 | Provar e ajustar tempero. Fazer no maximo 10 min antes do servico.\n4 | Empratar com aro de 8cm. Criar cavidade central e dispor a gema. Servir com torradas ou chips.\nEQUIPAMENTOS | None\nItem | None\nFaca de chef afiada | None\nBowl inox gelada (gelo) | None\nAro de empratar 8cm | None\nTermometro sonda | None\nArmazenamento | 0-4C - Servir imediatamente\nAlergenios | Ovo - Mostarda - Gluten"
+  },
+  "all_allergens": [
+    "gluten",
+    "mostarda",
+    "ovo"
+  ],
+  "critical_allergens": [],
+  "allergen_ingredients_count": 8,
+  "has_critical_allergen": false,
+  "allergen_risk_level": "high"
+}

@@ -407,6 +407,20 @@ async def get_learning_rules():
     return normalizer.rule_engine.get_rules_summary()
 
 
+@router.get("/semantic/correlations")
+async def get_semantic_correlations():
+    """
+    Get comprehensive semantic analysis of all learned relationships:
+    - All tokens from the semantic graph
+    - Allergen-ingredient relationships
+    - Graph statistics
+    """
+    from app.ml import get_normalizer
+
+    normalizer = get_normalizer()
+    return normalizer.rule_engine.analyze_semantic_correlations()
+
+
 @router.get("/semantic/{ingredient}")
 async def get_ingredient_semantic_profile(ingredient: str):
     """
@@ -420,20 +434,6 @@ async def get_ingredient_semantic_profile(ingredient: str):
 
     normalizer = get_normalizer()
     return normalizer.rule_engine.get_ingredient_semantic_profile(ingredient)
-
-
-@router.get("/semantic/correlations")
-async def get_semantic_correlations():
-    """
-    Get comprehensive semantic analysis of all learned relationships:
-    - Allergen correlations
-    - Ingredient families
-    - Graph statistics
-    """
-    from app.ml import get_normalizer
-
-    normalizer = get_normalizer()
-    return normalizer.rule_engine.analyze_semantic_correlations()
 
 
 @router.get("/tokenization-activity")

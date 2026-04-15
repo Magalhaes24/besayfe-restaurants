@@ -1,0 +1,366 @@
+{
+  "id": "FT-OP-004",
+  "name": "Creme Brulee a Baunilha",
+  "category": "SOBREMESAS",
+  "country": null,
+  "region": null,
+  "continent": null,
+  "prep_time_minutes": null,
+  "cooking_time_minutes": null,
+  "servings": 1,
+  "ingredients": [
+    {
+      "line_number": 1,
+      "product_name": "Nata 35% m.g.",
+      "quantity": 500.0,
+      "unit": "ML",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "ovo",
+        "milk"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 2,
+      "product_name": "Gemas de ovo frescas",
+      "quantity": 6.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "ovo",
+        "milk"
+      ],
+      "allergen_risk": "critical",
+      "allergen_confidence": 0.95,
+      "producer": "ovo frescas",
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 3,
+      "product_name": "Acucar refinado",
+      "quantity": 100.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "ovo",
+        "milk"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 4,
+      "product_name": "Fava de baunilha Bourbon",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "ovo",
+        "milk"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": "baunilha Bourbon",
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 5,
+      "product_name": "Acucar demerara (caramelizar)",
+      "quantity": 6.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "ovo",
+        "milk"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    }
+  ],
+  "steps": [
+    {
+      "step_number": 1,
+      "action": "Aquecer nata com baunilha (fava aberta e raspada) ate quase ferver. Infusionar 15 min fora do lume.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 2,
+      "action": "Bater gemas com acucar ate branquear. Verter nata morna em fio continuo, mexendo sempre.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 3,
+      "action": "Coar a mistura. Distribuir em ramekins 120ml. Assar em banho-maria a 150C por 40-45 min.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 4,
+      "action": "Arrefecer a temperatura ambiente 1h. Refrigerar minimo 4h (idealmente 24h).",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 5,
+      "action": "No servico: polvilhar acucar demerara uniforme e caramelizar com macario ate crocante.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 6,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 7,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 8,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 9,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 10,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 11,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 12,
+      "action": "Refrigerado ate 3 dias (sem acucar)",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 13,
+      "action": "Ovo - Leite",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    }
+  ],
+  "total_cost": 0.0,
+  "cost_per_serving": 0.0,
+  "source_file": "FT-OP-004.xlsx",
+  "source_format": "xlsx",
+  "normalized_at": "2026-04-15T09:26:59.670926",
+  "confidence_score": 0.3,
+  "raw_extraction": {
+    "sheets": {
+      "Ficha Tecnica": {
+        "headers": [
+          "FICHA TECNICA OPERACIONAL",
+          null
+        ],
+        "rows": [
+          {
+            "FICHA TECNICA OPERACIONAL": "Codigo",
+            "None": "FT-OP-004"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Nome",
+            "None": "Creme Brulee a Baunilha"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Categoria",
+            "None": "SOBREMESAS"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Chef",
+            "None": "Sofia Lima"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Estacao",
+            "None": "Pastelaria"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Porcoes",
+            "None": "6"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Tempo de Preparo",
+            "None": "20min"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Tempo de Cozimento",
+            "None": "45min"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Dificuldade",
+            "None": "3/5"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "INGREDIENTES",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Ingrediente",
+            "None": "Quantidade"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Nata 35% m.g.",
+            "None": "500ml"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Gemas de ovo frescas",
+            "None": "6 un"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Acucar refinado",
+            "None": "100g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Fava de baunilha Bourbon",
+            "None": "1 un"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Acucar demerara (caramelizar)",
+            "None": "6x10g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "MODO DE PREPARO",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "No.",
+            "None": "Passo"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "1",
+            "None": "Aquecer nata com baunilha (fava aberta e raspada) ate quase ferver. Infusionar 15 min fora do lume."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "2",
+            "None": "Bater gemas com acucar ate branquear. Verter nata morna em fio continuo, mexendo sempre."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "3",
+            "None": "Coar a mistura. Distribuir em ramekins 120ml. Assar em banho-maria a 150C por 40-45 min."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "4",
+            "None": "Arrefecer a temperatura ambiente 1h. Refrigerar minimo 4h (idealmente 24h)."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "5",
+            "None": "No servico: polvilhar acucar demerara uniforme e caramelizar com macario ate crocante."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "EQUIPAMENTOS",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Item",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Ramekins 120ml x6",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Assadeira profunda",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Termometro de forno",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Macario culinario",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Armazenamento",
+            "None": "Refrigerado ate 3 dias (sem acucar)"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Alergenios",
+            "None": "Ovo - Leite"
+          }
+        ],
+        "row_count": 31
+      }
+    },
+    "sheet_names": [
+      "Ficha Tecnica"
+    ],
+    "raw_text": "=== Sheet: Ficha Tecnica ===\nFICHA TECNICA OPERACIONAL | None\nCodigo | FT-OP-004\nNome | Creme Brulee a Baunilha\nCategoria | SOBREMESAS\nChef | Sofia Lima\nEstacao | Pastelaria\nPorcoes | 6\nTempo de Preparo | 20min\nTempo de Cozimento | 45min\nDificuldade | 3/5\nINGREDIENTES | None\nIngrediente | Quantidade\nNata 35% m.g. | 500ml\nGemas de ovo frescas | 6 un\nAcucar refinado | 100g\nFava de baunilha Bourbon | 1 un\nAcucar demerara (caramelizar) | 6x10g\nMODO DE PREPARO | None\nNo. | Passo\n1 | Aquecer nata com baunilha (fava aberta e raspada) ate quase ferver. Infusionar 15 min fora do lume.\n2 | Bater gemas com acucar ate branquear. Verter nata morna em fio continuo, mexendo sempre.\n3 | Coar a mistura. Distribuir em ramekins 120ml. Assar em banho-maria a 150C por 40-45 min.\n4 | Arrefecer a temperatura ambiente 1h. Refrigerar minimo 4h (idealmente 24h).\n5 | No servico: polvilhar acucar demerara uniforme e caramelizar com macario ate crocante.\nEQUIPAMENTOS | None\nItem | None\nRamekins 120ml x6 | None\nAssadeira profunda | None\nTermometro de forno | None\nMacario culinario | None\nArmazenamento | Refrigerado ate 3 dias (sem acucar)\nAlergenios | Ovo - Leite"
+  },
+  "all_allergens": [
+    "milk",
+    "ovo"
+  ],
+  "critical_allergens": [
+    "milk"
+  ],
+  "allergen_ingredients_count": 5,
+  "has_critical_allergen": true,
+  "allergen_risk_level": "critical"
+}

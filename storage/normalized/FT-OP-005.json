@@ -1,0 +1,439 @@
+{
+  "id": "FT-OP-005",
+  "name": "Pad Thai de Camarao",
+  "category": "COZINHA ASIATICA",
+  "country": null,
+  "region": null,
+  "continent": null,
+  "prep_time_minutes": null,
+  "cooking_time_minutes": null,
+  "servings": 1,
+  "ingredients": [
+    {
+      "line_number": 1,
+      "product_name": "Massa de arroz (pre-reidratada)",
+      "quantity": 120.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "shellfish",
+        "fish",
+        "amendoim",
+        "ovo"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": "arroz",
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 2,
+      "product_name": "Camarao 16/20 descascado",
+      "quantity": 100.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "shellfish",
+        "fish",
+        "amendoim",
+        "ovo"
+      ],
+      "allergen_risk": "critical",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 3,
+      "product_name": "Molho de tamarindo",
+      "quantity": 30.0,
+      "unit": "ML",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "shellfish",
+        "fish",
+        "amendoim",
+        "ovo"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": "tamarindo",
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 4,
+      "product_name": "Molho de peixe Nam Pla",
+      "quantity": 15.0,
+      "unit": "ML",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "shellfish",
+        "fish",
+        "amendoim",
+        "ovo"
+      ],
+      "allergen_risk": "critical",
+      "allergen_confidence": 0.95,
+      "producer": "peixe Nam Pla",
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 5,
+      "product_name": "Acucar de palma",
+      "quantity": 10.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "shellfish",
+        "fish",
+        "amendoim",
+        "ovo"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": "palma",
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 6,
+      "product_name": "Ovo inteiro",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "shellfish",
+        "fish",
+        "amendoim",
+        "ovo"
+      ],
+      "allergen_risk": "critical",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 7,
+      "product_name": "Broto de feijao",
+      "quantity": 40.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "shellfish",
+        "fish",
+        "amendoim",
+        "ovo"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": "feijao",
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 8,
+      "product_name": "Amendoim torrado esmagado",
+      "quantity": 20.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "shellfish",
+        "fish",
+        "amendoim",
+        "ovo"
+      ],
+      "allergen_risk": "critical",
+      "allergen_confidence": 0.95,
+      "producer": "esmagado",
+      "origin": null,
+      "storage_conditions": null
+    }
+  ],
+  "steps": [
+    {
+      "step_number": 1,
+      "action": "Aquecer wok a temperatura maxima. Adicionar oleo e saltear o camarao 90 seg ate rosado. Reservar.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 2,
+      "action": "No mesmo wok, adicionar mais oleo e a massa escorrida. Misturar sauce pad thai.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 3,
+      "action": "Criar espaco e cozinhar ovo mexido no centro. Incorporar a massa.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 4,
+      "action": "Devolver camarao, adicionar broto de feijao. Saltear 1 min a fogo alto.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 5,
+      "action": "Empratar. Garnish: cebolinho, amendoim, limao, piri-piri seco a parte.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 6,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 7,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 8,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 9,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 10,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 11,
+      "action": "Mise en place ate 4h - Servir na hora",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 12,
+      "action": "Crustaceo - Peixe - Amendoim - Ovo",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    }
+  ],
+  "total_cost": 0.0,
+  "cost_per_serving": 0.0,
+  "source_file": "FT-OP-005.xlsx",
+  "source_format": "xlsx",
+  "normalized_at": "2026-04-15T09:19:51.141766",
+  "confidence_score": 0.3,
+  "raw_extraction": {
+    "sheets": {
+      "Ficha Tecnica": {
+        "headers": [
+          "FICHA TECNICA OPERACIONAL",
+          null
+        ],
+        "rows": [
+          {
+            "FICHA TECNICA OPERACIONAL": "Codigo",
+            "None": "FT-OP-005"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Nome",
+            "None": "Pad Thai de Camarao"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Categoria",
+            "None": "COZINHA ASIATICA"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Chef",
+            "None": "Pedro Cruz"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Estacao",
+            "None": "Wok Station"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Porcoes",
+            "None": "1"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Tempo de Preparo",
+            "None": "10min"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Tempo de Cozimento",
+            "None": "8min"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Dificuldade",
+            "None": "2/5"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "INGREDIENTES",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Ingrediente",
+            "None": "Quantidade"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Massa de arroz (pre-reidratada)",
+            "None": "120g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Camarao 16/20 descascado",
+            "None": "100g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Molho de tamarindo",
+            "None": "30ml"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Molho de peixe Nam Pla",
+            "None": "15ml"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Acucar de palma",
+            "None": "10g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Ovo inteiro",
+            "None": "1 un"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Broto de feijao",
+            "None": "40g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Amendoim torrado esmagado",
+            "None": "20g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "MODO DE PREPARO",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "No.",
+            "None": "Passo"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "1",
+            "None": "Aquecer wok a temperatura maxima. Adicionar oleo e saltear o camarao 90 seg ate rosado. Reservar."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "2",
+            "None": "No mesmo wok, adicionar mais oleo e a massa escorrida. Misturar sauce pad thai."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "3",
+            "None": "Criar espaco e cozinhar ovo mexido no centro. Incorporar a massa."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "4",
+            "None": "Devolver camarao, adicionar broto de feijao. Saltear 1 min a fogo alto."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "5",
+            "None": "Empratar. Garnish: cebolinho, amendoim, limao, piri-piri seco a parte."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "EQUIPAMENTOS",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Item",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Wok aco carbono 36cm",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Fogao wok turbo",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Espatula wok",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Armazenamento",
+            "None": "Mise en place ate 4h - Servir na hora"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Alergenios",
+            "None": "Crustaceo - Peixe - Amendoim - Ovo"
+          }
+        ],
+        "row_count": 33
+      }
+    },
+    "sheet_names": [
+      "Ficha Tecnica"
+    ],
+    "raw_text": "=== Sheet: Ficha Tecnica ===\nFICHA TECNICA OPERACIONAL | None\nCodigo | FT-OP-005\nNome | Pad Thai de Camarao\nCategoria | COZINHA ASIATICA\nChef | Pedro Cruz\nEstacao | Wok Station\nPorcoes | 1\nTempo de Preparo | 10min\nTempo de Cozimento | 8min\nDificuldade | 2/5\nINGREDIENTES | None\nIngrediente | Quantidade\nMassa de arroz (pre-reidratada) | 120g\nCamarao 16/20 descascado | 100g\nMolho de tamarindo | 30ml\nMolho de peixe Nam Pla | 15ml\nAcucar de palma | 10g\nOvo inteiro | 1 un\nBroto de feijao | 40g\nAmendoim torrado esmagado | 20g\nMODO DE PREPARO | None\nNo. | Passo\n1 | Aquecer wok a temperatura maxima. Adicionar oleo e saltear o camarao 90 seg ate rosado. Reservar.\n2 | No mesmo wok, adicionar mais oleo e a massa escorrida. Misturar sauce pad thai.\n3 | Criar espaco e cozinhar ovo mexido no centro. Incorporar a massa.\n4 | Devolver camarao, adicionar broto de feijao. Saltear 1 min a fogo alto.\n5 | Empratar. Garnish: cebolinho, amendoim, limao, piri-piri seco a parte.\nEQUIPAMENTOS | None\nItem | None\nWok aco carbono 36cm | None\nFogao wok turbo | None\nEspatula wok | None\nArmazenamento | Mise en place ate 4h - Servir na hora\nAlergenios | Crustaceo - Peixe - Amendoim - Ovo"
+  },
+  "all_allergens": [
+    "amendoim",
+    "fish",
+    "ovo",
+    "shellfish"
+  ],
+  "critical_allergens": [
+    "fish",
+    "shellfish"
+  ],
+  "allergen_ingredients_count": 8,
+  "has_critical_allergen": true,
+  "allergen_risk_level": "critical"
+}

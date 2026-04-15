@@ -474,7 +474,35 @@ class RuleEngine:
 
     def analyze_semantic_correlations(self) -> dict:
         """Get comprehensive semantic analysis of all learned relationships."""
-        return self.correlation_analyzer.analyze_correlations()
+        # Build tokens dictionary from semantic graph
+        tokens = {}
+        for (value, token_type), token in self.semantic_graph.tokens.items():
+            tokens[value] = {
+                "value": token.value,
+                "type": token.token_type,
+                "language": token.language,
+                "confidence": token.confidence,
+            }
+
+        # Build allergen-ingredient relationships from semantic graph
+        allergen_ingredient_relationships = []
+        for rel in self.semantic_graph.relationships:
+            if rel.relation_type == "implies":
+                allergen_ingredient_relationships.append({
+                    "allergen": rel.target.value,
+                    "ingredient": rel.source.value,
+                    "strength": rel.strength,
+                    "evidence": rel.evidence_count,
+                })
+
+        # Get graph statistics
+        stats = self.semantic_graph.get_graph_statistics()
+
+        return {
+            "tokens": tokens,
+            "allergen_ingredient_relationships": allergen_ingredient_relationships,
+            "graph_statistics": stats,
+        }
 
     def get_tokenization_activity(self) -> dict:
         """Get recent tokenization and semantic graph activity."""

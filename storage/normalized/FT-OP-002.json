@@ -1,0 +1,441 @@
+{
+  "id": "FT-OP-002",
+  "name": "Bacalhau a Bras",
+  "category": "PEIXE & FRUTOS DO MAR",
+  "country": null,
+  "region": null,
+  "continent": null,
+  "prep_time_minutes": null,
+  "cooking_time_minutes": null,
+  "servings": 1,
+  "ingredients": [
+    {
+      "line_number": 1,
+      "product_name": "Bacalhau demolhado desfiado",
+      "quantity": 120.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "fish",
+        "ovo",
+        "sulfitos"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": "desfiado",
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 2,
+      "product_name": "Batata palha fina",
+      "quantity": 80.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "fish",
+        "ovo",
+        "sulfitos"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 3,
+      "product_name": "Ovos inteiros",
+      "quantity": 3.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "fish",
+        "ovo",
+        "sulfitos"
+      ],
+      "allergen_risk": "critical",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 4,
+      "product_name": "Cebola em juliana fina",
+      "quantity": 60.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "fish",
+        "ovo",
+        "sulfitos"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 5,
+      "product_name": "Alho laminado",
+      "quantity": 8.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "fish",
+        "ovo",
+        "sulfitos"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 6,
+      "product_name": "Azeite extra-virgem",
+      "quantity": 30.0,
+      "unit": "ML",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "fish",
+        "ovo",
+        "sulfitos"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 7,
+      "product_name": "Salsa fresca picada",
+      "quantity": 10.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "fish",
+        "ovo",
+        "sulfitos"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 8,
+      "product_name": "Azeitona preta galega",
+      "quantity": 20.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "fish",
+        "ovo",
+        "sulfitos"
+      ],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    }
+  ],
+  "steps": [
+    {
+      "step_number": 1,
+      "action": "Demolhar bacalhau em agua fria por 24h, trocando a agua a cada 8h. Escorrer e desfiar em lascas medias.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 2,
+      "action": "Dourar cebola e alho no azeite em lume medio (5 min). Juntar bacalhau e saltear 3 min.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 3,
+      "action": "Adicionar batata palha e misturar. Bater ovos com pimenta e salsa, juntar a mistura.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 4,
+      "action": "Mexer em fogo medio-baixo ate ovos ainda levemente cremosos. Retirar imediatamente.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 5,
+      "action": "Empratar em prato raso aquecido. Decorar com azeitonas, salsa e um fio de azeite.",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 6,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 7,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 8,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 9,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 10,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 11,
+      "action": "None",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 12,
+      "action": "Ate 48h refrigerado (sem ovos)",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    },
+    {
+      "step_number": 13,
+      "action": "Peixe - Ovo - Sulfitos",
+      "product": null,
+      "cut_type": null,
+      "time_minutes": null,
+      "observations": null
+    }
+  ],
+  "total_cost": 0.0,
+  "cost_per_serving": 0.0,
+  "source_file": "FT-OP-002.xlsx",
+  "source_format": "xlsx",
+  "normalized_at": "2026-04-15T09:27:02.119722",
+  "confidence_score": 0.3,
+  "raw_extraction": {
+    "sheets": {
+      "Ficha Tecnica": {
+        "headers": [
+          "FICHA TECNICA OPERACIONAL",
+          null
+        ],
+        "rows": [
+          {
+            "FICHA TECNICA OPERACIONAL": "Codigo",
+            "None": "FT-OP-002"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Nome",
+            "None": "Bacalhau a Bras"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Categoria",
+            "None": "PEIXE & FRUTOS DO MAR"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Chef",
+            "None": "Ana Santos"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Estacao",
+            "None": "Cozinha Quente"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Porcoes",
+            "None": "4"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Tempo de Preparo",
+            "None": "24h"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Tempo de Cozimento",
+            "None": "25min"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Dificuldade",
+            "None": "2/5"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "INGREDIENTES",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Ingrediente",
+            "None": "Quantidade"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Bacalhau demolhado desfiado",
+            "None": "120g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Batata palha fina",
+            "None": "80g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Ovos inteiros",
+            "None": "3 un"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Cebola em juliana fina",
+            "None": "60g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Alho laminado",
+            "None": "8g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Azeite extra-virgem",
+            "None": "30ml"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Salsa fresca picada",
+            "None": "10g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Azeitona preta galega",
+            "None": "20g"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "MODO DE PREPARO",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "No.",
+            "None": "Passo"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "1",
+            "None": "Demolhar bacalhau em agua fria por 24h, trocando a agua a cada 8h. Escorrer e desfiar em lascas medias."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "2",
+            "None": "Dourar cebola e alho no azeite em lume medio (5 min). Juntar bacalhau e saltear 3 min."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "3",
+            "None": "Adicionar batata palha e misturar. Bater ovos com pimenta e salsa, juntar a mistura."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "4",
+            "None": "Mexer em fogo medio-baixo ate ovos ainda levemente cremosos. Retirar imediatamente."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "5",
+            "None": "Empratar em prato raso aquecido. Decorar com azeitonas, salsa e um fio de azeite."
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "EQUIPAMENTOS",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Item",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Frigideira antiaderente 28cm",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Espatula silicone",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Bowl medio",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Fouet",
+            "None": null
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Armazenamento",
+            "None": "Ate 48h refrigerado (sem ovos)"
+          },
+          {
+            "FICHA TECNICA OPERACIONAL": "Alergenios",
+            "None": "Peixe - Ovo - Sulfitos"
+          }
+        ],
+        "row_count": 34
+      }
+    },
+    "sheet_names": [
+      "Ficha Tecnica"
+    ],
+    "raw_text": "=== Sheet: Ficha Tecnica ===\nFICHA TECNICA OPERACIONAL | None\nCodigo | FT-OP-002\nNome | Bacalhau a Bras\nCategoria | PEIXE & FRUTOS DO MAR\nChef | Ana Santos\nEstacao | Cozinha Quente\nPorcoes | 4\nTempo de Preparo | 24h\nTempo de Cozimento | 25min\nDificuldade | 2/5\nINGREDIENTES | None\nIngrediente | Quantidade\nBacalhau demolhado desfiado | 120g\nBatata palha fina | 80g\nOvos inteiros | 3 un\nCebola em juliana fina | 60g\nAlho laminado | 8g\nAzeite extra-virgem | 30ml\nSalsa fresca picada | 10g\nAzeitona preta galega | 20g\nMODO DE PREPARO | None\nNo. | Passo\n1 | Demolhar bacalhau em agua fria por 24h, trocando a agua a cada 8h. Escorrer e desfiar em lascas medias.\n2 | Dourar cebola e alho no azeite em lume medio (5 min). Juntar bacalhau e saltear 3 min.\n3 | Adicionar batata palha e misturar. Bater ovos com pimenta e salsa, juntar a mistura.\n4 | Mexer em fogo medio-baixo ate ovos ainda levemente cremosos. Retirar imediatamente.\n5 | Empratar em prato raso aquecido. Decorar com azeitonas, salsa e um fio de azeite.\nEQUIPAMENTOS | None\nItem | None\nFrigideira antiaderente 28cm | None\nEspatula silicone | None\nBowl medio | None\nFouet | None\nArmazenamento | Ate 48h refrigerado (sem ovos)\nAlergenios | Peixe - Ovo - Sulfitos"
+  },
+  "all_allergens": [
+    "fish",
+    "ovo",
+    "sulfitos"
+  ],
+  "critical_allergens": [
+    "fish"
+  ],
+  "allergen_ingredients_count": 8,
+  "has_critical_allergen": true,
+  "allergen_risk_level": "critical"
+}

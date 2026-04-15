@@ -18,7 +18,25 @@
       "Bash(pkill -f \"python.*main.py\\\\|uvicorn.*app\")",
       "Bash(python app/main.py)",
       "Bash(sqlite3:*)",
-      "Bash(pkill -f \"python.*main.py\\\\|uvicorn\")"
+      "Bash(pkill -f \"python.*main.py\\\\|uvicorn\")",
+      "Bash(nohup python *)",
+      "Bash(curl -s http://localhost:8000/health)",
+      "Bash(cat)",
+      "Read(//tmp/**)",
+      "Bash(find C:\\\\Users\\\\FranciscoMagalhães\\\\OneDrive - Redevaerk\\\\Documents\\\\Projetos\\\\besayfe-restaurants\\\\app\\\\ml *)",
+      "Bash(find C:\\\\Users\\\\FranciscoMagalhães\\\\OneDrive - Redevaerk\\\\Documents\\\\Projetos\\\\besayfe-restaurants\\\\app *)",
+      "Bash(pkill *)",
+      "Bash(taskkill /F /IM python.exe)",
+      "Bash(taskkill /f /im python.exe)",
+      "Bash(awk '{print $2}')",
+      "Bash(xargs kill *)",
+      "Bash(kill -9 23560 22116)",
+      "Bash(netstat -tulpn)",
+      "Bash(awk '/python/ {if \\($0 !~ /awk/\\) print $2}')",
+      "Bash(kill -9 799 703)",
+      "Bash(PYTHONIOENCODING=utf-8 python)",
+      "Bash(timeout 120 PYTHONIOENCODING=utf-8 python train_on_examples.py)",
+      "Bash(awk '/python/ && /uvicorn/ {print $2}')"
     ]
   }
 }
