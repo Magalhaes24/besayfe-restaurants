@@ -841,25 +841,54 @@ class LocalNormalizer:
 
             seen_products.add(product_name.lower())
 
-            # Extract allergens from this row (where there's an X or •)
-            detected_allergens = set()
-            for col_idx in range(1, min(len(row), len(headers))):
-                cell_value = str(row[col_idx]).strip()
-                # Check for X, •, ●, or other markers
-                if cell_value and cell_value.upper() in ['X', '●', '•', '✓', 'SIM', 'YES']:
-                    allergen_name = str(headers[col_idx]).strip()
-                    # Clean up allergen name (remove newlines, extra spaces)
-                    allergen_name = re.sub(r'\s+', ' ', allergen_name).lower()
-                    if allergen_name:
-                        detected_allergens.add(allergen_name)
+            # Extract allergens from this row with risk levels
+            # X/●/• = definite allergen (high risk)
+            # PC = "Pode Conter" / might contain (possible cross-contamination, medium risk)
+            definite_allergens = set()
+            possible_allergens = set()
 
-            # Create ingredient
+            for col_idx in range(1, min(len(row), len(headers))):
+                cell_value = str(row[col_idx]).strip().upper()
+
+                if not cell_value:
+                    continue
+
+                allergen_name = str(headers[col_idx]).strip()
+                allergen_name = re.sub(r'\s+', ' ', allergen_name).lower()
+
+                if not allergen_name:
+                    continue
+
+                # Check for definite allergen markers
+                if cell_value in ['X', '●', '•', '✓', 'SIM', 'YES', 'CONTÉM']:
+                    definite_allergens.add(allergen_name)
+                # Check for possible allergen markers (PC = Pode Conter = might contain)
+                elif cell_value in ['PC', 'PODE CONTER', 'CROSS-CONTAMINATION']:
+                    possible_allergens.add(allergen_name)
+
+            # Determine risk level based on allergen type
+            all_allergens = definite_allergens | possible_allergens
+            if definite_allergens:
+                # Has definite allergens = high risk
+                allergen_risk = "high"
+                allergen_confidence = 0.95
+            elif possible_allergens:
+                # Only possible allergens = medium risk
+                allergen_risk = "medium"
+                allergen_confidence = 0.60
+            else:
+                allergen_risk = "none"
+                allergen_confidence = 0.0
+
+            # Create ingredient with allergen risk information
             ingredient = Ingredient(
                 product_name=product_name,
                 quantity=1,
                 unit="UN",
                 unit_price=0.0,
-                allergens=sorted(list(detected_allergens)) if detected_allergens else [],
+                allergens=sorted(list(all_allergens)) if all_allergens else [],
+                allergen_risk=allergen_risk,
+                allergen_confidence=allergen_confidence,
             )
             ingredients.append(ingredient)
 

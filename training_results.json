@@ -52,7 +52,7 @@
       "file": "vira_alergenios.pdf",
       "status": "success",
       "ingredients_count": 23,
-      "allergens_count": 29,
+      "allergens_count": 46,
       "product_name": "Allergen Matrix",
       "category": ""
     }
@@ -63,6 +63,6 @@
     "successful": 7,
     "failed": 0,
     "total_ingredients": 166,
-    "total_allergens": 77
+    "total_allergens": 94
   }
 }
