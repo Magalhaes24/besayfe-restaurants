@@ -1,0 +1,41 @@
+{
+  "id": "2ab08e34-d0db-4376-83f2-b07121c0c148",
+  "name": "PICANTE VERDE Marca: Pcozinha",
+  "category": "",
+  "country": "PT",
+  "region": "",
+  "continent": null,
+  "prep_time_minutes": null,
+  "cooking_time_minutes": null,
+  "servings": 1,
+  "ingredients": [
+    {
+      "line_number": 1,
+      "product_name": "●Lista de Ingredientes Hidratos de carbono 3,5g ●Alergénios dos quais açúcares 0g ●Informação Nutricional",
+      "quantity": 0.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    }
+  ],
+  "steps": [],
+  "total_cost": 0.0,
+  "cost_per_serving": 0.0,
+  "source_file": "ft_format",
+  "source_format": "pdf",
+  "normalized_at": "2026-04-15T10:21:36.337774",
+  "confidence_score": 0.85,
+  "raw_extraction": {},
+  "all_allergens": [],
+  "critical_allergens": [],
+  "allergen_ingredients_count": 0,
+  "has_critical_allergen": false,
+  "allergen_risk_level": "none"
+}

@@ -758,27 +758,39 @@ class LocalNormalizer:
         """
         Split by semicolon while respecting parentheses.
         Handles cases like: "chocolate (cacau; dextrose; açúcar); sal"
+        Also handles unbalanced parentheses gracefully.
         Returns parts as a list, skipping empty parts.
         """
         parts = []
         current = []
         paren_depth = 0
+        last_was_paren_close = False
 
-        for char in text:
+        for i, char in enumerate(text):
             if char == '(':
                 paren_depth += 1
                 current.append(char)
+                last_was_paren_close = False
             elif char == ')':
-                paren_depth -= 1
+                paren_depth = max(0, paren_depth - 1)  # Never go below 0
                 current.append(char)
-            elif char == ';' and paren_depth == 0:
-                # Split here
-                part = ''.join(current).strip()
-                if part:
-                    parts.append(part)
-                current = []
+                last_was_paren_close = True
+            elif char == ';':
+                # Split at top-level semicolons, or after closing parens if we're deep
+                # This handles unbalanced parens where content after ) should be split
+                should_split = (paren_depth == 0) or (last_was_paren_close and paren_depth == 1)
+                if should_split:
+                    part = ''.join(current).strip()
+                    if part:
+                        parts.append(part)
+                    current = []
+                    last_was_paren_close = False
+                else:
+                    current.append(char)
+                    last_was_paren_close = False
             else:
                 current.append(char)
+                last_was_paren_close = False
 
         # Add the last part
         if current:
@@ -800,8 +812,9 @@ class LocalNormalizer:
                 servings=1,
                 country="PT",
                 region="",
-                restaurant_id=restaurant_id,
                 source_file="ft_format",
+                source_format="pdf",
+                confidence_score=0.85,
                 ingredients=[],
                 steps=[],
             )
@@ -915,6 +928,7 @@ class LocalNormalizer:
                         product_name=product_name,
                         quantity=quantity,
                         unit=unit,
+                        unit_price=0.0,
                         allergens=sorted(list(detected_allergens)),
                     )
                     sheet.ingredients.append(ingredient)
@@ -937,8 +951,9 @@ class LocalNormalizer:
                 servings=1,
                 country="PT",
                 region="",
-                restaurant_id=restaurant_id,
                 source_file="allergen_table",
+                source_format="pdf",
+                confidence_score=0.75,
                 ingredients=[],
                 steps=[],
             )
@@ -998,6 +1013,7 @@ class LocalNormalizer:
                         product_name=product_name,
                         quantity=1,
                         unit="UN",
+                        unit_price=0.0,
                         allergens=sorted(list(detected_allergens)) if detected_allergens else [],
                     )
                     sheet.ingredients.append(ingredient)

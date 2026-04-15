@@ -87,11 +87,15 @@ The system follows a modular pipeline architecture where each component has a sp
               └─────────────────────────┘
 ```
 
-> **Diagram Description**: [Space for detailed data flow diagram showing how files flow through parsers into ML pipeline, with feedback loop]
+### 📐 Interactive Diagrams
+
+**[View System Architecture Diagram](https://www.figma.com/online-whiteboard/create-diagram/da71160a-14be-438f-a67a-5bbe2b0f6bae?utm_source=claude&utm_content=edit_in_figjam)** — Complete data flow from input parsers through ML pipeline to output with feedback loop.
 
 ---
 
 ## 📦 Core Components
+
+The system is composed of specialized modules working in concert. See the **[ML Component Functions Diagram](https://www.figma.com/online-whiteboard/create-diagram/66ac61e1-1d04-4725-a3be-2bb7c7ca0612?utm_source=claude&utm_content=edit_in_figjam)** for a visual overview of how all components interact.
 
 ### 1. **Input Parsers** (`app/parsers/`)
 
@@ -206,6 +210,8 @@ Output: "unit_price" (confidence: 0.94)
 ### 4. **Pattern Store** (`app/ml/pattern_store.py`)
 
 **SQLite-backed** persistent database for learning and caching patterns.
+
+See the **[Pattern Store Database Schema Diagram](https://www.figma.com/online-whiteboard/create-diagram/adc4e138-c6d5-4cbf-8cd2-f9fc839de69b?utm_source=claude&utm_content=edit_in_figjam)** for a visual representation of the database structure.
 
 #### Database Tables
 
@@ -338,6 +344,9 @@ Comprehensive allergen risk assessment system.
 5. Apply same downstream processing as tabular
 
 #### Output Structure
+
+See the **[Normalized Data Structure Diagram](https://www.figma.com/online-whiteboard/create-diagram/0b138b3f-ded8-412b-87eb-48e80136fa35?utm_source=claude&utm_content=edit_in_figjam)** for a visual representation of this hierarchy.
+
 ```python
 NormalizedMenuSheet {
     sheet_id: str,
@@ -379,9 +388,27 @@ Transforms normalized data back into Excel format for user download.
 
 ---
 
+## 📐 Visual Guides
+
+All diagrams are interactive and editable in FigJam:
+
+1. **[System Architecture](https://www.figma.com/online-whiteboard/create-diagram/da71160a-14be-438f-a67a-5bbe2b0f6bae?utm_source=claude&utm_content=edit_in_figjam)** — Complete data flow showing how input parsers feed into the ML pipeline and feedback loop
+
+2. **[ML Component Functions](https://www.figma.com/online-whiteboard/create-diagram/66ac61e1-1d04-4725-a3be-2bb7c7ca0612?utm_source=claude&utm_content=edit_in_figjam)** — Detailed responsibilities and interactions of each ML module (Tokenizer, Classifier, Rule Engine, Allergen Detector, etc.)
+
+3. **[Continuous Learning Loop](https://www.figma.com/online-whiteboard/create-diagram/352af138-a71c-4a37-b740-2a62d0352e65?utm_source=claude&utm_content=edit_in_figjam)** — 9-step process showing how the system improves over time through user corrections
+
+4. **[Normalized Data Structure](https://www.figma.com/online-whiteboard/create-diagram/0b138b3f-ded8-412b-87eb-48e80136fa35?utm_source=claude&utm_content=edit_in_figjam)** — Hierarchical output format from NormalizedMenuSheet down to individual ingredients with allergen info
+
+5. **[Pattern Store Database Schema](https://www.figma.com/online-whiteboard/create-diagram/adc4e138-c6d5-4cbf-8cd2-f9fc839de69b?utm_source=claude&utm_content=edit_in_figjam)** — SQLite database tables and their relationships (column mappings, rules, corrections, vocabulary, etc.)
+
+---
+
 ## 📊 Data Flow
 
 ### Upload → Processing → Download Cycle
+
+See the **[Continuous Learning Loop Diagram](https://www.figma.com/online-whiteboard/create-diagram/352af138-a71c-4a37-b740-2a62d0352e65?utm_source=claude&utm_content=edit_in_figjam)** for a visual representation of this workflow.
 
 ```
 1. User uploads file (PDF/CSV/XLSX)
