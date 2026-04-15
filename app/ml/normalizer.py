@@ -59,7 +59,7 @@ class LocalNormalizer:
         source_format: str,
         restaurant_id: str,
     ) -> NormalizedMenuSheet:
-        """Normalize CSV/XLSX using column classifier."""
+        """Normalize CSV/XLSX using column classifier, with fallback to text extraction."""
         # Extract headers and rows
         if source_format == "xlsx":
             sheets = raw_content.get("sheets", {})
@@ -84,6 +84,13 @@ class LocalNormalizer:
             else:
                 headers = []
                 rows = []
+
+        # If structured extraction yielded no results or looks malformed, try text-based extraction
+        # (handles specification sheets, forms, and other non-tabular formats)
+        # Malformed detection: headers that look like data values (e.g., "FT-RP-016", numbers, etc.)
+        is_malformed = self._is_malformed_tabular_data(headers, rows)
+        if not rows or not headers or is_malformed:
+            return await self._normalize_tabular_as_text(raw_content, source_file, source_format, restaurant_id)
 
         # Classify columns
         header_mapping = self.column_classifier.classify_headers(headers)
@@ -164,6 +171,253 @@ class LocalNormalizer:
             servings=self._parse_int(scalar_fields.get("servings", 1)),
             prep_time_minutes=self._parse_int(scalar_fields.get("prep_time_minutes")),
             cooking_time_minutes=self._parse_int(scalar_fields.get("cooking_time_minutes")),
+            ingredients=ingredients,
+            steps=steps,
+            confidence_score=confidence,
+            source_file=source_file,
+            source_format=source_format,
+            normalized_at=datetime.utcnow(),
+            raw_extraction=raw_content,
+        )
+
+        return sheet
+
+    def _is_malformed_tabular_data(self, headers: list, rows: list) -> bool:
+        """
+        Detect if extracted tabular data looks malformed.
+        E.g., specification sheets where first row values become headers.
+        """
+        if not headers or len(headers) < 2:
+            return False  # Not enough columns to determine
+
+        # Check if headers look like they should be data values
+        # (e.g., numeric codes, model numbers, etc.)
+        suspicious_headers = 0
+        for h in headers[:2]:  # Check first 2 headers
+            if h is None:
+                continue
+            h_str = str(h).strip()
+            # If header is all-caps (including multi-word with spaces), or numeric, it's suspicious
+            # Normal column headers are typically Title Case or lowercase with underscores
+            if h_str and (
+                h_str.isupper() and len(h_str) > 3 or  # All caps like "FICHA TECNICA OPERACIONAL"
+                re.match(r'^[A-Z0-9\-\.]+$', h_str)     # Codes like "FT-RP-016"
+            ):
+                suspicious_headers += 1
+
+        # If any headers look like data values, the extraction is likely malformed
+        return suspicious_headers > 0
+
+    async def _normalize_tabular_as_text(
+        self,
+        raw_content: dict,
+        source_file: str,
+        source_format: str,
+        restaurant_id: str,
+    ) -> NormalizedMenuSheet:
+        """
+        Fallback: normalize XLSX/CSV as text when structured extraction fails.
+        Handles specification sheets (forms with metadata, ingredients, steps sections).
+        """
+        raw_text = raw_content.get("raw_text", "")
+        if not raw_text:
+            # If no raw text, use sheets as fallback (may result in empty sheet)
+            raw_text = ""
+
+        # Extract ingredients and steps by looking for section headers
+        ingredients = []
+        steps = []
+        scalar_fields = {}
+        ing_counter = 0
+        step_counter = 0
+
+        # Split text into lines for processing
+        lines = raw_text.split("\n")
+
+        # Track which section we're in
+        current_section = "metadata"
+        current_table_headers = None
+
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+
+            # Detect section headers first (must be standalone, not just metadata pairs)
+            first_part = line.split("|")[0].strip() if "|" in line else line
+
+            if "===" in line or (first_part.isupper() and len(first_part) > 5):
+                # Potential section header
+                if "INGREDIENTE" in first_part:
+                    current_section = "ingredients"
+                    current_table_headers = None
+                    continue
+                elif "MODO" in first_part or "PASSO" in first_part or "PREPARO" in first_part:
+                    current_section = "steps"
+                    current_table_headers = None
+                    continue
+                elif "ALERGEN" in first_part:
+                    current_section = "allergens"
+                    continue
+                elif "===" in line:
+                    # Skip sheet markers
+                    continue
+
+            # Handle pipe-separated rows
+            if "|" in line:
+                parts = [p.strip() for p in line.split("|") if p.strip()]
+
+                if not parts or len(parts) < 2:
+                    # Skip rows with insufficient data
+                    if current_section == "metadata":
+                        # Try to extract single value as metadata
+                        key = first_part.lower()
+                        if parts:
+                            scalar_fields["category"] = parts[0]
+                    continue
+
+                if current_section == "ingredients":
+                    # Check if this is a header row
+                    parts_lower = [p.lower() for p in parts]
+                    is_header_row = any(kw in " ".join(parts_lower) for kw in ["ingrediente", "quantidade", "ingredient", "quantity"])
+
+                    if is_header_row:
+                        current_table_headers = parts
+                    elif current_table_headers and len(parts) >= 2:
+                        # This is a data row
+                        ing_counter += 1
+                        canonical_row = {}
+                        raw_quantity = None
+
+                        for i, header in enumerate(current_table_headers):
+                            if i < len(parts):
+                                canonical = self.column_classifier.classify_single(header.lower())
+                                if canonical and canonical != "IGNORE":
+                                    canonical_row[canonical] = parts[i]
+                                if header.lower() in ["quantidade", "quantity", "amount"]:
+                                    raw_quantity = parts[i]
+
+                        # Parse quantity and unit
+                        if raw_quantity:
+                            qty, unit = self._parse_quantity_and_unit(raw_quantity)
+                            canonical_row["quantity"] = qty
+                            canonical_row["unit"] = unit
+
+                        if "product_name" in canonical_row:
+                            ingredients.append(self._build_ingredient(canonical_row, restaurant_id, ing_counter))
+
+                elif current_section == "steps":
+                    # Check if this is a header row
+                    parts_lower = [p.lower() for p in parts]
+                    is_header_row = any(kw in " ".join(parts_lower) for kw in ["no.", "passo", "instrucao", "instruction", "step", "action"])
+
+                    if is_header_row:
+                        current_table_headers = parts
+                    elif current_table_headers and len(parts) >= 2:
+                        # This is a data row
+                        step_counter += 1
+                        canonical_row = {}
+                        raw_instruction = None
+
+                        for i, header in enumerate(current_table_headers):
+                            if i < len(parts):
+                                canonical = self.column_classifier.classify_single(header.lower())
+                                if canonical and canonical != "IGNORE":
+                                    canonical_row[canonical] = parts[i]
+                                if header.lower() in ["instrucao", "instruction", "passo", "step", "action"]:
+                                    raw_instruction = parts[i]
+
+                        if raw_instruction and "action" not in canonical_row:
+                            canonical_row["action"] = raw_instruction
+
+                        steps.append(self._build_step(canonical_row, step_counter))
+
+                elif current_section == "metadata" and len(parts) >= 2:
+                    # Metadata key-value pairs
+                    key = parts[0].lower()
+                    value = parts[1]
+
+                    if any(k in key for k in ["nome", "name", "titulo", "title"]):
+                        scalar_fields["name"] = value
+                    elif any(k in key for k in ["codigo", "code", "id"]):
+                        scalar_fields["id"] = value
+                    elif any(k in key for k in ["categoria", "category"]):
+                        scalar_fields["category"] = value
+                    elif any(k in key for k in ["pais", "country"]):
+                        scalar_fields["country"] = value
+                    elif any(k in key for k in ["regiao", "region"]):
+                        scalar_fields["region"] = value
+                    elif any(k in key for k in ["continente", "continent"]):
+                        scalar_fields["continent"] = value
+                    elif any(k in key for k in ["porcao", "servings", "pessoas"]):
+                        scalar_fields["servings"] = self._parse_int(value)
+
+        # Extract allergens from the metadata text (usually at the end)
+        allergens_section = raw_text.lower().split("alergeni")[1] if "alergeni" in raw_text.lower() else ""
+        if allergens_section:
+            # Extract allergen text from the line (remove pipe separators and clean up)
+            allergen_line = allergens_section.split("\n")[0]
+            # Remove pipe and anything before it
+            if "|" in allergen_line:
+                allergen_line = allergen_line.split("|", 1)[1]
+
+            allergen_text = allergen_line.strip()
+
+            # Parse allergens from comma/dash separated list
+            # Common allergens from the document: "Gluten - Leite" or "Gluten, Leite"
+            allergen_list = re.split(r'[-,]', allergen_text)
+            allergen_list = [a.strip().lower() for a in allergen_list if a.strip()]
+
+            # Map common allergen names
+            allergen_map = {
+                "gluten": "gluten",
+                "leite": "milk",
+                "lactose": "milk",
+                "dairy": "milk",
+                "egg": "eggs",
+                "ovos": "eggs",
+                "fish": "fish",
+                "peixe": "fish",
+                "shellfish": "shellfish",
+                "crustaceo": "shellfish",
+                "mollusco": "shellfish",
+                "nuts": "nuts",
+                "amendoins": "peanuts",
+                "peanut": "peanuts",
+                "soy": "soy",
+                "soja": "soy",
+                "sesame": "sesame",
+                "sementes de sesamo": "sesame",
+            }
+
+            # For each ingredient, mark with detected allergens
+            mapped_allergens = [allergen_map.get(a, a) for a in allergen_list]
+            for ingredient in ingredients:
+                ingredient.allergens = mapped_allergens
+
+        # Apply learned rules
+        ingredients = self.rule_engine.apply_learned_rules(ingredients, language="pt")
+
+        # Compute confidence
+        n_required = 4
+        n_filled = sum(1 for k in ["name", "category", "servings"] if k in scalar_fields and scalar_fields[k])
+        field_score = (n_filled / n_required) * 0.6
+        optional_fields = ["country", "region", "continent"]
+        n_optional_filled = sum(1 for k in optional_fields if k in scalar_fields and scalar_fields[k])
+        n_optional_score = (n_optional_filled / len(optional_fields)) * 0.4
+        confidence = field_score + n_optional_score
+
+        # Build sheet
+        sheet = NormalizedMenuSheet(
+            id=scalar_fields.get("id") or source_file.split(".")[0],
+            name=scalar_fields.get("name", "Unknown"),
+            category=scalar_fields.get("category", "Other"),
+            country=scalar_fields.get("country"),
+            region=scalar_fields.get("region"),
+            continent=scalar_fields.get("continent"),
+            servings=self._parse_int(scalar_fields.get("servings", 1)),
+            prep_time_minutes=None,
+            cooking_time_minutes=None,
             ingredients=ingredients,
             steps=steps,
             confidence_score=confidence,
@@ -427,3 +681,62 @@ class LocalNormalizer:
             return float(str(value)) if value else 0.0
         except (ValueError, TypeError):
             return 0.0
+
+    @staticmethod
+    def _parse_quantity_and_unit(text: str) -> tuple[float, str]:
+        """
+        Parse quantity and unit from text like "250g", "80 ml", "5 fls".
+        Returns (quantity: float, unit: str normalized to uppercase).
+        """
+        if not text:
+            return 0.0, "UN"
+
+        text = str(text).strip()
+
+        # Try to extract number from the beginning
+        import re
+        match = re.match(r'^([0-9]*\.?[0-9]+)\s*(.*)$', text)
+
+        if match:
+            qty_str, unit_str = match.groups()
+            try:
+                quantity = float(qty_str)
+            except ValueError:
+                quantity = 0.0
+
+            unit = unit_str.strip().upper() if unit_str else "UN"
+
+            # Normalize common unit abbreviations
+            unit_map = {
+                "G": "G",
+                "GR": "G",
+                "GRS": "G",
+                "GRAMAS": "G",
+                "ML": "ML",
+                "L": "L",
+                "LT": "L",
+                "LITRO": "L",
+                "LITROS": "L",
+                "KG": "KG",
+                "K": "KG",
+                "QUILOS": "KG",
+                "QUILO": "KG",
+                "UN": "UN",
+                "UNIDADE": "UN",
+                "UNIDADES": "UN",
+                "UNIT": "UN",
+                "UNITS": "UN",
+                "PIECE": "UN",
+                "PIECES": "UN",
+                "FLS": "UN",  # Folhas/leaves
+                "FOLHAS": "UN",
+                "FOLHA": "UN",
+            }
+
+            # Map abbreviations to canonical units
+            normalized_unit = unit_map.get(unit, unit if unit in ["G", "ML", "L", "KG", "UN"] else "UN")
+
+            return quantity, normalized_unit
+        else:
+            # No number found, return defaults
+            return 0.0, "UN"

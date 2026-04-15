@@ -75,6 +75,15 @@ async def serve_tokenization_graph():
     return {"status": "error", "message": "Tokenization Graph page not found"}
 
 
+@app.get("/database")
+async def serve_database_viewer():
+    """Serve Database Viewer page."""
+    database = STATIC_DIR / "database.html"
+    if database.exists():
+        return FileResponse(str(database))
+    return {"status": "error", "message": "Database Viewer page not found"}
+
+
 @app.get("/health")
 async def health():
     return {"status": "ok", "type": "local_ml"}

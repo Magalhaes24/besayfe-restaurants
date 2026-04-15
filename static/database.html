@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Database Viewer — besayfe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1c2128;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --orange: #e3b341;
+      --purple: #bc8cff;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    .surface {
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .surface2 {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+    }
+
+    /* Table styles */
+    .db-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .db-table th {
+      background: var(--surface2);
+      color: var(--muted);
+      padding: 10px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .db-table td {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .db-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .db-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Badge styles */
+    .badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-blue {
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--accent);
+    }
+
+    .badge-green {
+      background: rgba(63, 185, 80, 0.15);
+      color: var(--green);
+    }
+
+    .badge-red {
+      background: rgba(248, 81, 73, 0.15);
+      color: var(--red);
+    }
+
+    .badge-yellow {
+      background: rgba(210, 153, 34, 0.15);
+      color: var(--yellow);
+    }
+
+    /* Button styles */
+    .btn {
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: none;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .btn-primary:hover {
+      background: #79c0ff;
+    }
+
+    .btn-danger {
+      background: var(--red);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #ff6962;
+    }
+
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      width: 800px;
+    }
+
+    /* Input styles */
+    .form-input {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.85rem;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* Spinner */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="p-4">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold mb-2">Database Viewer</h1>
+      <p class="text-muted">View, edit, and manage all normalized restaurant sheets</p>
+    </div>
+
+    <!-- Controls -->
+    <div class="surface p-4 mb-6 rounded-lg flex justify-between items-center">
+      <div class="flex items-center gap-4">
+        <div>
+          <span class="text-muted text-sm">Total sheets:</span>
+          <span id="totalCount" class="text-accent font-bold ml-2">—</span>
+        </div>
+        <div>
+          <span class="text-muted text-sm">Allergen ingredients:</span>
+          <span id="allergenCount" class="text-yellow font-bold ml-2">—</span>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="location.href='/'">← Back to Upload</button>
+    </div>
+
+    <!-- Table container -->
+    <div class="surface rounded-lg overflow-hidden">
+      <div id="loadingSpinner" class="p-8 text-center">
+        <div class="inline-block spinner"></div>
+        <p class="text-muted mt-2">Loading sheets...</p>
+      </div>
+
+      <div id="tableContainer" style="display: none;">
+        <table class="db-table">
+          <thead>
+            <tr>
+              <th style="width: 20%">Name</th>
+              <th style="width: 12%">Category</th>
+              <th style="width: 10%">Ingredients</th>
+              <th style="width: 15%">Allergens</th>
+              <th style="width: 12%">Confidence</th>
+              <th style="width: 15%">Source</th>
+              <th style="width: 16%">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="sheetsTableBody">
+          </tbody>
+        </table>
+      </div>
+
+      <div id="emptyState" style="display: none;" class="p-12 text-center">
+        <p class="text-muted mb-4">No sheets found in database</p>
+        <button class="btn btn-primary" onclick="location.href='/'">Upload a Sheet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-bold">Edit Sheet</h2>
+        <button class="btn btn-secondary" onclick="closeEditModal()">Close</button>
+      </div>
+
+      <div id="editForm" style="max-height: 70vh; overflow-y: auto;">
+        <!-- Form will be populated here -->
+      </div>
+
+      <div class="mt-6 flex gap-2 justify-end">
+        <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveSheet()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Modal -->
+  <div id="viewModal" class="modal" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-bold">Sheet Details</h2>
+        <button class="btn btn-secondary" onclick="closeViewModal()">Close</button>
+      </div>
+
+      <div id="viewContent" style="max-height: 70vh; overflow-y: auto;">
+        <!-- Content will be populated here -->
+      </div>
+
+      <div class="mt-6 flex gap-2 justify-end">
+        <button class="btn btn-secondary" onclick="closeViewModal()">Close</button>
+        <button class="btn btn-primary" onclick="editCurrentSheet()">Edit</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let sheets = [];
+    let currentSheetId = null;
+
+    async function loadSheets() {
+      try {
+        const response = await fetch('/api/v1/sheets');
+        const data = await response.json();
+        sheets = data.sheets;
+
+        document.getElementById('loadingSpinner').style.display = 'none';
+
+        if (sheets.length === 0) {
+          document.getElementById('emptyState').style.display = 'block';
+        } else {
+          document.getElementById('tableContainer').style.display = 'block';
+          renderTable();
+          updateStats();
+        }
+      } catch (error) {
+        console.error('Error loading sheets:', error);
+        document.getElementById('loadingSpinner').innerHTML = '<p class="text-red">Error loading sheets</p>';
+      }
+    }
+
+    function updateStats() {
+      document.getElementById('totalCount').textContent = sheets.length;
+      const allergenCount = sheets.reduce((sum, s) => sum + s.allergens_detected, 0);
+      document.getElementById('allergenCount').textContent = allergenCount;
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('sheetsTableBody');
+      tbody.innerHTML = sheets.map(sheet => {
+        const confColor = sheet.confidence_score > 0.7 ? 'green' : sheet.confidence_score > 0.4 ? 'yellow' : 'red';
+        const allergenBadges = sheet.critical_allergens.length > 0
+          ? `<span class="badge badge-red">${sheet.critical_allergens.join(', ')}</span>`
+          : sheet.allergens_detected > 0 ? `<span class="badge badge-yellow">${sheet.allergens_detected}</span>` : '—';
+
+        return `
+          <tr>
+            <td><strong>${escapeHtml(sheet.name)}</strong></td>
+            <td>${escapeHtml(sheet.category)}</td>
+            <td><span class="badge badge-blue">${sheet.ingredients_count}</span></td>
+            <td>${allergenBadges}</td>
+            <td><span class="badge badge-${confColor}">${(sheet.confidence_score * 100).toFixed(0)}%</span></td>
+            <td class="text-muted text-sm">${sheet.source_file}</td>
+            <td>
+              <div class="flex gap-2">
+                <button class="btn btn-secondary" onclick="viewSheet('${sheet.id}')">View</button>
+                <button class="btn btn-primary" onclick="editSheet('${sheet.id}')">Edit</button>
+                <button class="btn btn-danger" onclick="deleteSheet('${sheet.id}', '${escapeHtml(sheet.name)}')">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function viewSheet(sheetId) {
+      try {
+        const response = await fetch(`/api/v1/sheets/${sheetId}`);
+        const sheet = await response.json();
+        currentSheetId = sheetId;
+
+        let html = `
+          <div class="space-y-4">
+            <div class="surface2 p-3 rounded">
+              <h3 class="font-bold text-accent mb-2">Basic Info</h3>
+              <p><span class="text-muted">Name:</span> ${escapeHtml(sheet.name)}</p>
+              <p><span class="text-muted">Category:</span> ${escapeHtml(sheet.category)}</p>
+              <p><span class="text-muted">Servings:</span> ${sheet.servings}</p>
+              <p><span class="text-muted">Source:</span> ${escapeHtml(sheet.source_file)} (${sheet.source_format})</p>
+              <p><span class="text-muted">Confidence:</span> <span class="badge badge-blue">${(sheet.confidence_score * 100).toFixed(0)}%</span></p>
+            </div>
+
+            <div class="surface2 p-3 rounded">
+              <h3 class="font-bold text-accent mb-2">Allergens (${sheet.all_allergens.length})</h3>
+              <p>${sheet.all_allergens.length > 0 ? sheet.all_allergens.join(', ') : 'None'}</p>
+            </div>
+
+            <div class="surface2 p-3 rounded">
+              <h3 class="font-bold text-accent mb-2">Ingredients (${sheet.ingredients.length})</h3>
+              <div class="max-h-48 overflow-y-auto">
+                <table class="db-table" style="margin-top: 0;">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Qty</th>
+                      <th>Unit</th>
+                      <th>Allergens</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${sheet.ingredients.map(ing => `
+                      <tr>
+                        <td>${escapeHtml(ing.product_name)}</td>
+                        <td>${ing.quantity}</td>
+                        <td>${ing.unit}</td>
+                        <td>${ing.allergens.length > 0 ? ing.allergens.join(', ') : '—'}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="surface2 p-3 rounded">
+              <h3 class="font-bold text-accent mb-2">Steps (${sheet.steps.length})</h3>
+              <ol class="list-decimal list-inside space-y-1 max-h-32 overflow-y-auto">
+                ${sheet.steps.map(step => `<li>${escapeHtml(step.action)}</li>`).join('')}
+              </ol>
+            </div>
+          </div>
+        `;
+
+        document.getElementById('viewContent').innerHTML = html;
+        document.getElementById('viewModal').classList.add('active');
+      } catch (error) {
+        console.error('Error viewing sheet:', error);
+        alert('Error loading sheet details');
+      }
+    }
+
+    async function editSheet(sheetId) {
+      try {
+        const response = await fetch(`/api/v1/sheets/${sheetId}`);
+        const sheet = await response.json();
+        currentSheetId = sheetId;
+
+        let html = `
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-bold mb-1">Name</label>
+              <input type="text" id="editName" value="${escapeHtml(sheet.name)}" class="form-input w-full">
+            </div>
+
+            <div>
+              <label class="block text-sm font-bold mb-1">Category</label>
+              <input type="text" id="editCategory" value="${escapeHtml(sheet.category)}" class="form-input w-full">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-bold mb-1">Servings</label>
+                <input type="number" id="editServings" value="${sheet.servings}" class="form-input w-full">
+              </div>
+              <div>
+                <label class="block text-sm font-bold mb-1">Prep Time (min)</label>
+                <input type="number" id="editPrepTime" value="${sheet.prep_time_minutes || ''}" class="form-input w-full">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-bold mb-1">Country</label>
+                <input type="text" id="editCountry" value="${sheet.country || ''}" class="form-input w-full">
+              </div>
+              <div>
+                <label class="block text-sm font-bold mb-1">Region</label>
+                <input type="text" id="editRegion" value="${sheet.region || ''}" class="form-input w-full">
+              </div>
+            </div>
+
+            <div class="surface p-3 rounded mt-4">
+              <h3 class="font-bold text-accent mb-3">Ingredients (${sheet.ingredients.length})</h3>
+              <div id="ingredientsList" class="space-y-2">
+                ${sheet.ingredients.map((ing, idx) => `
+                  <div class="surface2 p-3 rounded">
+                    <div class="grid grid-cols-4 gap-2">
+                      <input type="text" value="${escapeHtml(ing.product_name)}" class="form-input ing-name" data-idx="${idx}">
+                      <input type="number" step="0.1" value="${ing.quantity}" class="form-input ing-qty" data-idx="${idx}">
+                      <input type="text" value="${ing.unit}" class="form-input ing-unit" data-idx="${idx}">
+                      <button class="btn btn-danger" onclick="removeIngredient(${idx})">Remove</button>
+                    </div>
+                    ${ing.allergens.length > 0 ? `<p class="text-xs text-muted mt-2">Allergens: ${ing.allergens.join(', ')}</p>` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+
+        document.getElementById('editForm').innerHTML = html;
+        document.getElementById('editModal').classList.add('active');
+      } catch (error) {
+        console.error('Error editing sheet:', error);
+        alert('Error loading sheet for editing');
+      }
+    }
+
+    async function saveSheet() {
+      try {
+        const response = await fetch(`/api/v1/sheets/${currentSheetId}`);
+        const sheet = await response.json();
+
+        // Update fields
+        sheet.name = document.getElementById('editName').value;
+        sheet.category = document.getElementById('editCategory').value;
+        sheet.servings = parseInt(document.getElementById('editServings').value);
+        sheet.prep_time_minutes = document.getElementById('editPrepTime').value ? parseInt(document.getElementById('editPrepTime').value) : null;
+        sheet.country = document.getElementById('editCountry').value || null;
+        sheet.region = document.getElementById('editRegion').value || null;
+
+        // Update ingredients
+        const ingInputs = document.querySelectorAll('[class*="ing-"]');
+        sheet.ingredients.forEach((ing, idx) => {
+          const nameInput = document.querySelector(`.ing-name[data-idx="${idx}"]`);
+          const qtyInput = document.querySelector(`.ing-qty[data-idx="${idx}"]`);
+          const unitInput = document.querySelector(`.ing-unit[data-idx="${idx}"]`);
+
+          if (nameInput) ing.product_name = nameInput.value;
+          if (qtyInput) ing.quantity = parseFloat(qtyInput.value);
+          if (unitInput) ing.unit = unitInput.value;
+        });
+
+        // Save via corrections endpoint
+        const correctionResponse = await fetch(`/api/v1/corrections/${currentSheetId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sheet })
+        });
+
+        if (correctionResponse.ok) {
+          alert('Sheet updated successfully');
+          closeEditModal();
+          loadSheets();
+        } else {
+          alert('Error saving sheet');
+        }
+      } catch (error) {
+        console.error('Error saving sheet:', error);
+        alert('Error saving sheet');
+      }
+    }
+
+    function removeIngredient(idx) {
+      document.querySelector(`.ing-name[data-idx="${idx}"]`).parentElement.parentElement.remove();
+    }
+
+    async function deleteSheet(sheetId, sheetName) {
+      if (!confirm(`Are you sure you want to delete "${sheetName}"? This cannot be undone.`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/v1/sheets/${sheetId}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          alert('Sheet deleted successfully');
+          loadSheets();
+        } else {
+          alert('Error deleting sheet');
+        }
+      } catch (error) {
+        console.error('Error deleting sheet:', error);
+        alert('Error deleting sheet');
+      }
+    }
+
+    function editCurrentSheet() {
+      closeViewModal();
+      editSheet(currentSheetId);
+    }
+
+    function closeModal(event) {
+      if (event.target.classList.contains('modal')) {
+        event.target.classList.remove('active');
+      }
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.remove('active');
+    }
+
+    function closeViewModal() {
+      document.getElementById('viewModal').classList.remove('active');
+    }
+
+    function escapeHtml(text) {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return String(text).replace(/[&<>"']/g, m => map[m]);
+    }
+
+    // Load sheets on page load
+    document.addEventListener('DOMContentLoaded', loadSheets);
+  </script>
+</body>
+</html>

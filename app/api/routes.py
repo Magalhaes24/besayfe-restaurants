@@ -466,6 +466,63 @@ async def get_vocabulary_stats():
     return normalizer.rule_engine.get_vocabulary_stats()
 
 
+@router.get("/sheets")
+async def list_all_sheets():
+    """
+    List all normalized sheets in the database.
+    Returns summary info for each sheet (id, name, ingredients count, allergens, etc.)
+    """
+    import json
+    from pathlib import Path
+
+    sheets = []
+    storage_dir = settings.storage_dir
+
+    if not storage_dir.exists():
+        return {"sheets": [], "total": 0}
+
+    for json_file in sorted(storage_dir.glob("*.json")):
+        try:
+            async with aiofiles.open(json_file, "r", encoding="utf-8") as f:
+                data = json.loads(await f.read())
+
+            sheet = NormalizedMenuSheet(**data)
+            sheets.append({
+                "id": sheet.id,
+                "name": sheet.name,
+                "category": sheet.category,
+                "source_file": sheet.source_file,
+                "source_format": sheet.source_format,
+                "servings": sheet.servings,
+                "ingredients_count": len(sheet.ingredients),
+                "allergens_detected": sheet.allergen_ingredients_count,
+                "critical_allergens": sheet.critical_allergens,
+                "confidence_score": sheet.confidence_score,
+                "normalized_at": sheet.normalized_at.isoformat(),
+            })
+        except Exception as e:
+            # Skip files that can't be parsed
+            print(f"Error reading {json_file}: {e}")
+            continue
+
+    return {"sheets": sheets, "total": len(sheets)}
+
+
+@router.delete("/sheets/{sheet_id}")
+async def delete_sheet(sheet_id: str):
+    """Delete a normalized sheet from the database."""
+    json_path = settings.storage_dir / f"{sheet_id}.json"
+
+    if not json_path.exists():
+        raise HTTPException(status_code=404, detail="Sheet not found")
+
+    try:
+        json_path.unlink()
+        return {"status": "deleted", "sheet_id": sheet_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete sheet: {str(e)}")
+
+
 def _compute_diff(original: NormalizedMenuSheet, corrected: NormalizedMenuSheet, metadata: dict = None) -> dict:
     """
     Compute field-level differences between original and corrected.
