@@ -231,7 +231,7 @@ diagrams/                 # System documentation diagrams
 
 ---
 
-## 🤔 Common Questions
+## Questions
 
 **Q: How does it improve without retraining?**  
 A: Every correction is analyzed, patterns extracted, and stored. New documents automatically use these patterns.
@@ -250,7 +250,7 @@ A: Pattern database typically <10MB. Grows slowly with corrections.
 
 ---
 
-## 🔧 Development
+## Development
 
 ### To Add a New Parser
 1. Create `app/parsers/{format}_parser.py`
@@ -264,10 +264,11 @@ A: Pattern database typically <10MB. Grows slowly with corrections.
 
 ---
 
-## 📞 Support
+## Support
 
 Check the diagnostic tools:
 - `/ml-dashboard` - View system state and metrics
 - `/database` - Browse learned patterns
 - `storage/ml/patterns.db` - Direct database access
+
 

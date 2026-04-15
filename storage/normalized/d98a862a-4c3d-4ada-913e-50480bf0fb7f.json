@@ -1,0 +1,446 @@
+{
+  "id": "d98a862a-4c3d-4ada-913e-50480bf0fb7f",
+  "name": "Allergen Matrix",
+  "category": "",
+  "country": "PT",
+  "region": "",
+  "continent": null,
+  "prep_time_minutes": null,
+  "cooking_time_minutes": null,
+  "servings": 1,
+  "ingredients": [
+    {
+      "line_number": 1,
+      "product_name": "RECEITAS DE FRANGO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MOLHO DA CASA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "sulfitos"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "TRUFA E PARMESÃO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "leite"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MOLHO DE TRUFA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "leite"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "QUEIJO PARMESÃO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "leite"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "QUEIJO E BACON",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "leite"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MOLHO DE QUEIJO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "leite"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "ABACATE E IOGURTE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "leite"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "CREME DE ABACATE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "leite"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "OVO ESTRELADO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "leite",
+        "ovos"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "MOLHO VITOQUE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "leite"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "VIRADA TRADICIONAL",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "aipo",
+        "glúten",
+        "leite",
+        "mostarda",
+        "soja",
+        "sulfitos"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "BATATAS TIPO LEITÃO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "leite",
+        "soja"
+      ],
+      "allergen_risk": "medium",
+      "allergen_confidence": 0.6,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "CEBOLA CROCANTE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "glúten"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "VIRADA PICANTE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "aipo",
+        "glúten",
+        "leite",
+        "mostarda",
+        "soja",
+        "sulfitos"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "VIRADA\nQUEIJO E BACON",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "aipo",
+        "glúten",
+        "leite",
+        "mostarda",
+        "soja"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "VIRADA ABACATE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "glúten",
+        "leite"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "IOGURTE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "leite"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "VIRADA OVO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "aipo",
+        "glúten",
+        "leite",
+        "mostarda",
+        "ovos",
+        "soja",
+        "sulfitos"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "VITOQUE",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "glúten",
+        "leite",
+        "ovos"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "BEBIDAS",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 0.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "CERVEJA, LIVRA",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "glúten"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 1,
+      "product_name": "VINHO",
+      "quantity": 1.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "sulfitos"
+      ],
+      "allergen_risk": "high",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    }
+  ],
+  "steps": [],
+  "total_cost": 0.0,
+  "cost_per_serving": 0.0,
+  "source_file": "vira_alergenios.pdf",
+  "source_format": "pdf",
+  "normalized_at": "2026-04-15T11:34:24.951916",
+  "confidence_score": 0.8,
+  "raw_extraction": {},
+  "all_allergens": [
+    "aipo",
+    "glúten",
+    "leite",
+    "mostarda",
+    "ovos",
+    "soja",
+    "sulfitos"
+  ],
+  "critical_allergens": [],
+  "allergen_ingredients_count": 21,
+  "has_critical_allergen": false,
+  "allergen_risk_level": "high"
+}

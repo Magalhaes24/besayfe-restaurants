@@ -791,11 +791,50 @@ class LocalNormalizer:
             # No number found, return defaults
             return 0.0, "UN"
 
+    def _analyze_allergen_markers(self, table: list) -> dict:
+        """
+        Analyze the table to understand what markers mean (X, PC, etc.)
+        Returns a dict mapping marker -> marker_type ('definite' or 'possible')
+        """
+        marker_meanings = {}
+        marker_frequency = {}
+
+        # Collect all unique markers in the table
+        for row in table[1:]:
+            for cell_idx, cell in enumerate(row[1:], 1):  # Skip first column (product names)
+                cell_value = str(cell).strip()
+                if cell_value and cell_value not in ['', ' ']:
+                    marker_frequency[cell_value] = marker_frequency.get(cell_value, 0) + 1
+
+        # Known markers with explicit meanings
+        definite_markers = {'X', '●', '•', '✓', 'SIM', 'YES', 'CONTÉM', '1', 'X ', ' X'}
+        possible_markers = {'PC', 'PODE CONTER', 'CROSS-CONTAMINATION', '2', 'POSSÍVEL', 'POSSIBLE'}
+
+        # Assign meanings to known markers
+        for marker in marker_frequency.keys():
+            marker_upper = marker.upper().strip()
+            if marker_upper in definite_markers:
+                marker_meanings[marker] = 'definite'
+            elif marker_upper in possible_markers:
+                marker_meanings[marker] = 'possible'
+            else:
+                # Unknown marker - use frequency heuristic
+                # If a marker appears in many rows (>5), it's likely meaningful
+                # Less frequent markers might be isolated allergens or errors
+                if marker_frequency[marker] > 5:
+                    # Assume unknown frequent markers are "definite" unless they contain "conter/contain"
+                    if any(word in marker_upper for word in ['CONTER', 'CONTAIN', 'POSSI', 'MAYBE']):
+                        marker_meanings[marker] = 'possible'
+                    else:
+                        marker_meanings[marker] = 'definite'
+
+        return marker_meanings
+
     def _try_parse_allergen_matrix(self, table: list, restaurant_id: str) -> Optional[list[Ingredient]]:
         """
         Try to parse allergen matrix table format.
-        Format: First column is product names, remaining columns are allergens with X/• marks.
-        Example: Headers [PRODUTO, GLÚTEN, OVOS, LEITE], Row [Pão, X, , X] means Pão has Glúten and Leite
+        Format: First column is product names, remaining columns are allergens with markers (X, PC, etc.)
+        Intelligently detects and interprets different marker types.
         """
         if not table or len(table) < 2:
             return None
@@ -804,14 +843,13 @@ class LocalNormalizer:
         rows = table[1:]
 
         # Check if this looks like an allergen matrix
-        # Indicators: First column is "PRODUTO" or similar, other columns are allergen names
         first_header = str(headers[0]).lower().strip() if headers else ""
 
         is_allergen_matrix = False
         if any(keyword in first_header for keyword in ['produto', 'product', 'prato', 'dish', 'item']):
             # Check if other headers contain allergen names
             allergen_keywords = ['glúten', 'ovo', 'leite', 'peixe', 'crustáceo', 'frutos', 'molusco',
-                                'amendoim', 'soja', 'aipo', 'mostarda', 'sulfito', 'sesamo']
+                                'amendoim', 'soja', 'aipo', 'mostarda', 'sulfito', 'sesamo', 'lactose']
             remaining_headers = [str(h).lower() for h in headers[1:]]
             allergen_count = sum(1 for h in remaining_headers if any(kw in h for kw in allergen_keywords))
 
@@ -820,6 +858,9 @@ class LocalNormalizer:
 
         if not is_allergen_matrix:
             return None
+
+        # Analyze what different markers mean in this table
+        marker_meanings = self._analyze_allergen_markers(table)
 
         # Parse the allergen matrix
         ingredients = []
@@ -842,55 +883,63 @@ class LocalNormalizer:
             seen_products.add(product_name.lower())
 
             # Extract allergens from this row with risk levels
-            # X/●/• = definite allergen (high risk)
-            # PC = "Pode Conter" / might contain (possible cross-contamination, medium risk)
             definite_allergens = set()
             possible_allergens = set()
+            has_any_marker = False
 
             for col_idx in range(1, min(len(row), len(headers))):
-                cell_value = str(row[col_idx]).strip().upper()
+                cell_value = str(row[col_idx]).strip()
 
                 if not cell_value:
                     continue
 
+                # Check if this cell contains a marker
+                marker_type = marker_meanings.get(cell_value)
+                if marker_type is None:
+                    # Unknown marker but not empty - might still be a marker
+                    if cell_value and len(cell_value) <= 3:  # Single markers are typically short
+                        marker_type = 'definite'  # Default to definite
+                    else:
+                        continue
+
+                has_any_marker = True
                 allergen_name = str(headers[col_idx]).strip()
                 allergen_name = re.sub(r'\s+', ' ', allergen_name).lower()
 
                 if not allergen_name:
                     continue
 
-                # Check for definite allergen markers
-                if cell_value in ['X', '●', '•', '✓', 'SIM', 'YES', 'CONTÉM']:
+                # Add to appropriate risk category based on marker type
+                if marker_type == 'definite':
                     definite_allergens.add(allergen_name)
-                # Check for possible allergen markers (PC = Pode Conter = might contain)
-                elif cell_value in ['PC', 'PODE CONTER', 'CROSS-CONTAMINATION']:
+                elif marker_type == 'possible':
                     possible_allergens.add(allergen_name)
 
-            # Determine risk level based on allergen type
-            all_allergens = definite_allergens | possible_allergens
-            if definite_allergens:
-                # Has definite allergens = high risk
-                allergen_risk = "high"
-                allergen_confidence = 0.95
-            elif possible_allergens:
-                # Only possible allergens = medium risk
-                allergen_risk = "medium"
-                allergen_confidence = 0.60
-            else:
-                allergen_risk = "none"
-                allergen_confidence = 0.0
+            # Only create ingredient if it has at least one marked allergen
+            if has_any_marker or (definite_allergens or possible_allergens):
+                # Determine risk level based on allergen type
+                all_allergens = definite_allergens | possible_allergens
+                if definite_allergens:
+                    allergen_risk = "high"
+                    allergen_confidence = 0.95
+                elif possible_allergens:
+                    allergen_risk = "medium"
+                    allergen_confidence = 0.60
+                else:
+                    allergen_risk = "none"
+                    allergen_confidence = 0.0
 
-            # Create ingredient with allergen risk information
-            ingredient = Ingredient(
-                product_name=product_name,
-                quantity=1,
-                unit="UN",
-                unit_price=0.0,
-                allergens=sorted(list(all_allergens)) if all_allergens else [],
-                allergen_risk=allergen_risk,
-                allergen_confidence=allergen_confidence,
-            )
-            ingredients.append(ingredient)
+                # Create ingredient with allergen risk information
+                ingredient = Ingredient(
+                    product_name=product_name,
+                    quantity=1,
+                    unit="UN",
+                    unit_price=0.0,
+                    allergens=sorted(list(all_allergens)) if all_allergens else [],
+                    allergen_risk=allergen_risk,
+                    allergen_confidence=allergen_confidence,
+                )
+                ingredients.append(ingredient)
 
         return ingredients if ingredients else None
 
