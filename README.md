@@ -13,25 +13,17 @@ Besayfe is a local AI system that converts restaurant technical sheets (fichas t
 
 ---
 
-## 🔄 How It Works
+## 🔄 System Pipeline
 
-```
-1. User uploads file (PDF/CSV/XLSX)
-   ↓
-2. System reads & extracts content (Parsers)
-   ↓
-3. ML Pipeline processes data:
-   • Tokenizer → learns vocabulary & patterns
-   • Column Classifier → identifies field types
-   • Rule Engine → applies learned rules
-   • Allergen Detector → identifies allergens
-   ↓
-4. Returns normalized structured data
-   ↓
-5. User reviews & corrects (optional)
-   ↓
-6. System learns from corrections
-```
+The complete system architecture shows how data flows through each component:
+
+![Besayfe System Architecture](./diagrams/Besayfe%20System%20Architecture.png)
+
+**Flow:**
+1. **Input Layer** - Parsers (PDF, CSV, XLSX) extract raw content
+2. **ML Processing** - Pipeline of specialized modules processes the data
+3. **Output Layer** - Normalized data and XLSX export
+4. **Learning Loop** - User corrections feedback to improve system
 
 ---
 
@@ -45,11 +37,15 @@ Reads files and extracts content:
 
 Output: Structured data (headers, rows, text)
 
+---
+
 ### **Tokenizer** (`app/ml/tokenizer.py`)
 Learns ingredient vocabulary from documents:
 - Recognizes ingredient names, allergens, units
 - Discovers compound terms (e.g., "olive oil" as single token)
 - Stores learned vocabulary in database
+
+---
 
 ### **Column Classifier** (`app/ml/column_classifier.py`)
 Identifies what each column means:
@@ -57,13 +53,15 @@ Identifies what each column means:
 - Uses machine learning trained on corrections
 - Supports Portuguese, Spanish, English column names
 
-### **Pattern Store** (`app/ml/pattern_store.py`)
-SQLite database storing all learned knowledge:
-- Column mappings (raw header → standard field)
-- Unit conversions (kg, g, L, ml, units)
-- Allergen patterns
-- User corrections for future learning
-- Restaurant-specific rules
+---
+
+### **Field Extractor** (`app/ml/field_extractor.py`)
+Extracts actual values from identified columns:
+- Parses ingredient rows
+- Extracts quantities and units
+- Handles compound ingredients
+
+---
 
 ### **Rule Engine** (`app/ml/rule_engine.py`)
 Applies learned rules to new data:
@@ -71,17 +69,39 @@ Applies learned rules to new data:
 - **Compound Rules** - Parses ingredients with embedded quantities
 - Updates confidence based on success/failure
 
+---
+
 ### **Allergen Detector** (`app/ml/allergen_detector.py`)
 Assesses allergen risk:
 - Identifies 14+ allergen types (gluten, dairy, nuts, shellfish, etc.)
 - Analyzes compound ingredients
 - Flags high-risk items for review
 
+---
+
 ### **Local Normalizer** (`app/ml/normalizer.py`)
 Orchestrates the complete pipeline:
 - Coordinates all modules
 - Applies learned corrections
 - Returns structured normalized data with allergen info
+
+---
+
+### **Pattern Store** (`app/ml/pattern_store.py`)
+SQLite database storing all learned knowledge:
+
+![Pattern Store Database Schema](./diagrams/Besayfe%20Pattern%20Store%20Database%20Schema.png)
+
+**Core Tables:**
+- `column_mappings` - Raw header → standard field mappings
+- `unit_vocabulary` - Unit conversions (kg, g, L, ml, units)
+- `allergen_patterns` - Allergen detection rules
+- `corrections` - User corrections for retraining
+- `rules` - Learned rules with confidence scores
+- `vocabulary` - Token vocabulary & merges
+- `restaurant_profiles` - Per-restaurant metadata
+
+---
 
 ### **XLSX Exporter** (`app/exporter/xlsx_exporter.py`)
 Exports normalized data as Excel files:
@@ -93,30 +113,37 @@ Exports normalized data as Excel files:
 
 ## 🧠 Continuous Learning
 
-Every user correction is analyzed to improve the system:
+The system improves from every correction:
 
-1. **Correction Submitted** - User fixes a field
-2. **Pattern Extracted** - System identifies the underlying pattern
-3. **Rule Created** - Pattern is stored as a learned rule
-4. **Applied to New Data** - Rule is tested on new documents
-5. **Confidence Updated** - Rule's success/failure adjusts its reliability
+![Continuous Learning Loop](./diagrams/Besayfe%20Continuous%20Learning%20Loop.png)
 
-Example: If user corrects "kg" → "KG" multiple times, system learns this mapping and auto-corrects it in future files.
+**Process:**
+1. User uploads file
+2. System processes through ML pipeline
+3. User reviews output and corrects errors (optional)
+4. System extracts patterns from corrections
+5. Patterns stored in Pattern Store
+6. New documents use learned patterns automatically
+7. Confidence scores updated based on success/failure
 
 ---
 
-## 📊 Data Storage
+## 📊 Output Data Structure
 
-**Pattern Database** (`storage/ml/patterns.db`):
-- Column mappings
-- Unit vocabularies
-- Allergen patterns
-- User corrections
-- Learned rules
-- Token vocabulary
+The system produces normalized, structured data:
 
-**Normalized Output** (`storage/normalized/`):
-- Processed files in JSON format
+![Normalized Data Structure](./diagrams/Besayfe%20Normalized%20Data%20Structure.png)
+
+**Output contains:**
+- `NormalizedMenuSheet` - Root object
+  - `source_format` - Original file type (pdf/csv/xlsx)
+  - `restaurant_id` - Identified restaurant
+  - `dishes` - List of menu items
+    - `name` - Dish name
+    - `ingredients` - List with name, quantity, unit, cost, allergens
+    - `allergen_summary` - Risk score for each allergen
+    - `preparation_steps` - Cooking instructions
+    - `cost_total` - Total dish cost
 
 ---
 
@@ -188,6 +215,8 @@ app/
 storage/
 ├── ml/                   # patterns.db (learning database)
 └── normalized/           # Processed files
+
+diagrams/                 # System documentation diagrams
 ```
 
 ---
