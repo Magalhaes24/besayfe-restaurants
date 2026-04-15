@@ -12,6 +12,8 @@ from datetime import datetime
 from typing import Optional
 
 from app.ml.pattern_store import PatternStore
+from app.ml.semantic_graph import SemanticGraph, CorrelationAnalyzer
+from app.ml.tokenizer import TokenVocabulary
 
 
 class AllergenRule:
@@ -125,6 +127,11 @@ class RuleEngine:
         self.compound_rules: list[CompoundIngredientRule] = []
         self.ingredient_name_variants: dict[str, str] = {}  # Learned aliases
         self.origin_patterns: dict[str, str] = {}  # Ingredient → origin mapping
+        self.semantic_graph = SemanticGraph(pattern_store)  # Knowledge graph with database persistence
+        self.correlation_analyzer = CorrelationAnalyzer(self.semantic_graph)
+        self.token_vocabulary = TokenVocabulary(pattern_store)  # Persistent vocabulary learning (BPE-like)
+        self.recent_tokens: list = []  # Track recently created tokens for visualization
+        self.recent_relationships: list = []  # Track recently created/updated relationships
         self._load_stored_rules()
 
     def _load_stored_rules(self):
@@ -137,6 +144,9 @@ class RuleEngine:
         Extract generalizable rules from user corrections.
         Called after user submits corrections with good/bad feedback.
         """
+        # Learn vocabulary and tokens from corrections
+        self._learn_vocabulary_from_correction(original, corrected)
+
         # Learn allergen patterns
         self._learn_allergen_patterns(original, corrected, feedback_data)
 
@@ -152,11 +162,71 @@ class RuleEngine:
         # Store rules
         self._persist_rules()
 
+    def _learn_vocabulary_from_correction(self, original, corrected):
+        """
+        Learn domain-specific vocabulary and token merges from corrections.
+        Builds a persistent vocabulary that improves tokenization over time.
+        """
+        for orig_ing, corr_ing in zip(original.ingredients, corrected.ingredients):
+            # Observe ingredient tokens
+            self.token_vocabulary.observe_token(
+                corr_ing.product_name, token_type="ingredient", language="pt"
+            )
+
+            # Observe allergen tokens
+            for allergen in corr_ing.allergens:
+                self.token_vocabulary.observe_token(
+                    allergen, token_type="allergen", language="pt"
+                )
+
+            # Learn token pairs (co-occurrences)
+            # Ingredient + allergen pairs
+            for allergen in corr_ing.allergens:
+                self.token_vocabulary.observe_token_pair(
+                    corr_ing.product_name,
+                    allergen,
+                    context="allergen_implication",
+                )
+
+            # Ingredient + origin pairs
+            if corr_ing.origin:
+                self.token_vocabulary.observe_token(
+                    corr_ing.origin, token_type="origin", language="pt"
+                )
+                self.token_vocabulary.observe_token_pair(
+                    corr_ing.product_name,
+                    corr_ing.origin,
+                    context="origin_source",
+                )
+
+            # Ingredient + producer pairs
+            if corr_ing.producer:
+                self.token_vocabulary.observe_token(
+                    corr_ing.producer, token_type="producer", language="pt"
+                )
+                self.token_vocabulary.observe_token_pair(
+                    corr_ing.product_name,
+                    corr_ing.producer,
+                    context="producer_source",
+                )
+
+            # Learn merges for multi-word ingredients
+            if " " in corr_ing.product_name:
+                words = corr_ing.product_name.split()
+                # Learn that consecutive words should merge into the full ingredient
+                for i in range(len(words) - 1):
+                    merged = " ".join(words[: i + 2])
+                    if i == 0 or len(words) > 2:
+                        self.token_vocabulary.learn_merge(
+                            words[i], words[i + 1], merged, confidence=0.9
+                        )
+
     def _learn_allergen_patterns(self, original, corrected, feedback_data: dict):
         """
         Extract allergen detection patterns from corrections.
         If user marked an ingredient allergen detection as "good", reinforce that pattern.
         If marked as "bad", learn to avoid that pattern.
+        Uses semantic graph to propagate allergen implications through ingredient families.
         """
         for i, (orig_ing, corr_ing) in enumerate(zip(
             original.ingredients, corrected.ingredients
@@ -193,6 +263,21 @@ class RuleEngine:
 
                         # Add or update existing rule
                         self._add_or_update_rule(rule)
+
+                        # Learn in semantic graph (if good feedback)
+                        if feedback == "good":
+                            # Track the ingredient token
+                            self._track_token_creation(corr_ing.product_name, "ingredient", "pt")
+                            # Track the allergen token
+                            self._track_token_creation(allergen, "allergen", "pt")
+                            # Track the implication relationship
+                            self._track_relationship_creation(
+                                corr_ing.product_name, allergen, "implies", 0.85
+                            )
+                            # Propagate through semantic graph
+                            self.semantic_graph.propagate_allergen_implications(
+                                corr_ing.product_name, allergen, confidence=0.85
+                            )
 
     def _learn_compound_structures(self, original, corrected):
         """
@@ -367,4 +452,178 @@ class RuleEngine:
                 }
                 for r in self.compound_rules
             ],
+        }
+
+    def get_ingredient_semantic_profile(self, ingredient: str) -> dict:
+        """Get semantic analysis of an ingredient including relationships and predictions."""
+        profile = self.semantic_graph.get_ingredient_profile(ingredient)
+
+        # Add semantic predictions
+        predictions = self.correlation_analyzer.predict_allergens(ingredient)
+
+        return {
+            "ingredient": ingredient,
+            "profile": profile,
+            "allergen_predictions": predictions,
+            "semantic_relationships": {
+                "families": self.correlation_analyzer.find_ingredient_families(),
+                "correlations": self.correlation_analyzer.find_allergen_correlations(),
+            },
+            "graph_stats": self.semantic_graph.get_graph_statistics(),
+        }
+
+    def analyze_semantic_correlations(self) -> dict:
+        """Get comprehensive semantic analysis of all learned relationships."""
+        return self.correlation_analyzer.analyze_correlations()
+
+    def get_tokenization_activity(self) -> dict:
+        """Get recent tokenization and semantic graph activity."""
+        return {
+            "recent_tokens": self.recent_tokens[-20:],  # Last 20
+            "recent_relationships": self.recent_relationships[-20:],  # Last 20
+            "graph_snapshot": {
+                "total_tokens": len(self.semantic_graph.tokens),
+                "total_relationships": len(self.semantic_graph.relationships),
+                "top_tokens": [
+                    {
+                        "value": token.value,
+                        "type": token.token_type,
+                        "confidence": token.confidence,
+                    }
+                    for token in list(self.semantic_graph.tokens.values())[:10]
+                ],
+                "strongest_relationships": [
+                    {
+                        "source": rel.source.value,
+                        "target": rel.target.value,
+                        "type": rel.relation_type,
+                        "strength": round(rel.strength, 2),
+                        "evidence": rel.evidence_count,
+                    }
+                    for rel in sorted(
+                        self.semantic_graph.relationships,
+                        key=lambda r: r.strength,
+                        reverse=True,
+                    )[:10]
+                ],
+            },
+        }
+
+    def learn_from_normalized_sheet(self, sheet):
+        """
+        Learn from a normalized sheet without waiting for corrections.
+        Feeds all detected ingredients and allergens into semantic graph and vocabulary.
+        Called immediately after normalization to bootstrap learning from technical sheets.
+        """
+        for ing in sheet.ingredients:
+            # Feed ingredient token to vocabulary
+            self.token_vocabulary.observe_token(
+                ing.product_name, token_type="ingredient", language="pt"
+            )
+            self._track_token_creation(ing.product_name, "ingredient", "pt")
+
+            # Feed allergen tokens to vocabulary and semantic graph
+            for allergen in ing.allergens:
+                self.token_vocabulary.observe_token(
+                    allergen, token_type="allergen", language="pt"
+                )
+                self._track_token_creation(allergen, "allergen", "pt")
+
+                # Learn ingredient-allergen pairing
+                self.token_vocabulary.observe_token_pair(
+                    ing.product_name,
+                    allergen,
+                    context="allergen_implication",
+                )
+
+                # Add to semantic graph with high confidence (verified data)
+                self.semantic_graph.propagate_allergen_implications(
+                    ing.product_name, allergen, confidence=0.95
+                )
+                self._track_relationship_creation(
+                    ing.product_name, allergen, "implies", 0.95
+                )
+
+            # Feed origin and producer tokens if present
+            if ing.origin:
+                self.token_vocabulary.observe_token(
+                    ing.origin, token_type="origin", language="pt"
+                )
+                self.token_vocabulary.observe_token_pair(
+                    ing.product_name,
+                    ing.origin,
+                    context="origin_source",
+                )
+                self._track_token_creation(ing.origin, "origin", "pt")
+
+            if ing.producer:
+                self.token_vocabulary.observe_token(
+                    ing.producer, token_type="producer", language="pt"
+                )
+                self.token_vocabulary.observe_token_pair(
+                    ing.product_name,
+                    ing.producer,
+                    context="producer_source",
+                )
+                self._track_token_creation(ing.producer, "producer", "pt")
+
+            # Learn merges for multi-word ingredients
+            if " " in ing.product_name:
+                words = ing.product_name.split()
+                for i in range(len(words) - 1):
+                    merged = " ".join(words[: i + 2])
+                    if i == 0 or len(words) > 2:
+                        self.token_vocabulary.learn_merge(
+                            words[i], words[i + 1], merged, confidence=0.95
+                        )
+
+    def _track_token_creation(self, token_value: str, token_type: str, language: str = "pt"):
+        """Track token creation for visualization."""
+        self.recent_tokens.append({
+            "value": token_value,
+            "type": token_type,
+            "language": language,
+            "timestamp": datetime.utcnow().isoformat(),
+        })
+        # Keep only recent entries
+        if len(self.recent_tokens) > 100:
+            self.recent_tokens = self.recent_tokens[-100:]
+
+    def _track_relationship_creation(self, source_val: str, target_val: str, rel_type: str, strength: float):
+        """Track relationship creation for visualization."""
+        self.recent_relationships.append({
+            "source": source_val,
+            "target": target_val,
+            "type": rel_type,
+            "strength": round(strength, 2),
+            "timestamp": datetime.utcnow().isoformat(),
+        })
+        # Keep only recent entries
+        if len(self.recent_relationships) > 100:
+            self.recent_relationships = self.recent_relationships[-100:]
+
+    def get_vocabulary_stats(self) -> dict:
+        """Get comprehensive vocabulary learning statistics."""
+        vocab_stats = self.token_vocabulary.get_vocabulary_stats()
+        merge_candidates = self.token_vocabulary.get_merge_candidates(min_frequency=2)
+
+        return {
+            "vocabulary": vocab_stats,
+            "merge_candidates": [
+                {
+                    "token_a": a,
+                    "token_b": b,
+                    "frequency": freq,
+                    "recommendation": "high priority" if freq > 10 else "medium" if freq > 5 else "low",
+                }
+                for a, b, freq in merge_candidates[:10]
+            ],
+            "tokenization_quality": {
+                "total_tokens_seen": vocab_stats["total_frequency"],
+                "unique_tokens": vocab_stats["total_tokens"],
+                "learned_merges": vocab_stats["total_merges"],
+                "vocabulary_coverage": round(
+                    (vocab_stats["total_tokens"] / max(1, vocab_stats["total_frequency"])) * 100, 1
+                ),
+            },
         }

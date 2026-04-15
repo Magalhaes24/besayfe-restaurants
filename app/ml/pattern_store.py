@@ -119,6 +119,102 @@ class PatternStore:
             """
         )
 
+        # vocabulary_tokens: persistent token vocabulary (BPE-inspired)
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS vocabulary_tokens (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                text TEXT NOT NULL UNIQUE,
+                token_type TEXT DEFAULT 'ingredient',
+                frequency INTEGER DEFAULT 1,
+                confidence REAL DEFAULT 0.5,
+                language TEXT DEFAULT 'pt',
+                created_at TEXT DEFAULT (datetime('now')),
+                last_used TEXT DEFAULT (datetime('now'))
+            )
+            """
+        )
+
+        # vocabulary_merges: learned token merges
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS vocabulary_merges (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                token_a TEXT NOT NULL,
+                token_b TEXT NOT NULL,
+                merged_token TEXT NOT NULL,
+                frequency INTEGER DEFAULT 1,
+                confidence REAL DEFAULT 0.5,
+                created_at TEXT DEFAULT (datetime('now')),
+                UNIQUE(token_a, token_b)
+            )
+            """
+        )
+
+        # vocabulary_cooccurrence: token pair frequency matrix
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS vocabulary_cooccurrence (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                token_a TEXT NOT NULL,
+                token_b TEXT NOT NULL,
+                count INTEGER DEFAULT 1,
+                created_at TEXT DEFAULT (datetime('now')),
+                UNIQUE(token_a, token_b)
+            )
+            """
+        )
+
+        # semantic_tokens: semantic graph tokens (ingredients, allergens, origins, etc.)
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS semantic_tokens (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                value TEXT NOT NULL,
+                token_type TEXT NOT NULL,
+                language TEXT DEFAULT 'pt',
+                confidence REAL DEFAULT 1.0,
+                created_at TEXT DEFAULT (datetime('now')),
+                last_used TEXT DEFAULT (datetime('now')),
+                UNIQUE(value, token_type)
+            )
+            """
+        )
+
+        # semantic_relationships: relationships between semantic tokens
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS semantic_relationships (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                source_value TEXT NOT NULL,
+                source_type TEXT NOT NULL,
+                target_value TEXT NOT NULL,
+                target_type TEXT NOT NULL,
+                relation_type TEXT NOT NULL,
+                strength REAL DEFAULT 0.5,
+                evidence_count INTEGER DEFAULT 1,
+                created_at TEXT DEFAULT (datetime('now')),
+                last_updated TEXT DEFAULT (datetime('now')),
+                UNIQUE(source_value, source_type, target_value, target_type, relation_type)
+            )
+            """
+        )
+
+        # ingredient_families: computed ingredient families based on allergen profiles
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS ingredient_families (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                family_key TEXT NOT NULL UNIQUE,
+                allergen_profile TEXT NOT NULL,
+                ingredients_json TEXT NOT NULL,
+                member_count INTEGER DEFAULT 0,
+                created_at TEXT DEFAULT (datetime('now')),
+                last_updated TEXT DEFAULT (datetime('now'))
+            )
+            """
+        )
+
         conn.commit()
         conn.close()
 
@@ -471,3 +567,312 @@ class PatternStore:
 
         conn.commit()
         conn.close()
+
+    # --- Vocabulary Persistence (BPE-inspired Token Learning) ---
+
+    def save_vocabulary_token(
+        self,
+        text: str,
+        token_type: str = "ingredient",
+        frequency: int = 1,
+        confidence: float = 0.5,
+        language: str = "pt",
+    ):
+        """Save or update a vocabulary token."""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            INSERT INTO vocabulary_tokens (text, token_type, frequency, confidence, language, last_used)
+            VALUES (?, ?, ?, ?, ?, datetime('now'))
+            ON CONFLICT(text) DO UPDATE SET
+                frequency = frequency + 1,
+                confidence = MAX(confidence, excluded.confidence),
+                last_used = datetime('now')
+            """,
+            (text.lower().strip(), token_type, frequency, confidence, language),
+        )
+
+        conn.commit()
+        conn.close()
+
+    def save_vocabulary_merge(
+        self,
+        token_a: str,
+        token_b: str,
+        merged_token: str,
+        frequency: int = 1,
+        confidence: float = 0.5,
+    ):
+        """Save or update a learned token merge."""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        a_lower = token_a.lower().strip()
+        b_lower = token_b.lower().strip()
+        merged_lower = merged_token.lower().strip()
+
+        cursor.execute(
+            """
+            INSERT INTO vocabulary_merges (token_a, token_b, merged_token, frequency, confidence)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(token_a, token_b) DO UPDATE SET
+                frequency = frequency + 1,
+                confidence = MAX(confidence, excluded.confidence)
+            """,
+            (a_lower, b_lower, merged_lower, frequency, confidence),
+        )
+
+        conn.commit()
+        conn.close()
+
+    def save_cooccurrence(self, token_a: str, token_b: str, count: int = 1):
+        """Save or update token pair cooccurrence count."""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        a_lower = token_a.lower().strip()
+        b_lower = token_b.lower().strip()
+
+        cursor.execute(
+            """
+            INSERT INTO vocabulary_cooccurrence (token_a, token_b, count)
+            VALUES (?, ?, ?)
+            ON CONFLICT(token_a, token_b) DO UPDATE SET
+                count = count + excluded.count
+            """,
+            (a_lower, b_lower, count),
+        )
+
+        conn.commit()
+        conn.close()
+
+    def load_vocabulary(self) -> dict:
+        """Load entire vocabulary from database."""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        # Load tokens
+        cursor.execute("SELECT * FROM vocabulary_tokens")
+        tokens = {}
+        for row in cursor.fetchall():
+            tokens[row[1]] = {  # text is key
+                "text": row[1],
+                "type": row[2],
+                "frequency": row[3],
+                "confidence": row[4],
+                "language": row[5],
+                "created_at": row[6],
+                "last_used": row[7],
+            }
+
+        # Load merges
+        cursor.execute("SELECT * FROM vocabulary_merges")
+        merges = []
+        for row in cursor.fetchall():
+            merges.append({
+                "a": row[1],
+                "b": row[2],
+                "merged": row[3],
+                "frequency": row[4],
+                "confidence": row[5],
+                "created_at": row[6],
+            })
+
+        # Load cooccurrence matrix
+        cursor.execute("SELECT * FROM vocabulary_cooccurrence")
+        cooccurrence = {}
+        for row in cursor.fetchall():
+            cooccurrence[f"{row[1]}:{row[2]}"] = row[3]
+
+        conn.close()
+
+        return {
+            "vocabulary": tokens,
+            "merges": merges,
+            "cooccurrence_matrix": cooccurrence,
+        }
+
+    def get_vocabulary_stats(self) -> dict:
+        """Get comprehensive vocabulary statistics."""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT COUNT(*) FROM vocabulary_tokens")
+        total_tokens = cursor.fetchone()[0]
+
+        cursor.execute("SELECT SUM(frequency) FROM vocabulary_tokens")
+        total_frequency = cursor.fetchone()[0] or 0
+
+        cursor.execute("SELECT COUNT(*) FROM vocabulary_merges")
+        total_merges = cursor.fetchone()[0]
+
+        cursor.execute("SELECT AVG(confidence) FROM vocabulary_merges")
+        avg_confidence = cursor.fetchone()[0] or 0.0
+
+        # Top tokens
+        cursor.execute(
+            "SELECT text, token_type, frequency, confidence, last_used FROM vocabulary_tokens ORDER BY frequency DESC LIMIT 10"
+        )
+        top_tokens = [
+            {
+                "text": row[0],
+                "type": row[1],
+                "frequency": row[2],
+                "confidence": round(row[3], 2),
+                "last_used": row[4],
+            }
+            for row in cursor.fetchall()
+        ]
+
+        # Recent merges
+        cursor.execute(
+            "SELECT token_a, token_b, merged_token, frequency, confidence, created_at FROM vocabulary_merges ORDER BY created_at DESC LIMIT 5"
+        )
+        recent_merges = [
+            {
+                "a": row[0],
+                "b": row[1],
+                "merged": row[2],
+                "frequency": row[3],
+                "confidence": round(row[4], 2),
+                "created_at": row[5],
+            }
+            for row in cursor.fetchall()
+        ]
+
+        conn.close()
+
+        return {
+            "total_tokens": total_tokens,
+            "total_frequency": total_frequency,
+            "avg_token_frequency": total_frequency / max(1, total_tokens),
+            "total_merges": total_merges,
+            "avg_merge_confidence": round(avg_confidence, 2),
+            "top_tokens": top_tokens,
+            "recent_merges": recent_merges,
+        }
+
+    def save_semantic_token(self, value: str, token_type: str, language: str = "pt", confidence: float = 1.0):
+        """Save or update a semantic token in the database."""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                """
+                INSERT INTO semantic_tokens (value, token_type, language, confidence)
+                VALUES (?, ?, ?, ?)
+                ON CONFLICT(value, token_type) DO UPDATE SET
+                  confidence = MAX(confidence, ?),
+                  last_used = datetime('now')
+                """,
+                (value.lower().strip(), token_type, language, confidence, confidence)
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+    def save_semantic_relationship(self, source_val: str, source_type: str, target_val: str, target_type: str, relation_type: str, strength: float = 0.5):
+        """Save or update a semantic relationship in the database."""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                """
+                INSERT INTO semantic_relationships
+                (source_value, source_type, target_value, target_type, relation_type, strength, evidence_count)
+                VALUES (?, ?, ?, ?, ?, ?, 1)
+                ON CONFLICT(source_value, source_type, target_value, target_type, relation_type) DO UPDATE SET
+                  strength = ?,
+                  evidence_count = evidence_count + 1,
+                  last_updated = datetime('now')
+                """,
+                (source_val.lower().strip(), source_type, target_val.lower().strip(), target_type, relation_type, strength, strength)
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+    def load_semantic_graph(self) -> dict:
+        """Load all semantic tokens and relationships from database."""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        try:
+            # Load tokens
+            cursor.execute("SELECT value, token_type, language, confidence, created_at, last_used FROM semantic_tokens")
+            tokens = {}
+            for row in cursor.fetchall():
+                key = (row[0], row[1])
+                tokens[key] = {
+                    "value": row[0],
+                    "type": row[1],
+                    "language": row[2],
+                    "confidence": row[3],
+                    "created_at": row[4],
+                    "last_used": row[5],
+                }
+
+            # Load relationships
+            cursor.execute(
+                """
+                SELECT source_value, source_type, target_value, target_type, relation_type, strength, evidence_count, created_at
+                FROM semantic_relationships
+                """
+            )
+            relationships = []
+            for row in cursor.fetchall():
+                relationships.append({
+                    "source_value": row[0],
+                    "source_type": row[1],
+                    "target_value": row[2],
+                    "target_type": row[3],
+                    "relation_type": row[4],
+                    "strength": row[5],
+                    "evidence_count": row[6],
+                    "created_at": row[7],
+                })
+
+            # Load families
+            cursor.execute(
+                """
+                SELECT family_key, allergen_profile, ingredients_json, member_count
+                FROM ingredient_families
+                """
+            )
+            families = {}
+            for row in cursor.fetchall():
+                families[row[0]] = {
+                    "allergen_profile": row[1],
+                    "ingredients": row[2],
+                    "member_count": row[3],
+                }
+
+            return {
+                "tokens": tokens,
+                "relationships": relationships,
+                "families": families,
+            }
+        finally:
+            conn.close()
+
+    def update_ingredient_family(self, family_key: str, allergen_profile: str, ingredients_json: str, member_count: int):
+        """Save or update an ingredient family."""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                """
+                INSERT INTO ingredient_families (family_key, allergen_profile, ingredients_json, member_count)
+                VALUES (?, ?, ?, ?)
+                ON CONFLICT(family_key) DO UPDATE SET
+                  allergen_profile = ?,
+                  ingredients_json = ?,
+                  member_count = ?,
+                  last_updated = datetime('now')
+                """,
+                (family_key, allergen_profile, ingredients_json, member_count, allergen_profile, ingredients_json, member_count)
+            )
+            conn.commit()
+        finally:
+            conn.close()

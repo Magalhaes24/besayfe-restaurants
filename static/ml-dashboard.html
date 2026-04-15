@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ML Learning Dashboard — besayfe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1c2128;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --orange: #e3b341;
+      --purple: #bc8cff;
+      --teal: #39d353;
+    }
+    body {
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+      color: var(--text);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      min-height: 100vh;
+    }
+    .surface { background: var(--surface); border: 1px solid var(--border); }
+    .surface2 { background: var(--surface2); border: 1px solid var(--border); }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(88, 166, 255, 0.1);
+    }
+    .metric-card {
+      background: linear-gradient(135deg, rgba(88,166,255,0.05) 0%, rgba(188,140,255,0.05) 100%);
+      border-left: 3px solid var(--accent);
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 0.65rem;
+      font-weight: 600;
+    }
+    .badge-green { background: rgba(63,185,80,0.15); color: var(--green); }
+    .badge-yellow { background: rgba(210,153,34,0.15); color: var(--yellow); }
+    .badge-red { background: rgba(248,81,73,0.15); color: var(--red); }
+    .badge-purple { background: rgba(188,140,255,0.15); color: var(--purple); }
+    .badge-blue { background: rgba(88,166,255,0.15); color: var(--accent); }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .stat-item {
+      background: var(--surface2);
+      border-left: 3px solid var(--accent);
+      padding: 1rem;
+      border-radius: 0.5rem;
+    }
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: bold;
+      color: var(--accent);
+    }
+    a { text-decoration: none; color: inherit; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+<div class="min-h-screen p-8">
+  <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="mb-12">
+      <div class="flex items-center justify-between mb-4">
+        <h1 class="text-4xl font-bold" style="background: linear-gradient(90deg, var(--purple), var(--teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          ML Learning Dashboard
+        </h1>
+        <a href="/" class="text-xs px-4 py-2 rounded surface" style="border: 1px solid var(--border);text-decoration:none">← Back to Main</a>
+      </div>
+      <p style="color:var(--muted);font-size:0.95rem">Explore learned patterns, semantic tokens, and system intelligence</p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stat-grid mb-8">
+      <div class="stat-item" style="border-left-color:var(--purple)">
+        <div class="stat-label" style="color:var(--purple)">Learned Rules</div>
+        <div class="stat-value" id="total-rules-stat">—</div>
+      </div>
+      <div class="stat-item" style="border-left-color:var(--teal)">
+        <div class="stat-label" style="color:var(--teal)">Semantic Tokens</div>
+        <div class="stat-value" id="total-tokens-stat">—</div>
+      </div>
+      <div class="stat-item" style="border-left-color:var(--red)">
+        <div class="stat-label" style="color:var(--red)">Relationships</div>
+        <div class="stat-value" id="total-relationships-stat">—</div>
+      </div>
+      <div class="stat-item" style="border-left-color:var(--green)">
+        <div class="stat-label" style="color:var(--green)">Avg Confidence</div>
+        <div class="stat-value" id="avg-confidence-stat">—%</div>
+      </div>
+    </div>
+
+    <!-- Learning Status -->
+    <div class="card metric-card mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold">🧠 Learning Status</h2>
+        <span id="learning-badge" class="badge badge-yellow">Initializing…</span>
+      </div>
+      <div id="learning-detail" style="color:var(--muted);font-size:0.9rem">Loading system status…</div>
+    </div>
+
+    <!-- Navigation Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- ML Memory Explorer -->
+      <a href="/ml-memory" style="text-decoration:none">
+        <div class="card">
+          <div style="color:var(--purple);font-size:1.5rem;margin-bottom:0.5rem">🧠</div>
+          <h3 class="text-lg font-semibold mb-2">ML Memory</h3>
+          <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1rem">Explore all learned rules, allergen patterns, compound ingredient rules, and variant mappings</p>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+            <span class="badge badge-purple">Allergen Rules</span>
+            <span class="badge badge-orange">Compound Rules</span>
+            <span class="badge badge-green">Variants</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Tokenization Graph -->
+      <a href="/tokenization-graph" style="text-decoration:none">
+        <div class="card">
+          <div style="color:var(--teal);font-size:1.5rem;margin-bottom:0.5rem">🔤</div>
+          <h3 class="text-lg font-semibold mb-2">Tokenization Graph</h3>
+          <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1rem">View semantic tokens, relationships, ingredient families, and real-time tokenization activity</p>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+            <span class="badge badge-blue">Tokens</span>
+            <span class="badge badge-purple">Relationships</span>
+            <span class="badge badge-green">Families</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Semantic Analysis -->
+      <a href="/" onclick="window.location.href='/'; document.querySelector('[onclick*=semantic]')?.click(); return false;">
+        <div class="card">
+          <div style="color:var(--accent);font-size:1.5rem;margin-bottom:0.5rem">🔗</div>
+          <h3 class="text-lg font-semibold mb-2">Semantic Analysis</h3>
+          <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1rem">Analyze ingredient families, allergen correlations, and ingredient relationships in the main application</p>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+            <span class="badge badge-blue">Correlations</span>
+            <span class="badge badge-red">Allergens</span>
+            <span class="badge badge-teal">Predictions</span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="mt-12">
+      <h2 class="text-xl font-semibold mb-6">⚡ Recent Activity</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Recent Tokens -->
+        <div class="card">
+          <h3 class="font-semibold mb-4" style="color:var(--teal)">Recent Tokens Created</h3>
+          <div id="recent-tokens-section" class="space-y-2" style="max-height:300px;overflow-y:auto">
+            <div style="color:var(--muted);font-size:0.85rem">Loading…</div>
+          </div>
+        </div>
+
+        <!-- Recent Relationships -->
+        <div class="card">
+          <h3 class="font-semibold mb-4" style="color:var(--purple)">Recent Relationships</h3>
+          <div id="recent-relationships-section" class="space-y-2" style="max-height:300px;overflow-y:auto">
+            <div style="color:var(--muted);font-size:0.85rem">Loading…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Tips -->
+    <div class="mt-12 p-6 surface rounded-lg" style="border-left:3px solid var(--orange)">
+      <h3 class="font-semibold mb-3" style="color:var(--orange)">💡 How the System Learns</h3>
+      <ul style="color:var(--muted);font-size:0.9rem;line-height:1.6">
+        <li>✓ <strong>Corrections with Feedback:</strong> Mark corrections as "good" or "bad" to teach the system</li>
+        <li>✓ <strong>Pattern Extraction:</strong> System analyzes corrected ingredients and extracts learnable patterns</li>
+        <li>✓ <strong>Semantic Relationships:</strong> Similar ingredients share allergen implications (shellfish family)</li>
+        <li>✓ <strong>Confidence Building:</strong> Rules strengthen with repeated evidence, weaken with conflicts</li>
+        <li>✓ <strong>Real-time Growth:</strong> Each correction improves future predictions immediately</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = window.location.origin;
+
+async function loadDashboard() {
+  try {
+    // Load learning status
+    const rulesRes = await fetch(`${API}/api/v1/learning-rules`);
+    const rulesData = rulesRes.ok ? await rulesRes.json() : {};
+
+    // Load semantic status
+    const semanticRes = await fetch(`${API}/api/v1/semantic/correlations`);
+    const semanticData = semanticRes.ok ? await semanticRes.json() : {};
+
+    // Load tokenization activity
+    const tokenRes = await fetch(`${API}/api/v1/tokenization-activity`);
+    const tokenData = tokenRes.ok ? await tokenRes.json() : {};
+
+    // Update stats
+    const totalRules = (rulesData.total_allergen_rules || 0) + (rulesData.total_compound_rules || 0);
+    document.getElementById('total-rules-stat').textContent = totalRules;
+
+    const stats = semanticData.graph_statistics || {};
+    document.getElementById('total-tokens-stat').textContent = stats.total_tokens || 0;
+    document.getElementById('total-relationships-stat').textContent = stats.total_relationships || 0;
+
+    const topConf = rulesData.allergen_patterns?.[0]?.confidence || 0;
+    document.getElementById('avg-confidence-stat').textContent = (topConf * 100).toFixed(0);
+
+    // Learning status
+    const badge = document.getElementById('learning-badge');
+    const detail = document.getElementById('learning-detail');
+
+    if (rulesData.total_allergen_rules > 10) {
+      badge.className = 'badge badge-green';
+      badge.textContent = 'WELL TRAINED';
+      detail.innerHTML = `
+        <div>✅ System is actively learning and improving</div>
+        <div style="margin-top:0.5rem"><strong>${rulesData.total_allergen_rules}</strong> allergen patterns learned</div>
+        <div><strong>${rulesData.learned_variants}</strong> ingredient variants known</div>
+        <div style="margin-top:0.5rem;color:var(--green)">Confidence: ${(topConf*100).toFixed(0)}%</div>
+      `;
+    } else if (rulesData.total_allergen_rules > 0) {
+      badge.className = 'badge badge-yellow';
+      badge.textContent = 'LEARNING';
+      detail.innerHTML = `
+        <div>⚠️ System is learning. Submit more corrections with feedback to improve.</div>
+        <div style="margin-top:0.5rem"><strong>${rulesData.total_allergen_rules}</strong> pattern(s) learned so far</div>
+      `;
+    } else {
+      badge.className = 'badge badge-yellow';
+      badge.textContent = 'UNTRAINED';
+      detail.innerHTML = `<div>👀 No patterns learned yet. Upload files and mark corrections with feedback to start learning.</div>`;
+    }
+
+    // Recent tokens
+    const recentTokens = (tokenData.recent_tokens || []).slice(-5).reverse();
+    const tokenSection = document.getElementById('recent-tokens-section');
+    if (recentTokens.length > 0) {
+      tokenSection.innerHTML = recentTokens.map(t => `
+        <div style="padding:0.75rem;background:var(--surface2);border-radius:0.5rem;border-left:2px solid var(--accent)">
+          <div style="color:var(--teal);font-weight:600;font-size:0.85rem">${t.value}</div>
+          <div style="color:var(--muted);font-size:0.7rem">${t.type} • ${new Date(t.timestamp).toLocaleTimeString()}</div>
+        </div>
+      `).join('');
+    } else {
+      tokenSection.innerHTML = '<div style="color:var(--muted);font-size:0.85rem">No recent tokens</div>';
+    }
+
+    // Recent relationships
+    const recentRels = (tokenData.recent_relationships || []).slice(-5).reverse();
+    const relSection = document.getElementById('recent-relationships-section');
+    if (recentRels.length > 0) {
+      relSection.innerHTML = recentRels.map(r => `
+        <div style="padding:0.75rem;background:var(--surface2);border-radius:0.5rem;border-left:2px solid ${r.strength > 0.7 ? 'var(--green)' : 'var(--yellow)'}">
+          <div style="color:var(--accent);font-size:0.8rem">${r.source} <span style="color:var(--muted)">→</span> ${r.target}</div>
+          <div style="color:var(--muted);font-size:0.7rem">${r.type} • ${(r.strength*100).toFixed(0)}% • ${new Date(r.timestamp).toLocaleTimeString()}</div>
+        </div>
+      `).join('');
+    } else {
+      relSection.innerHTML = '<div style="color:var(--muted);font-size:0.85rem">No recent relationships</div>';
+    }
+  } catch(e) {
+    console.error('Failed to load dashboard:', e);
+  }
+}
+
+// Load on page open
+document.addEventListener('DOMContentLoaded', loadDashboard);
+// Refresh every 30 seconds
+setInterval(loadDashboard, 30000);
+</script>
+</body>
+</html>

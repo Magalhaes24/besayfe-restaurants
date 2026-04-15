@@ -81,10 +81,129 @@ async def normalize_sheet(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Normalization error: {str(e)}")
 
+    # Feed normalized sheet into learning systems (semantic graph, vocabulary)
+    try:
+        normalizer.rule_engine.learn_from_normalized_sheet(sheet)
+    except Exception as e:
+        # Log but don't fail - learning is non-critical
+        print(f"Warning: Failed to learn from normalized sheet: {e}")
+
     # Persist to storage
     await _save_sheet(sheet)
 
     return sheet
+
+
+@router.post("/normalize-bulk", status_code=201)
+async def normalize_bulk(files: list[UploadFile] = File(...)):
+    """
+    Accept multiple PDF, CSV, or XLSX files. Normalize all and return summary.
+    Feeds all sheets into learning systems for bulk vocabulary/semantic learning.
+    """
+    if not files:
+        raise HTTPException(status_code=400, detail="No files provided")
+
+    if len(files) > 100:
+        raise HTTPException(status_code=400, detail="Maximum 100 files per request")
+
+    results = {
+        "total_files": len(files),
+        "successful": 0,
+        "failed": 0,
+        "sheets": [],
+        "errors": [],
+    }
+
+    normalizer = get_normalizer()
+
+    for file in files:
+        try:
+            # Validate file size
+            content = await file.read()
+            if len(content) > settings.max_file_size_bytes:
+                results["failed"] += 1
+                results["errors"].append({
+                    "file": file.filename,
+                    "error": f"File too large. Max: {settings.max_file_size_mb}MB"
+                })
+                continue
+
+            source_format = _detect_format(file.filename or "unknown.pdf")
+            source_file = file.filename or "unknown"
+
+            # Parse raw content based on format
+            try:
+                if source_format == "pdf":
+                    raw = await extract_pdf(content)
+                elif source_format == "csv":
+                    raw = await extract_csv(content)
+                elif source_format == "xlsx":
+                    raw = await extract_xlsx(content)
+            except Exception as e:
+                results["failed"] += 1
+                results["errors"].append({
+                    "file": file.filename,
+                    "error": f"Parse error: {str(e)}"
+                })
+                continue
+
+            # Normalize
+            try:
+                sheet = await normalizer.normalize(
+                    raw, source_file=source_file, source_format=source_format
+                )
+            except Exception as e:
+                results["failed"] += 1
+                results["errors"].append({
+                    "file": file.filename,
+                    "error": f"Normalization error: {str(e)}"
+                })
+                continue
+
+            # Feed into learning systems
+            try:
+                normalizer.rule_engine.learn_from_normalized_sheet(sheet)
+            except Exception as e:
+                print(f"Warning: Failed to learn from {file.filename}: {e}")
+
+            # Persist
+            await _save_sheet(sheet)
+
+            results["successful"] += 1
+            results["sheets"].append({
+                "id": sheet.id,
+                "filename": file.filename,
+                "name": sheet.name,
+                "ingredients_count": len(sheet.ingredients),
+                "allergens_detected": sum(len(ing.allergens) for ing in sheet.ingredients),
+            })
+
+        except Exception as e:
+            results["failed"] += 1
+            results["errors"].append({
+                "file": file.filename,
+                "error": f"Unexpected error: {str(e)}"
+            })
+
+    # Get updated learning stats
+    semantic_stats = normalizer.rule_engine.semantic_graph.get_graph_statistics()
+    vocab_stats = normalizer.rule_engine.token_vocabulary.get_vocabulary_stats()
+
+    results["learning_summary"] = {
+        "semantic_graph": {
+            "total_tokens": semantic_stats["total_tokens"],
+            "ingredients_known": semantic_stats["ingredients"],
+            "allergens_known": semantic_stats["allergens"],
+            "total_relationships": semantic_stats["total_relationships"],
+        },
+        "vocabulary": {
+            "total_tokens": vocab_stats["total_tokens"],
+            "total_observations": vocab_stats["total_frequency"],
+            "learned_merges": vocab_stats["total_merges"],
+        },
+    }
+
+    return results
 
 
 @router.get("/export/{sheet_id}")
@@ -146,12 +265,24 @@ async def submit_correction(sheet_id: str, data: dict = Body(...)):
     # Extract sheet and metadata
     if "sheet" in data:
         # New format with metadata
-        corrected = NormalizedMenuSheet(**data["sheet"])
+        sheet_data = data["sheet"]
         metadata = data.get("metadata", {})
     else:
         # Legacy format: direct sheet
-        corrected = NormalizedMenuSheet(**data)
+        sheet_data = data
         metadata = {}
+
+    # Extract feedback/deletion markers BEFORE Pydantic strips them
+    ingredient_metadata = {}
+    if "ingredients" in sheet_data:
+        for idx, ing in enumerate(sheet_data["ingredients"]):
+            ingredient_metadata[idx] = {
+                "marked_for_deletion": ing.get("_marked_for_deletion", False),
+                "ml_feedback": ing.get("_ml_feedback", None),
+            }
+
+    # Construct Pydantic model (this strips extra attributes)
+    corrected = NormalizedMenuSheet(**sheet_data)
 
     # Load original
     json_path = settings.storage_dir / f"{sheet_id}.json"
@@ -164,13 +295,16 @@ async def submit_correction(sheet_id: str, data: dict = Body(...)):
     original = NormalizedMenuSheet(**original_data)
 
     # Filter out deleted ingredients before comparison
+    # Use extracted metadata, not attributes on objects
+    active_ingredients = [
+        ing for idx, ing in enumerate(corrected.ingredients)
+        if not ingredient_metadata.get(idx, {}).get("marked_for_deletion", False)
+    ]
+
     corrected_active = NormalizedMenuSheet(
         **{
             **corrected.dict(),
-            "ingredients": [
-                i for i in corrected.ingredients
-                if not getattr(i, "_marked_for_deletion", False)
-            ]
+            "ingredients": active_ingredients
         }
     )
 
@@ -203,8 +337,10 @@ async def submit_correction(sheet_id: str, data: dict = Body(...)):
     # Learn from this correction (self-improving rules)
     try:
         normalizer = get_normalizer()
-        feedback_data = {f"ingredient_{i}": {"feedback": getattr(ing, "_ml_feedback", None)}
-                        for i, ing in enumerate(corrected.ingredients)}
+        feedback_data = {
+            f"ingredient_{i}": {"feedback": ingredient_metadata.get(i, {}).get("ml_feedback", None)}
+            for i in range(len(corrected.ingredients))
+        }
         normalizer.rule_engine.learn_from_correction(original, corrected_active, feedback_data)
     except Exception as e:
         # Log but don't fail - learning is non-critical
@@ -230,6 +366,9 @@ async def get_status():
     rule_confidence = normalizer.rule_engine.get_learning_confidence()
     rules_summary = normalizer.rule_engine.get_rules_summary()
 
+    # Get semantic graph status
+    semantic_stats = normalizer.rule_engine.semantic_graph.get_graph_statistics()
+
     return {
         "correction_count": store.get_correction_count(),
         "pattern_count": store.get_pattern_count(),
@@ -244,6 +383,18 @@ async def get_status():
             "rules": rules_summary,
             "is_self_improving": rule_confidence["allergen_rules"] > 0,
         },
+        "semantic_graph": {
+            "total_tokens": semantic_stats["total_tokens"],
+            "ingredients_known": semantic_stats["ingredients"],
+            "allergens_known": semantic_stats["allergens"],
+            "total_relationships": semantic_stats["total_relationships"],
+            "avg_relationship_strength": semantic_stats["avg_relationship_strength"],
+        },
+        "vocabulary": {
+            "total_tokens": normalizer.rule_engine.token_vocabulary.get_vocabulary_stats()["total_tokens"],
+            "learned_merges": normalizer.rule_engine.token_vocabulary.get_vocabulary_stats()["total_merges"],
+            "total_observations": normalizer.rule_engine.token_vocabulary.get_vocabulary_stats()["total_frequency"],
+        },
     }
 
 
@@ -254,6 +405,65 @@ async def get_learning_rules():
 
     normalizer = get_normalizer()
     return normalizer.rule_engine.get_rules_summary()
+
+
+@router.get("/semantic/{ingredient}")
+async def get_ingredient_semantic_profile(ingredient: str):
+    """
+    Get semantic analysis of an ingredient including:
+    - Allergen profile
+    - Related ingredients
+    - Allergen predictions based on learned relationships
+    - Ingredient family classification
+    """
+    from app.ml import get_normalizer
+
+    normalizer = get_normalizer()
+    return normalizer.rule_engine.get_ingredient_semantic_profile(ingredient)
+
+
+@router.get("/semantic/correlations")
+async def get_semantic_correlations():
+    """
+    Get comprehensive semantic analysis of all learned relationships:
+    - Allergen correlations
+    - Ingredient families
+    - Graph statistics
+    """
+    from app.ml import get_normalizer
+
+    normalizer = get_normalizer()
+    return normalizer.rule_engine.analyze_semantic_correlations()
+
+
+@router.get("/tokenization-activity")
+async def get_tokenization_activity():
+    """
+    Get recent tokenization and semantic graph activity:
+    - Recently created tokens
+    - Recently created/updated relationships
+    - Current graph snapshot with top tokens and relationships
+    """
+    from app.ml import get_normalizer
+
+    normalizer = get_normalizer()
+    return normalizer.rule_engine.get_tokenization_activity()
+
+
+@router.get("/vocabulary-stats")
+async def get_vocabulary_stats():
+    """
+    Get comprehensive vocabulary learning statistics:
+    - Total tokens learned
+    - Merge history
+    - Merge candidates (tokens that appear together frequently)
+    - Vocabulary coverage
+    - Top tokens by frequency
+    """
+    from app.ml import get_normalizer
+
+    normalizer = get_normalizer()
+    return normalizer.rule_engine.get_vocabulary_stats()
 
 
 def _compute_diff(original: NormalizedMenuSheet, corrected: NormalizedMenuSheet, metadata: dict = None) -> dict:

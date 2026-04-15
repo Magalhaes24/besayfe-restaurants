@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ML Memory Explorer — besayfe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1c2128;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --orange: #e3b341;
+      --purple: #bc8cff;
+      --teal: #39d353;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    .surface { background: var(--surface); border: 1px solid var(--border); }
+    .surface2 { background: var(--surface2); border: 1px solid var(--border); }
+    .badge { font-size: 0.65rem; padding: 1px 6px; border-radius: 9999px; font-weight: 600; }
+    .badge-green { background: rgba(63,185,80,0.15); color: var(--green); }
+    .badge-yellow { background: rgba(210,153,34,0.15); color: var(--yellow); }
+    .badge-red { background: rgba(248,81,73,0.15); color: var(--red); }
+    .badge-purple { background: rgba(188,140,255,0.15); color: var(--purple); }
+    .badge-blue { background: rgba(88,166,255,0.15); color: var(--accent); }
+    .debug-table th { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .debug-table td, .debug-table th { padding: 6px 10px; border-bottom: 1px solid var(--border); }
+    .debug-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .tab-btn { border-bottom: 2px solid transparent; transition: all 0.15s; cursor: pointer; }
+    .tab-btn.active { border-color: var(--accent); color: var(--accent); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .metric-card { background: var(--surface2); border-left: 3px solid var(--accent); }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+<div class="min-h-screen p-6" style="background:var(--bg)">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-2">
+        <h1 class="text-3xl font-bold" style="color:var(--purple)">🧠 ML Memory Explorer</h1>
+        <a href="/" class="text-xs px-3 py-2 rounded" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);text-decoration:none">← Back to Main</a>
+      </div>
+      <p style="color:var(--muted);font-size:0.85rem">View all learned patterns, rules, variants, and training metrics</p>
+    </div>
+
+    <!-- Navigation tabs -->
+    <div class="surface rounded-t-xl p-4 flex gap-2" style="border-bottom:none">
+      <button class="tab-btn active px-4 py-2 text-sm font-semibold" onclick="switchTab('overview')" style="color:var(--accent)">📊 Overview</button>
+      <button class="tab-btn px-4 py-2 text-sm font-semibold" onclick="switchTab('allergen-rules')" style="color:var(--red)">🚨 Allergen Rules</button>
+      <button class="tab-btn px-4 py-2 text-sm font-semibold" onclick="switchTab('compound-rules')" style="color:var(--orange)">🔗 Compound Rules</button>
+      <button class="tab-btn px-4 py-2 text-sm font-semibold" onclick="switchTab('variants')" style="color:var(--green)">✏️ Variants</button>
+      <button class="tab-btn px-4 py-2 text-sm font-semibold" onclick="switchTab('origins')" style="color:var(--teal)">🌍 Origins</button>
+    </div>
+
+    <!-- Panels -->
+    <div class="surface rounded-b-xl p-6" style="border-top:none">
+      <!-- Overview Tab -->
+      <div id="tab-overview" class="tab-panel active">
+        <div class="grid grid-cols-4 gap-4 mb-6">
+          <div class="metric-card rounded-lg p-4" style="border-left-color:var(--purple)">
+            <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;font-weight:600">Total Rules</div>
+            <div id="total-rules" style="font-size:2rem;font-weight:bold;color:var(--purple)">—</div>
+          </div>
+          <div class="metric-card rounded-lg p-4" style="border-left-color:var(--red)">
+            <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;font-weight:600">Allergen Rules</div>
+            <div id="allergen-rules-count" style="font-size:2rem;font-weight:bold;color:var(--red)">—</div>
+          </div>
+          <div class="metric-card rounded-lg p-4" style="border-left-color:var(--orange)">
+            <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;font-weight:600">Compound Rules</div>
+            <div id="compound-rules-count" style="font-size:2rem;font-weight:bold;color:var(--orange)">—</div>
+          </div>
+          <div class="metric-card rounded-lg p-4" style="border-left-color:var(--green)">
+            <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;font-weight:600">Learned Variants</div>
+            <div id="variants-count" style="font-size:2rem;font-weight:bold;color:var(--green)">—</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Learning Status -->
+          <div>
+            <h3 class="text-sm font-semibold mb-4" style="color:var(--muted)">Learning Status</h3>
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span style="color:var(--muted)">Status</span>
+                <span id="learning-status-badge" class="badge badge-yellow">untrained</span>
+              </div>
+              <div class="flex justify-between">
+                <span style="color:var(--muted)">Avg Confidence</span>
+                <span id="avg-confidence" style="color:var(--accent);font-weight:600">—%</span>
+              </div>
+              <div class="flex justify-between">
+                <span style="color:var(--muted)">Learning Mode</span>
+                <span id="learning-mode" style="color:var(--green)">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Patterns -->
+          <div>
+            <h3 class="text-sm font-semibold mb-4" style="color:var(--muted)">Top High-Confidence Patterns</h3>
+            <div id="top-patterns" class="space-y-2 text-xs"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Allergen Rules Tab -->
+      <div id="tab-allergen-rules" class="tab-panel">
+        <h3 class="text-sm font-semibold mb-4" style="color:var(--muted)">Allergen Detection Rules</h3>
+        <div class="overflow-x-auto">
+          <table class="debug-table w-full text-xs">
+            <thead>
+              <tr>
+                <th style="text-align:left">Allergen</th>
+                <th style="text-align:left">Source Ingredient</th>
+                <th style="text-align:left">Pattern</th>
+                <th>Confidence</th>
+                <th>Success / Failure</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody id="allergen-rules-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Compound Rules Tab -->
+      <div id="tab-compound-rules" class="tab-panel">
+        <h3 class="text-sm font-semibold mb-4" style="color:var(--muted)">Compound Ingredient Parsing Rules</h3>
+        <div class="overflow-x-auto">
+          <table class="debug-table w-full text-xs">
+            <thead>
+              <tr>
+                <th>Restaurant</th>
+                <th>Format</th>
+                <th>Delimiter</th>
+                <th>Pattern Parts</th>
+                <th>Confidence</th>
+                <th>Success / Failure</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody id="compound-rules-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Variants Tab -->
+      <div id="tab-variants" class="tab-panel">
+        <h3 class="text-sm font-semibold mb-4" style="color:var(--muted)">Learned Ingredient Variants & Typos</h3>
+        <div class="overflow-x-auto">
+          <table class="debug-table w-full text-xs">
+            <thead>
+              <tr>
+                <th style="text-align:left">Original (Typo/Variant)</th>
+                <th style="text-align:left">Corrected Form</th>
+                <th>Correction Count</th>
+              </tr>
+            </thead>
+            <tbody id="variants-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Origins Tab -->
+      <div id="tab-origins" class="tab-panel">
+        <h3 class="text-sm font-semibold mb-4" style="color:var(--muted)">Learned Origin & Producer Information</h3>
+        <div class="overflow-x-auto">
+          <table class="debug-table w-full text-xs">
+            <thead>
+              <tr>
+                <th style="text-align:left">Ingredient</th>
+                <th style="text-align:left">Origin</th>
+                <th style="text-align:left">Producer</th>
+              </tr>
+            </thead>
+            <tbody id="origins-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = window.location.origin;
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+    const tabs = ['overview', 'allergen-rules', 'compound-rules', 'variants', 'origins'];
+    if (tabs[idx] === name) btn.classList.add('active');
+  });
+  document.getElementById(`tab-${name}`).classList.add('active');
+}
+
+async function loadMemory() {
+  try {
+    const res = await fetch(`${API}/api/v1/learning-rules`);
+    if (!res.ok) throw new Error('Failed to load rules');
+    const rules = await res.json();
+
+    // Overview metrics
+    document.getElementById('total-rules').textContent =
+      (rules.total_allergen_rules || 0) + (rules.total_compound_rules || 0);
+    document.getElementById('allergen-rules-count').textContent = rules.total_allergen_rules || 0;
+    document.getElementById('compound-rules-count').textContent = rules.total_compound_rules || 0;
+    document.getElementById('variants-count').textContent = rules.learned_variants || 0;
+
+    // Learning status
+    const status = rules.total_allergen_rules > 0 ? 'LEARNING ACTIVE' : 'UNTRAINED';
+    const badge = document.getElementById('learning-status-badge');
+    badge.className = rules.total_allergen_rules > 0 ? 'badge badge-green' : 'badge badge-yellow';
+    badge.textContent = status;
+
+    const topConf = rules.allergen_patterns?.[0]?.confidence || 0;
+    document.getElementById('avg-confidence').textContent = (topConf * 100).toFixed(0);
+
+    const learningMode = rules.total_allergen_rules > 10 ? 'TRAINED' : 'LEARNING';
+    document.getElementById('learning-mode').textContent = learningMode;
+
+    // Top patterns
+    const topPatterns = document.getElementById('top-patterns');
+    if (rules.allergen_patterns && rules.allergen_patterns.length > 0) {
+      topPatterns.innerHTML = rules.allergen_patterns.slice(0, 5).map(p => `
+        <div class="rounded p-2" style="background:var(--surface2)">
+          <div style="color:var(--red);font-weight:600">${p.allergen}</div>
+          <div style="color:var(--muted);font-size:0.65rem">From: ${p.source} • ${(p.confidence*100).toFixed(0)}% confidence</div>
+        </div>
+      `).join('');
+    } else {
+      topPatterns.innerHTML = '<div style="color:var(--muted)">No patterns learned yet</div>';
+    }
+
+    // Allergen rules table
+    const allergenTable = document.getElementById('allergen-rules-table');
+    if (rules.allergen_patterns && rules.allergen_patterns.length > 0) {
+      allergenTable.innerHTML = rules.allergen_patterns.map(r => `
+        <tr>
+          <td style="color:var(--red)">${r.allergen}</td>
+          <td style="color:var(--accent)">${r.source}</td>
+          <td style="color:var(--muted);font-size:0.65rem;max-width:200px;overflow:hidden;text-overflow:ellipsis">${r.pattern || 'N/A'}</td>
+          <td style="text-align:center;color:${r.confidence > 0.8 ? 'var(--green)' : 'var(--yellow)'}; font-weight:600">${(r.confidence*100).toFixed(0)}%</td>
+          <td style="text-align:center;color:var(--muted);font-size:0.65rem">${r.success_rate || '0/0'}</td>
+          <td style="color:var(--muted);font-size:0.65rem">—</td>
+        </tr>
+      `).join('');
+    } else {
+      allergenTable.innerHTML = '<tr><td colspan="6" style="color:var(--muted);text-align:center">No allergen rules learned yet</td></tr>';
+    }
+
+    // Compound rules table
+    const compoundTable = document.getElementById('compound-rules-table');
+    if (rules.compound_patterns && rules.compound_patterns.length > 0) {
+      compoundTable.innerHTML = rules.compound_patterns.map(r => `
+        <tr>
+          <td style="color:var(--accent)">${r.restaurant}</td>
+          <td style="color:var(--muted)">${r.format}</td>
+          <td style="text-align:center;color:var(--muted)">;</td>
+          <td style="color:var(--muted);font-size:0.65rem">product, qty, unit</td>
+          <td style="text-align:center;color:${r.confidence > 0.8 ? 'var(--green)' : 'var(--yellow)'}; font-weight:600">${(r.confidence*100).toFixed(0)}%</td>
+          <td style="text-align:center;color:var(--muted);font-size:0.65rem">—</td>
+          <td style="color:var(--muted);font-size:0.65rem">—</td>
+        </tr>
+      `).join('');
+    } else {
+      compoundTable.innerHTML = '<tr><td colspan="7" style="color:var(--muted);text-align:center">No compound rules learned yet</td></tr>';
+    }
+
+  } catch(e) {
+    console.error('Failed to load memory:', e);
+    document.body.innerHTML += `<div style="color:var(--red);padding:1rem">Error loading ML memory: ${e.message}</div>`;
+  }
+}
+
+// Load on page open
+document.addEventListener('DOMContentLoaded', loadMemory);
+</script>
+</body>
+</html>

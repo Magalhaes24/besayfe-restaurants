@@ -327,7 +327,7 @@
   "cost_per_serving": 0.0,
   "source_file": "luca-restaurant_technical_sheet.csv",
   "source_format": "csv",
-  "normalized_at": "2026-04-14T11:44:58.231707",
+  "normalized_at": "2026-04-14T15:47:02.581894",
   "confidence_score": 0.15,
   "raw_extraction": {
     "headers": [

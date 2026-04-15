@@ -14,7 +14,11 @@
       "Bash(curl:*)",
       "Bash(ipconfig)",
       "Bash(netsh advfirewall:*)",
-      "Bash(node -c static/index.html)"
+      "Bash(node -c static/index.html)",
+      "Bash(pkill -f \"python.*main.py\\\\|uvicorn.*app\")",
+      "Bash(python app/main.py)",
+      "Bash(sqlite3:*)",
+      "Bash(pkill -f \"python.*main.py\\\\|uvicorn\")"
     ]
   }
 }

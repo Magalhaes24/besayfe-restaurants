@@ -1,0 +1,171 @@
+{
+  "id": "test_menu",
+  "name": "Unknown",
+  "category": "Main",
+  "country": null,
+  "region": null,
+  "continent": null,
+  "prep_time_minutes": null,
+  "cooking_time_minutes": null,
+  "servings": 1,
+  "ingredients": [
+    {
+      "line_number": 1,
+      "product_name": "Fish",
+      "quantity": 0.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "fish"
+      ],
+      "allergen_risk": "medium",
+      "allergen_confidence": 0.7,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 2,
+      "product_name": "Egg",
+      "quantity": 0.0,
+      "unit": "UN",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "eggs"
+      ],
+      "allergen_risk": "critical",
+      "allergen_confidence": 0.95,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 3,
+      "product_name": "Butter",
+      "quantity": 0.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "milk"
+      ],
+      "allergen_risk": "medium",
+      "allergen_confidence": 0.7,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 4,
+      "product_name": "Milk",
+      "quantity": 0.0,
+      "unit": "ML",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "milk"
+      ],
+      "allergen_risk": "medium",
+      "allergen_confidence": 0.7,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 5,
+      "product_name": "Chocolate",
+      "quantity": 0.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    }
+  ],
+  "steps": [],
+  "total_cost": 0.0,
+  "cost_per_serving": 0.0,
+  "source_file": "test_menu.csv",
+  "source_format": "csv",
+  "normalized_at": "2026-04-14T15:42:28.958215",
+  "confidence_score": 0.15,
+  "raw_extraction": {
+    "headers": [
+      "Name",
+      "Category",
+      "Ingredient",
+      "Quantity",
+      "Unit",
+      "Allergens"
+    ],
+    "rows": [
+      {
+        "Name": "Test Dish",
+        "Category": "Main",
+        "Ingredient": "Fish",
+        "Quantity": "150",
+        "Unit": "g",
+        "Allergens": "fish"
+      },
+      {
+        "Name": "Test Dish",
+        "Category": "Main",
+        "Ingredient": "Egg",
+        "Quantity": "1",
+        "Unit": "un",
+        "Allergens": "eggs"
+      },
+      {
+        "Name": "Test Dish",
+        "Category": "Main",
+        "Ingredient": "Butter",
+        "Quantity": "10",
+        "Unit": "g",
+        "Allergens": "dairy"
+      },
+      {
+        "Name": "Another Dish",
+        "Category": "Dessert",
+        "Ingredient": "Milk",
+        "Quantity": "200",
+        "Unit": "ml",
+        "Allergens": "dairy"
+      },
+      {
+        "Name": "Another Dish",
+        "Category": "Dessert",
+        "Ingredient": "Chocolate",
+        "Quantity": "50",
+        "Unit": "g",
+        "Allergens": "tree nuts"
+      }
+    ],
+    "raw_text": "Name,Category,Ingredient,Quantity,Unit,Allergens\nTest Dish,Main,Fish,150,g,fish\nTest Dish,Main,Egg,1,un,eggs\nTest Dish,Main,Butter,10,g,dairy\nAnother Dish,Dessert,Milk,200,ml,dairy\nAnother Dish,Dessert,Chocolate,50,g,tree nuts\n",
+    "row_count": 5,
+    "encoding_detected": "ascii"
+  },
+  "all_allergens": [
+    "eggs",
+    "fish",
+    "milk"
+  ],
+  "critical_allergens": [
+    "eggs",
+    "fish",
+    "milk"
+  ],
+  "allergen_ingredients_count": 4,
+  "has_critical_allergen": true,
+  "allergen_risk_level": "critical"
+}

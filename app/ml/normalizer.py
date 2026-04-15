@@ -293,6 +293,15 @@ class LocalNormalizer:
         detected_allergens = self.allergen_db.detect_allergens(allergen_text)
         allergen_list = sorted(list(detected_allergens))
 
+        # Semantic graph enhancement - predict additional allergens from learned relationships
+        semantic_predictions = self.rule_engine.correlation_analyzer.predict_allergens(
+            product_name, confidence_threshold=0.6
+        )
+        for pred in semantic_predictions:
+            if pred["allergen"] not in allergen_list:
+                allergen_list.append(pred["allergen"])
+        allergen_list = sorted(list(set(allergen_list)))
+
         # Risk assessment
         risk_info = assess_allergen_risk(detected_allergens, quantity, unit)
         allergen_risk = risk_info.get("overall_risk", "none")

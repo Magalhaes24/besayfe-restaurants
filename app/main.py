@@ -48,6 +48,33 @@ async def serve_ui():
     return {"status": "ok", "ui": "not found — place static/index.html"}
 
 
+@app.get("/ml-dashboard")
+async def serve_ml_dashboard():
+    """Serve ML Dashboard page."""
+    dashboard = STATIC_DIR / "ml-dashboard.html"
+    if dashboard.exists():
+        return FileResponse(str(dashboard))
+    return {"status": "error", "message": "ML Dashboard not found"}
+
+
+@app.get("/ml-memory")
+async def serve_ml_memory():
+    """Serve ML Memory Explorer page."""
+    memory = STATIC_DIR / "ml-memory.html"
+    if memory.exists():
+        return FileResponse(str(memory))
+    return {"status": "error", "message": "ML Memory page not found"}
+
+
+@app.get("/tokenization-graph")
+async def serve_tokenization_graph():
+    """Serve Tokenization Graph page."""
+    tokenization = STATIC_DIR / "tokenization-graph.html"
+    if tokenization.exists():
+        return FileResponse(str(tokenization))
+    return {"status": "error", "message": "Tokenization Graph page not found"}
+
+
 @app.get("/health")
 async def health():
     return {"status": "ok", "type": "local_ml"}

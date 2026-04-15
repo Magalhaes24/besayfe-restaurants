@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vocabulary Learning — besayfe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1c2128;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --orange: #e3b341;
+      --purple: #bc8cff;
+      --teal: #39d353;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    .surface { background: var(--surface); border: 1px solid var(--border); }
+    .surface2 { background: var(--surface2); border: 1px solid var(--border); }
+    .badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 9999px; font-weight: 600; }
+    .badge-blue { background: rgba(88,166,255,0.15); color: var(--accent); }
+    .badge-red { background: rgba(248,81,73,0.15); color: var(--red); }
+    .badge-green { background: rgba(63,185,80,0.15); color: var(--green); }
+    .badge-orange { background: rgba(227,179,65,0.15); color: var(--orange); }
+    .badge-purple { background: rgba(188,140,255,0.15); color: var(--purple); }
+    .debug-table th { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .debug-table td, .debug-table th { padding: 6px 10px; border-bottom: 1px solid var(--border); }
+    .debug-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .tab-btn { border-bottom: 2px solid transparent; transition: all 0.15s; cursor: pointer; }
+    .tab-btn.active { border-color: var(--accent); color: var(--accent); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .metric-card { background: var(--surface2); border-left: 3px solid var(--accent); }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+<div class="min-h-screen p-6" style="background:var(--bg)">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-2">
+        <h1 class="text-3xl font-bold" style="color:var(--orange)">📚 Persistent Vocabulary Learning</h1>
+        <a href="/" class="text-xs px-3 py-2 rounded" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);text-decoration:none">← Back to Main</a>
+      </div>
+      <p style="color:var(--muted);font-size:0.85rem">Domain-specific tokenization vocabulary learned from every correction</p>
+    </div>
+
+    <!-- Navigation tabs -->
+    <div class="surface rounded-t-xl p-4 flex gap-2" style="border-bottom:none">
+      <button class="tab-btn active px-4 py-2 text-sm font-semibold" onclick="switchTab('overview')" style="color:var(--accent)">📊 Overview</button>
+      <button class="tab-btn px-4 py-2 text-sm font-semibold" onclick="switchTab('tokens')" style="color:var(--teal)">🔤 Top Tokens</button>
+      <button class="tab-btn px-4 py-2 text-sm font-semibold" onclick="switchTab('merges')" style="color:var(--purple)">🔗 Learned Merges</button>
+      <button class="tab-btn px-4 py-2 text-sm font-semibold" onclick="switchTab('candidates')" style="color:var(--yellow)">⭐ Merge Candidates</button>
+    </div>
+
+    <!-- Panels -->
+    <div class="surface rounded-b-xl p-6" style="border-top:none">
+      <!-- Overview Tab -->
+      <div id="tab-overview" class="tab-panel active">
+        <h2 class="text-lg font-semibold mb-4" style="color:var(--muted)">Vocabulary Learning Progress</h2>
+
+        <div class="grid grid-cols-4 gap-4 mb-6">
+          <div class="metric-card rounded-lg p-4" style="border-left-color:var(--orange)">
+            <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;font-weight:600">Unique Tokens</div>
+            <div id="unique-tokens" style="font-size:2rem;font-weight:bold;color:var(--orange)">—</div>
+          </div>
+          <div class="metric-card rounded-lg p-4" style="border-left-color:var(--teal)">
+            <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;font-weight:600">Total Observations</div>
+            <div id="total-observations" style="font-size:2rem;font-weight:bold;color:var(--teal)">—</div>
+          </div>
+          <div class="metric-card rounded-lg p-4" style="border-left-color:var(--purple)">
+            <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;font-weight:600">Learned Merges</div>
+            <div id="learned-merges" style="font-size:2rem;font-weight:bold;color:var(--purple)">—</div>
+          </div>
+          <div class="metric-card rounded-lg p-4" style="border-left-color:var(--green)">
+            <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;font-weight:600">Vocabulary Coverage</div>
+            <div id="vocabulary-coverage" style="font-size:2rem;font-weight:bold;color:var(--green)">—%</div>
+          </div>
+        </div>
+
+        <!-- How BPE Tokenization Works -->
+        <div class="surface rounded-lg p-4 mb-6">
+          <h3 class="font-semibold mb-3" style="color:var(--orange)">How Vocabulary Learning Works (BPE)</h3>
+          <p style="color:var(--muted);font-size:0.9rem;line-height:1.6">
+            This system learns vocabulary similar to Byte Pair Encoding (BPE):
+          </p>
+          <ol style="color:var(--muted);font-size:0.9rem;line-height:1.8;margin:1rem 0;padding-left:1.5rem;list-style:decimal">
+            <li><strong>Observe tokens:</strong> Every ingredient, allergen, and origin is tracked in the vocabulary</li>
+            <li><strong>Record co-occurrences:</strong> When tokens appear together (e.g., "shrimp" + "shellfish allergen"), it's recorded</li>
+            <li><strong>Learn merges:</strong> Frequently co-occurring tokens merge into compounds (e.g., "white fish" → "whitefish")</li>
+            <li><strong>Apply vocabulary:</strong> All future normalization uses this learned vocabulary for better tokenization</li>
+            <li><strong>Persistent storage:</strong> Vocabulary grows across all corrections and never resets</li>
+          </ol>
+        </div>
+
+        <!-- Statistics -->
+        <div class="grid grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-sm font-semibold mb-3" style="color:var(--muted)">Tokenization Quality</h3>
+            <div id="quality-metrics" class="space-y-2 text-sm"></div>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-semibold mb-3" style="color:var(--muted)">Top Token Types</h3>
+            <div id="token-types" class="space-y-2 text-sm"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Tokens Tab -->
+      <div id="tab-tokens" class="tab-panel">
+        <h3 class="text-sm font-semibold mb-4" style="color:var(--muted)">Most Frequent Tokens</h3>
+        <div class="overflow-x-auto">
+          <table class="debug-table w-full text-xs">
+            <thead>
+              <tr>
+                <th style="text-align:left">Token</th>
+                <th style="text-align:left">Type</th>
+                <th>Frequency</th>
+                <th>Confidence</th>
+                <th>Last Used</th>
+              </tr>
+            </thead>
+            <tbody id="tokens-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Learned Merges Tab -->
+      <div id="tab-merges" class="tab-panel">
+        <h3 class="text-sm font-semibold mb-4" style="color:var(--muted)">Learned Token Merges</h3>
+        <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1rem">
+          When the system learns that tokens frequently appear together, it creates merges.
+          Example: "white" + "fish" → "whitefish"
+        </p>
+        <div class="overflow-x-auto">
+          <table class="debug-table w-full text-xs">
+            <thead>
+              <tr>
+                <th style="text-align:left">Token A</th>
+                <th style="text-align:left">+</th>
+                <th style="text-align:left">Token B</th>
+                <th style="text-align:left">=</th>
+                <th style="text-align:left">Merged Token</th>
+                <th>Frequency</th>
+                <th>Confidence</th>
+              </tr>
+            </thead>
+            <tbody id="merges-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Merge Candidates Tab -->
+      <div id="tab-candidates" class="tab-panel">
+        <h3 class="text-sm font-semibold mb-4" style="color:var(--muted)">Recommended Token Merges</h3>
+        <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1rem">
+          These token pairs appear together frequently and are candidates for learning as merges.
+          The system will automatically learn the most frequent combinations.
+        </p>
+        <div class="overflow-x-auto">
+          <table class="debug-table w-full text-xs">
+            <thead>
+              <tr>
+                <th style="text-align:left">Token A</th>
+                <th style="text-align:left">+</th>
+                <th style="text-align:left">Token B</th>
+                <th>Frequency</th>
+                <th>Priority</th>
+                <th>Potential Merge</th>
+              </tr>
+            </thead>
+            <tbody id="candidates-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = window.location.origin;
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+    const tabs = ['overview', 'tokens', 'merges', 'candidates'];
+    if (tabs[idx] === name) btn.classList.add('active');
+  });
+  document.getElementById(`tab-${name}`).classList.add('active');
+}
+
+async function loadVocabulary() {
+  try {
+    const res = await fetch(`${API}/api/v1/vocabulary-stats`);
+    if (!res.ok) throw new Error('Failed to load vocabulary');
+    const data = await res.json();
+
+    const vocab = data.vocabulary || {};
+    const quality = data.tokenization_quality || {};
+    const candidates = data.merge_candidates || [];
+
+    // Update metrics
+    document.getElementById('unique-tokens').textContent = vocab.total_tokens || 0;
+    document.getElementById('total-observations').textContent = vocab.total_frequency || 0;
+    document.getElementById('learned-merges').textContent = vocab.total_merges || 0;
+    document.getElementById('vocabulary-coverage').textContent = quality.vocabulary_coverage || 0;
+
+    // Quality metrics
+    const qualityDiv = document.getElementById('quality-metrics');
+    qualityDiv.innerHTML = `
+      <div class="flex justify-between">
+        <span style="color:var(--muted)">Avg Token Frequency</span>
+        <span style="color:var(--accent);font-weight:600">${(vocab.avg_token_frequency || 0).toFixed(1)}</span>
+      </div>
+      <div class="flex justify-between">
+        <span style="color:var(--muted)">Merge Candidates</span>
+        <span style="color:var(--orange);font-weight:600">${vocab.merge_candidates || 0}</span>
+      </div>
+    `;
+
+    // Token types (from top tokens)
+    const tokenTypesDiv = document.getElementById('token-types');
+    if (vocab.top_tokens && vocab.top_tokens.length > 0) {
+      const typeCount = {};
+      vocab.top_tokens.forEach(t => {
+        typeCount[t.type] = (typeCount[t.type] || 0) + 1;
+      });
+      tokenTypesDiv.innerHTML = Object.entries(typeCount).map(([type, count]) => `
+        <div class="flex justify-between">
+          <span style="color:var(--muted)">${type}</span>
+          <span style="color:var(--accent);font-weight:600">${count}</span>
+        </div>
+      `).join('');
+    }
+
+    // Top tokens table
+    const tokenTable = document.getElementById('tokens-table');
+    if (vocab.top_tokens && vocab.top_tokens.length > 0) {
+      tokenTable.innerHTML = vocab.top_tokens.map(t => `
+        <tr>
+          <td style="color:var(--teal)">${t.text}</td>
+          <td><span class="badge badge-blue">${t.type}</span></td>
+          <td style="text-align:center;font-weight:600">${t.frequency}</td>
+          <td style="text-align:center;color:${t.confidence > 0.7 ? 'var(--green)' : 'var(--yellow)'}; font-weight:600">${(t.confidence*100).toFixed(0)}%</td>
+          <td style="color:var(--muted);font-size:0.7rem">${new Date(t.last_used).toLocaleDateString()}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Learned merges table
+    const mergesTable = document.getElementById('merges-table');
+    if (vocab.recent_merges && vocab.recent_merges.length > 0) {
+      mergesTable.innerHTML = vocab.recent_merges.map(m => `
+        <tr>
+          <td style="color:var(--accent)">${m.a}</td>
+          <td style="color:var(--muted)">+</td>
+          <td style="color:var(--accent)">${m.b}</td>
+          <td style="color:var(--muted)">=</td>
+          <td style="color:var(--teal);font-weight:600">${m.merged}</td>
+          <td style="text-align:center">${m.frequency}</td>
+          <td style="text-align:center;color:${m.confidence > 0.8 ? 'var(--green)' : 'var(--yellow)'}; font-weight:600">${(m.confidence*100).toFixed(0)}%</td>
+        </tr>
+      `).join('');
+    } else {
+      mergesTable.innerHTML = '<tr><td colspan="7" style="color:var(--muted);text-align:center">No merges learned yet</td></tr>';
+    }
+
+    // Candidates table
+    const candidatesTable = document.getElementById('candidates-table');
+    if (candidates.length > 0) {
+      candidatesTable.innerHTML = candidates.map(c => {
+        const merged = `${c.token_a}${c.token_b}`;
+        return `
+          <tr>
+            <td style="color:var(--accent)">${c.token_a}</td>
+            <td style="color:var(--muted)">+</td>
+            <td style="color:var(--accent)">${c.token_b}</td>
+            <td style="text-align:center;font-weight:600">${c.frequency}</td>
+            <td><span class="badge ${c.recommendation === 'high priority' ? 'badge-red' : c.recommendation === 'medium' ? 'badge-orange' : 'badge-green'}">${c.recommendation}</span></td>
+            <td style="color:var(--teal);font-size:0.85rem">${merged}</td>
+          </tr>
+        `;
+      }).join('');
+    } else {
+      candidatesTable.innerHTML = '<tr><td colspan="6" style="color:var(--muted);text-align:center">No merge candidates yet</td></tr>';
+    }
+  } catch(e) {
+    console.error('Failed to load vocabulary:', e);
+  }
+}
+
+// Load on page open
+document.addEventListener('DOMContentLoaded', loadVocabulary);
+// Refresh every 30 seconds
+setInterval(loadVocabulary, 30000);
+</script>
+</body>
+</html>

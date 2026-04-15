@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tokenization Graph — besayfe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1c2128;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --orange: #e3b341;
+      --purple: #bc8cff;
+      --teal: #39d353;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    .surface { background: var(--surface); border: 1px solid var(--border); }
+    .surface2 { background: var(--surface2); border: 1px solid var(--border); }
+    .badge { font-size: 0.65rem; padding: 1px 6px; border-radius: 9999px; font-weight: 600; }
+    .badge-green { background: rgba(63,185,80,0.15); color: var(--green); }
+    .badge-yellow { background: rgba(210,153,34,0.15); color: var(--yellow); }
+    .badge-red { background: rgba(248,81,73,0.15); color: var(--red); }
+    .badge-purple { background: rgba(188,140,255,0.15); color: var(--purple); }
+    .badge-blue { background: rgba(88,166,255,0.15); color: var(--accent); }
+    .debug-table th { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .debug-table td, .debug-table th { padding: 6px 10px; border-bottom: 1px solid var(--border); }
+    .debug-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .tab-btn { border-bottom: 2px solid transparent; transition: all 0.15s; cursor: pointer; }
+    .tab-btn.active { border-color: var(--accent); color: var(--accent); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .metric-card { background: var(--surface2); border-left: 3px solid var(--accent); }
+    .token-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      margin: 2px;
+    }
+    .token-ingredient { background: rgba(88,166,255,0.15); color: var(--accent); }
+    .token-allergen { background: rgba(248,81,73,0.15); color: var(--red); }
+    .token-origin { background: rgba(57,211,83,0.15); color: var(--teal); }
+    .token-producer { background: rgba(227,179,65,0.15); color: var(--orange); }
+    .token-preparation { background: rgba(188,140,255,0.15); color: var(--purple); }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+<div class="min-h-screen p-6" style="background:var(--bg)">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-2">
+        <h1 class="text-3xl font-bold" style="color:var(--teal)">🔤 Tokenization Graph</h1>
+        <a href="/" class="text-xs px-3 py-2 rounded" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);text-decoration:none">← Back to Main</a>
+      </div>
+      <p style="color:var(--muted);font-size:0.85rem">Semantic tokens and relationships in the knowledge graph</p>
+    </div>
+
+    <!-- Navigation tabs -->
+    <div class="surface rounded-t-xl p-4 flex gap-2" style="border-bottom:none">
+      <button class="tab-btn active px-4 py-2 text-sm font-semibold" onclick="switchTab('overview')" style="color:var(--accent)">📊 Overview</button>
+      <button class="tab-btn px-4 py-2 text-sm font-semibold" onclick="switchTab('tokens')" style="color:var(--teal)">🔤 Tokens</button>
+      <button class="tab-btn px-4 py-2 text-sm font-semibold" onclick="switchTab('relationships')" style="color:var(--purple)">🔗 Relationships</button>
+      <button class="tab-btn px-4 py-2 text-sm font-semibold" onclick="switchTab('families')" style="color:var(--green)">👨‍👩‍👧‍👦 Families</button>
+      <button class="tab-btn px-4 py-2 text-sm font-semibold" onclick="switchTab('activity')" style="color:var(--orange)">⚡ Activity</button>
+    </div>
+
+    <!-- Panels -->
+    <div class="surface rounded-b-xl p-6" style="border-top:none">
+      <!-- Overview Tab -->
+      <div id="tab-overview" class="tab-panel active">
+        <div class="grid grid-cols-5 gap-4 mb-6">
+          <div class="metric-card rounded-lg p-4" style="border-left-color:var(--teal)">
+            <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;font-weight:600">Total Tokens</div>
+            <div id="total-tokens" style="font-size:2rem;font-weight:bold;color:var(--teal)">—</div>
+          </div>
+          <div class="metric-card rounded-lg p-4" style="border-left-color:var(--accent)">
+            <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;font-weight:600">Ingredients</div>
+            <div id="ingredient-tokens" style="font-size:2rem;font-weight:bold;color:var(--accent)">—</div>
+          </div>
+          <div class="metric-card rounded-lg p-4" style="border-left-color:var(--red)">
+            <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;font-weight:600">Allergens</div>
+            <div id="allergen-tokens" style="font-size:2rem;font-weight:bold;color:var(--red)">—</div>
+          </div>
+          <div class="metric-card rounded-lg p-4" style="border-left-color:var(--purple)">
+            <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;font-weight:600">Relationships</div>
+            <div id="total-relationships" style="font-size:2rem;font-weight:bold;color:var(--purple)">—</div>
+          </div>
+          <div class="metric-card rounded-lg p-4" style="border-left-color:var(--yellow)">
+            <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;font-weight:600">Avg Strength</div>
+            <div id="avg-strength" style="font-size:2rem;font-weight:bold;color:var(--yellow)">—%</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Graph Summary -->
+          <div>
+            <h3 class="text-sm font-semibold mb-4" style="color:var(--muted)">Graph Summary</h3>
+            <div class="space-y-2 text-sm">
+              <div id="graph-summary" style="color:var(--muted)">Loading…</div>
+            </div>
+          </div>
+
+          <!-- Top Tokens by Connections -->
+          <div>
+            <h3 class="text-sm font-semibold mb-4" style="color:var(--muted)">Most Connected Tokens</h3>
+            <div id="top-tokens" class="space-y-2 text-xs"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tokens Tab -->
+      <div id="tab-tokens" class="tab-panel">
+        <div class="mb-4 flex gap-2">
+          <input type="text" id="token-filter" placeholder="Filter tokens..." class="px-3 py-2 text-xs rounded"
+            style="background:var(--surface2);border:1px solid var(--border);color:var(--text);flex:1"
+            onkeyup="filterTokens(this.value)">
+          <select id="token-type-filter" class="px-3 py-2 text-xs rounded" style="background:var(--surface2);border:1px solid var(--border);color:var(--text)" onchange="filterTokens('')">
+            <option value="">All Types</option>
+            <option value="ingredient">Ingredient</option>
+            <option value="allergen">Allergen</option>
+            <option value="origin">Origin</option>
+            <option value="producer">Producer</option>
+            <option value="preparation">Preparation</option>
+          </select>
+        </div>
+        <h3 class="text-sm font-semibold mb-4" style="color:var(--muted)">Semantic Tokens</h3>
+        <div class="overflow-x-auto">
+          <table class="debug-table w-full text-xs">
+            <thead>
+              <tr>
+                <th style="text-align:left">Value</th>
+                <th style="text-align:left">Type</th>
+                <th>Language</th>
+                <th>Confidence</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody id="tokens-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Relationships Tab -->
+      <div id="tab-relationships" class="tab-panel">
+        <h3 class="text-sm font-semibold mb-4" style="color:var(--muted)">Token Relationships</h3>
+        <div class="overflow-x-auto">
+          <table class="debug-table w-full text-xs">
+            <thead>
+              <tr>
+                <th style="text-align:left">Source</th>
+                <th style="text-align:left">Type</th>
+                <th style="text-align:left">Target</th>
+                <th>Strength</th>
+                <th>Evidence</th>
+              </tr>
+            </thead>
+            <tbody id="relationships-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Families Tab -->
+      <div id="tab-families" class="tab-panel">
+        <h3 class="text-sm font-semibold mb-4" style="color:var(--muted)">Ingredient Families</h3>
+        <div id="families-container" class="space-y-4"></div>
+      </div>
+
+      <!-- Activity Tab -->
+      <div id="tab-activity" class="tab-panel">
+        <div class="flex gap-2 mb-4">
+          <button onclick="loadActivity()" class="text-xs px-3 py-2 rounded" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted)">🔄 Refresh</button>
+        </div>
+
+        <h3 class="text-sm font-semibold mb-4" style="color:var(--muted)">Recent Tokenization Activity</h3>
+
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Recent Tokens -->
+          <div>
+            <h4 class="text-xs font-semibold mb-2" style="color:var(--muted)">Recent Tokens</h4>
+            <div id="recent-tokens-list" class="space-y-2" style="max-height:400px;overflow-y:auto"></div>
+          </div>
+
+          <!-- Recent Relationships -->
+          <div>
+            <h4 class="text-xs font-semibold mb-2" style="color:var(--muted)">Recent Relationships</h4>
+            <div id="recent-relationships-list" class="space-y-2" style="max-height:400px;overflow-y:auto"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = window.location.origin;
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+    const tabs = ['overview', 'tokens', 'relationships', 'families', 'activity'];
+    if (tabs[idx] === name) btn.classList.add('active');
+  });
+  document.getElementById(`tab-${name}`).classList.add('active');
+
+  if (name === 'activity') loadActivity();
+}
+
+function getTokenBadgeClass(type) {
+  const classes = {
+    'ingredient': 'token-ingredient',
+    'allergen': 'token-allergen',
+    'origin': 'token-origin',
+    'producer': 'token-producer',
+    'preparation': 'token-preparation'
+  };
+  return classes[type] || 'token-ingredient';
+}
+
+async function loadGraph() {
+  try {
+    const res = await fetch(`${API}/api/v1/semantic/correlations`);
+    if (!res.ok) throw new Error('Failed to load graph');
+    const data = await res.json();
+    const stats = data.graph_statistics || {};
+
+    // Metrics
+    document.getElementById('total-tokens').textContent = stats.total_tokens || 0;
+    document.getElementById('ingredient-tokens').textContent = stats.ingredients || 0;
+    document.getElementById('allergen-tokens').textContent = stats.allergens || 0;
+    document.getElementById('total-relationships').textContent = stats.total_relationships || 0;
+    const avgStr = stats.avg_relationship_strength || 0;
+    document.getElementById('avg-strength').textContent = (avgStr * 100).toFixed(0);
+
+    // Summary
+    const summary = document.getElementById('graph-summary');
+    summary.innerHTML = `
+      <div style="color:var(--muted)">
+        <p>The knowledge graph contains <span style="color:var(--teal);font-weight:600">${stats.total_tokens || 0}</span> semantic tokens connected by <span style="color:var(--purple);font-weight:600">${stats.total_relationships || 0}</span> relationships.</p>
+        <p style="margin-top:0.5rem">Average relationship strength: <span style="color:var(--yellow);font-weight:600">${(avgStr*100).toFixed(0)}%</span></p>
+      </div>
+    `;
+
+    // Load tokens
+    await loadTokens();
+    // Load relationships
+    await loadRelationships();
+    // Load families
+    await loadFamilies();
+  } catch(e) {
+    console.error('Failed to load graph:', e);
+  }
+}
+
+async function loadTokens() {
+  try {
+    const res = await fetch(`${API}/api/v1/tokenization-activity`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const snapshot = data.graph_snapshot || {};
+    const tokens = snapshot.top_tokens || [];
+
+    const table = document.getElementById('tokens-table');
+    if (tokens.length > 0) {
+      table.innerHTML = tokens.map(t => `
+        <tr>
+          <td style="color:var(--teal)">${t.value}</td>
+          <td><span class="token-badge ${getTokenBadgeClass(t.type)}">${t.type}</span></td>
+          <td style="color:var(--muted)">${t.language}</td>
+          <td style="text-align:center;color:var(--green);font-weight:600">${(t.confidence*100).toFixed(0)}%</td>
+          <td style="color:var(--muted)">—</td>
+        </tr>
+      `).join('');
+    }
+  } catch(e) {
+    console.error('Failed to load tokens:', e);
+  }
+}
+
+async function loadRelationships() {
+  try {
+    const res = await fetch(`${API}/api/v1/tokenization-activity`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const snapshot = data.graph_snapshot || {};
+    const rels = snapshot.strongest_relationships || [];
+
+    const table = document.getElementById('relationships-table');
+    if (rels.length > 0) {
+      table.innerHTML = rels.map(r => `
+        <tr>
+          <td style="color:var(--teal)">${r.source}</td>
+          <td style="color:var(--muted);font-size:0.7rem">${r.type}</td>
+          <td style="color:var(--teal)">${r.target}</td>
+          <td style="text-align:center;color:${r.strength > 0.7 ? 'var(--green)' : 'var(--yellow)'}; font-weight:600">${(r.strength*100).toFixed(0)}%</td>
+          <td style="text-align:center;color:var(--muted)">${r.evidence || 1}</td>
+        </tr>
+      `).join('');
+    }
+  } catch(e) {
+    console.error('Failed to load relationships:', e);
+  }
+}
+
+async function loadFamilies() {
+  try {
+    const res = await fetch(`${API}/api/v1/semantic/correlations`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const families = data.ingredient_families || {};
+
+    const container = document.getElementById('families-container');
+    if (Object.keys(families).length > 0) {
+      container.innerHTML = Object.entries(families).map(([fam, ings]) => `
+        <div class="surface rounded-lg p-4">
+          <div style="color:var(--accent);font-weight:600;margin-bottom:0.5rem">${fam.replace('family_','').toUpperCase()}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:0.5rem">
+            ${ings.map(ing => `<span class="token-badge token-ingredient">${ing}</span>`).join('')}
+          </div>
+        </div>
+      `).join('');
+    } else {
+      container.innerHTML = '<div style="color:var(--muted)">No ingredient families detected yet</div>';
+    }
+  } catch(e) {
+    console.error('Failed to load families:', e);
+  }
+}
+
+async function loadActivity() {
+  try {
+    const res = await fetch(`${API}/api/v1/tokenization-activity`);
+    if (!res.ok) return;
+    const data = await res.json();
+
+    // Recent tokens
+    const tokensList = document.getElementById('recent-tokens-list');
+    const recentTokens = (data.recent_tokens || []).slice(-10).reverse();
+    if (recentTokens.length > 0) {
+      tokensList.innerHTML = recentTokens.map(t => `
+        <div class="rounded px-3 py-2" style="background:var(--surface2);border-left:2px solid var(--accent)">
+          <div style="color:var(--teal);font-weight:600;font-size:0.75rem">${t.value}</div>
+          <div style="color:var(--muted);font-size:0.65rem">${t.type} • ${new Date(t.timestamp).toLocaleTimeString()}</div>
+        </div>
+      `).join('');
+    }
+
+    // Recent relationships
+    const relsList = document.getElementById('recent-relationships-list');
+    const recentRels = (data.recent_relationships || []).slice(-10).reverse();
+    if (recentRels.length > 0) {
+      relsList.innerHTML = recentRels.map(r => `
+        <div class="rounded px-3 py-2" style="background:var(--surface2);border-left:2px solid ${r.strength > 0.7 ? 'var(--green)' : 'var(--yellow)'}">
+          <div style="color:var(--accent);font-size:0.75rem">
+            <span style="color:var(--teal)">${r.source}</span>
+            <span style="color:var(--muted)">→[${r.type}]→</span>
+            <span style="color:var(--teal)">${r.target}</span>
+          </div>
+          <div style="color:var(--muted);font-size:0.65rem">${(r.strength*100).toFixed(0)}% • ${new Date(r.timestamp).toLocaleTimeString()}</div>
+        </div>
+      `).join('');
+    }
+  } catch(e) {
+    console.error('Failed to load activity:', e);
+  }
+}
+
+function filterTokens(query) {
+  const typeFilter = document.getElementById('token-type-filter').value;
+  const rows = document.querySelectorAll('#tokens-table tr');
+  rows.forEach(row => {
+    const value = row.cells[0]?.textContent.toLowerCase() || '';
+    const type = row.cells[1]?.textContent.toLowerCase() || '';
+    const matches = (!query || value.includes(query.toLowerCase())) &&
+                   (!typeFilter || type.includes(typeFilter));
+    row.style.display = matches ? '' : 'none';
+  });
+}
+
+// Load on page open
+document.addEventListener('DOMContentLoaded', loadGraph);
+</script>
+</body>
+</html>

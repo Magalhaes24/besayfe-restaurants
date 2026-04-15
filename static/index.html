@@ -116,6 +116,11 @@
     <span class="badge badge-purple ml-2" data-i18n="header.debug">DEBUG UI</span>
   </div>
   <div class="flex items-center gap-4">
+    <div class="flex gap-2 text-xs">
+      <a href="/ml-dashboard" class="px-2 py-1 rounded" style="background:rgba(188,140,255,0.15);color:var(--purple);border:1px solid rgba(188,140,255,0.3)">🧠 ML Dashboard</a>
+      <a href="/ml-memory" class="px-2 py-1 rounded" style="background:rgba(227,179,65,0.15);color:var(--orange);border:1px solid rgba(227,179,65,0.3)">📊 Memory</a>
+      <a href="/tokenization-graph" class="px-2 py-1 rounded" style="background:rgba(57,211,83,0.15);color:var(--teal);border:1px solid rgba(57,211,83,0.3)">🔤 Tokens</a>
+    </div>
     <div class="flex gap-2">
       <button class="lang-btn active" onclick="setLanguage('en')">EN</button>
       <button class="lang-btn" onclick="setLanguage('pt')">PT</button>
@@ -138,22 +143,57 @@
   <!-- LEFT COLUMN: upload + pipeline + status -->
   <div class="lg:col-span-1 flex flex-col gap-4">
 
-    <!-- Upload card -->
+    <!-- Upload card with tabs -->
     <div class="surface rounded-xl p-5">
-      <h2 class="text-xs font-semibold uppercase tracking-widest mb-3" style="color:var(--muted)" data-i18n="upload.title">Upload File</h2>
-      <div id="dropzone" class="rounded-lg p-6 text-center cursor-pointer select-none" onclick="document.getElementById('fileInput').click()">
-        <div class="text-3xl mb-2">📄</div>
-        <div class="text-sm font-medium" data-i18n="upload.drop">Drop file here or click to browse</div>
-        <div class="text-xs mt-1" style="color:var(--muted)" data-i18n="upload.formats">PDF · CSV · XLSX</div>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xs font-semibold uppercase tracking-widest" style="color:var(--muted)">Upload</h2>
+        <div class="flex gap-2 text-xs">
+          <button class="upload-tab-btn active px-2 py-1 rounded transition-all" onclick="switchUploadMode('single')" style="background:rgba(88,166,255,0.2);color:var(--accent)">Single</button>
+          <button class="upload-tab-btn px-2 py-1 rounded transition-all" onclick="switchUploadMode('bulk')" style="color:var(--muted)">Bulk</button>
+        </div>
       </div>
-      <input type="file" id="fileInput" accept=".pdf,.csv,.xlsx" class="hidden" />
-      <div id="file-info" class="mt-3 text-xs hidden" style="color:var(--muted)"></div>
-      <button id="btn-normalize" disabled
-        class="mt-4 w-full py-2 rounded-lg text-sm font-semibold transition-all"
-        style="background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3)"
-        onclick="runNormalize()" data-i18n="upload.normalize">
-        Normalize →
-      </button>
+
+      <!-- Single file upload -->
+      <div id="upload-single" class="upload-mode">
+        <div id="dropzone" class="rounded-lg p-6 text-center cursor-pointer select-none" onclick="document.getElementById('fileInput').click()">
+          <div class="text-3xl mb-2">📄</div>
+          <div class="text-sm font-medium" data-i18n="upload.drop">Drop file here or click to browse</div>
+          <div class="text-xs mt-1" style="color:var(--muted)" data-i18n="upload.formats">PDF · CSV · XLSX</div>
+        </div>
+        <input type="file" id="fileInput" accept=".pdf,.csv,.xlsx" class="hidden" />
+        <div id="file-info" class="mt-3 text-xs hidden" style="color:var(--muted)"></div>
+        <button id="btn-normalize" disabled
+          class="mt-4 w-full py-2 rounded-lg text-sm font-semibold transition-all"
+          style="background:rgba(88,166,255,0.15);color:var(--accent);border:1px solid rgba(88,166,255,0.3)"
+          onclick="runNormalize()" data-i18n="upload.normalize">
+          Normalize →
+        </button>
+      </div>
+
+      <!-- Bulk file upload -->
+      <div id="upload-bulk" class="upload-mode hidden">
+        <div id="bulk-dropzone" class="rounded-lg p-6 text-center cursor-pointer select-none border-2 border-dashed" style="border-color:var(--border)" onclick="document.getElementById('bulkFileInput').click()">
+          <div class="text-3xl mb-2">📚</div>
+          <div class="text-sm font-medium">Drop multiple files or click to browse</div>
+          <div class="text-xs mt-1" style="color:var(--muted)">PDF · CSV · XLSX (up to 100 files)</div>
+        </div>
+        <input type="file" id="bulkFileInput" accept=".pdf,.csv,.xlsx" multiple class="hidden" />
+        <div id="bulk-file-list" class="mt-3 text-xs space-y-1" style="color:var(--muted); max-height:150px; overflow-y:auto"></div>
+        <button id="btn-bulk-normalize" disabled
+          class="mt-4 w-full py-2 rounded-lg text-sm font-semibold transition-all"
+          style="background:rgba(63,185,80,0.15);color:var(--green);border:1px solid rgba(63,185,80,0.3)"
+          onclick="runBulkNormalize()">
+          Normalize All →
+        </button>
+      </div>
+
+      <!-- Bulk upload progress -->
+      <div id="bulk-progress" class="mt-4 hidden">
+        <div class="text-xs mb-2" style="color:var(--muted)">Processing: <span id="bulk-progress-text">0/0</span></div>
+        <div class="w-full h-2 rounded-full" style="background:var(--surface2)">
+          <div id="bulk-progress-bar" class="h-2 rounded-full transition-all" style="background:var(--accent);width:0%"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Pipeline visualization -->
@@ -277,6 +317,8 @@
         <button class="tab-btn px-4 py-2.5 text-xs font-semibold" onclick="switchTab('json')" data-i18n="tabs.json">JSON</button>
         <button class="tab-btn px-4 py-2.5 text-xs font-semibold" onclick="switchTab('patterns')" data-i18n="tabs.patterns">Patterns</button>
         <button class="tab-btn px-4 py-2.5 text-xs font-semibold" onclick="switchTab('learning')" style="color:var(--purple)">🧠 Learning</button>
+        <button class="tab-btn px-4 py-2.5 text-xs font-semibold" onclick="switchTab('semantic')" style="color:var(--teal)">🔗 Semantic</button>
+        <button class="tab-btn px-4 py-2.5 text-xs font-semibold" onclick="switchTab('tokenization')" style="color:var(--orange)">🔤 Tokenization</button>
       </div>
 
       <!-- ALLERGENS TAB (MAIN OBJECTIVE) -->
@@ -431,6 +473,89 @@
           <div>
             <div class="text-xs font-semibold mb-2" style="color:var(--muted)">Learned Ingredient Variants</div>
             <div id="variants-list" class="flex flex-col gap-1 text-xs"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEMANTIC TAB -->
+      <div id="tab-semantic" class="tab-panel p-4 overflow-auto" style="max-height:500px">
+        <div class="flex flex-col gap-4">
+          <!-- Semantic graph status -->
+          <div class="rounded-lg p-3" style="background:rgba(57,211,83,0.12);border:1px solid rgba(57,211,83,0.3)">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-semibold" style="color:var(--teal)">Knowledge Graph</span>
+              <span id="semantic-status-badge" class="badge badge-muted">analyzing…</span>
+            </div>
+            <div id="semantic-status-detail" class="text-xs" style="color:var(--teal)">Building relationships between ingredients and allergens…</div>
+          </div>
+
+          <!-- Graph statistics -->
+          <div>
+            <div class="text-xs font-semibold mb-2" style="color:var(--muted)">Graph Statistics</div>
+            <table class="debug-table w-full text-xs" style="background:var(--surface2)">
+              <tbody id="semantic-stats"></tbody>
+            </table>
+          </div>
+
+          <!-- Ingredient families -->
+          <div>
+            <div class="text-xs font-semibold mb-2" style="color:var(--muted)">Ingredient Families (by Allergen Profile)</div>
+            <div id="ingredient-families" class="flex flex-col gap-2 text-xs"></div>
+          </div>
+
+          <!-- Allergen correlations -->
+          <div>
+            <div class="text-xs font-semibold mb-2" style="color:var(--muted)">Top Allergen Correlations</div>
+            <div id="allergen-correlations" class="flex flex-col gap-2 text-xs"></div>
+          </div>
+
+          <!-- Current dish semantic analysis -->
+          <div>
+            <div class="text-xs font-semibold mb-2" style="color:var(--muted)">Current Dish Semantic Profile</div>
+            <div id="dish-semantic-profile" class="text-xs" style="color:var(--muted)">Load a sheet to see semantic analysis…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOKENIZATION TAB -->
+      <div id="tab-tokenization" class="tab-panel p-4 overflow-auto" style="max-height:500px">
+        <div class="flex flex-col gap-4">
+          <!-- Activity status -->
+          <div class="rounded-lg p-3" style="background:rgba(227,179,65,0.12);border:1px solid rgba(227,179,65,0.3)">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-semibold" style="color:var(--orange)">Tokenization Activity</span>
+              <button onclick="loadTokenizationActivity()" class="text-xs px-2 py-1 rounded" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted)">Refresh</button>
+            </div>
+            <div id="tokenization-status" class="text-xs" style="color:var(--orange)">Loading…</div>
+          </div>
+
+          <!-- Recent tokens -->
+          <div>
+            <div class="text-xs font-semibold mb-2" style="color:var(--muted)">Recent Tokens Created</div>
+            <div id="recent-tokens" class="flex flex-col gap-1 text-xs" style="max-height:200px;overflow-y:auto"></div>
+          </div>
+
+          <!-- Recent relationships -->
+          <div>
+            <div class="text-xs font-semibold mb-2" style="color:var(--muted)">Recent Relationships Established</div>
+            <div id="recent-relationships" class="flex flex-col gap-1 text-xs" style="max-height:200px;overflow-y:auto"></div>
+          </div>
+
+          <!-- Strongest relationships in graph -->
+          <div>
+            <div class="text-xs font-semibold mb-2" style="color:var(--muted)">Strongest Relationships in Graph</div>
+            <table class="debug-table w-full text-xs" style="background:var(--surface2)">
+              <thead>
+                <tr>
+                  <th style="color:var(--muted)">Source</th>
+                  <th style="color:var(--muted)">→</th>
+                  <th style="color:var(--muted)">Target</th>
+                  <th style="color:var(--muted)">Type</th>
+                  <th style="color:var(--muted)">Strength</th>
+                </tr>
+              </thead>
+              <tbody id="strongest-relationships"></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -791,6 +916,138 @@ async function runNormalize() {
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
+// ── Bulk upload ──────────────────────────────────────────────────
+let selectedBulkFiles = [];
+
+function switchUploadMode(mode) {
+  // Update tab buttons
+  document.querySelectorAll('.upload-tab-btn').forEach(btn => {
+    btn.style.background = 'transparent';
+    btn.style.color = 'var(--muted)';
+  });
+  event.target.style.background = 'rgba(88,166,255,0.2)';
+  event.target.style.color = 'var(--accent)';
+
+  // Update modes
+  document.getElementById('upload-single').classList.toggle('hidden', mode === 'bulk');
+  document.getElementById('upload-bulk').classList.toggle('hidden', mode === 'single');
+  selectedBulkFiles = [];
+  document.getElementById('bulk-file-list').innerHTML = '';
+}
+
+document.getElementById('bulkFileInput')?.addEventListener('change', (e) => {
+  selectedBulkFiles = Array.from(e.target.files);
+  updateBulkFileList();
+  document.getElementById('btn-bulk-normalize').disabled = selectedBulkFiles.length === 0;
+});
+
+document.getElementById('bulk-dropzone')?.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  e.dropEffect = 'copy';
+  document.getElementById('bulk-dropzone').style.background = 'rgba(88,166,255,0.1)';
+});
+
+document.getElementById('bulk-dropzone')?.addEventListener('dragleave', () => {
+  document.getElementById('bulk-dropzone').style.background = 'transparent';
+});
+
+document.getElementById('bulk-dropzone')?.addEventListener('drop', (e) => {
+  e.preventDefault();
+  document.getElementById('bulk-dropzone').style.background = 'transparent';
+  selectedBulkFiles = Array.from(e.dataTransfer.files);
+  updateBulkFileList();
+  document.getElementById('btn-bulk-normalize').disabled = selectedBulkFiles.length === 0;
+});
+
+function updateBulkFileList() {
+  const list = document.getElementById('bulk-file-list');
+  if (selectedBulkFiles.length === 0) {
+    list.innerHTML = '';
+    return;
+  }
+  list.innerHTML = selectedBulkFiles.map((f, i) => `
+    <div class="flex items-center justify-between">
+      <span>📄 ${f.name}</span>
+      <span style="color:var(--muted)">${(f.size/1024).toFixed(1)}KB</span>
+    </div>
+  `).join('');
+}
+
+async function runBulkNormalize() {
+  if (selectedBulkFiles.length === 0) return;
+  hideError();
+
+  const btn = document.getElementById('btn-bulk-normalize');
+  btn.disabled = true;
+  btn.textContent = 'Processing…';
+
+  const progress = document.getElementById('bulk-progress');
+  const progressText = document.getElementById('bulk-progress-text');
+  const progressBar = document.getElementById('bulk-progress-bar');
+  progress.classList.remove('hidden');
+
+  const fd = new FormData();
+  selectedBulkFiles.forEach((f, i) => {
+    fd.append('files', f);
+  });
+
+  try {
+    progressText.textContent = `0/${selectedBulkFiles.length}`;
+    progressBar.style.width = '0%';
+
+    const r = await fetch(`${API}/api/v1/normalize-bulk`, {
+      method: 'POST',
+      body: fd
+    });
+
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({ detail: r.statusText }));
+      throw new Error(err.detail || r.statusText);
+    }
+
+    const result = await r.json();
+
+    // Update progress
+    progressText.textContent = `${result.successful}/${result.total_files}`;
+    progressBar.style.width = `${(result.successful / result.total_files) * 100}%`;
+
+    // Show summary
+    const summary = result.learning_summary || {};
+    let msg = `✅ Processed ${result.successful}/${result.total_files} sheets\n`;
+    if (summary.semantic_graph) {
+      msg += `\n📊 Semantic Graph:\n`;
+      msg += `  • ${summary.semantic_graph.ingredients_known} ingredients\n`;
+      msg += `  • ${summary.semantic_graph.allergens_known} allergens\n`;
+      msg += `  • ${summary.semantic_graph.total_relationships} relationships\n`;
+    }
+    if (summary.vocabulary) {
+      msg += `\n📚 Vocabulary:\n`;
+      msg += `  • ${summary.vocabulary.total_tokens} tokens\n`;
+      msg += `  • ${summary.vocabulary.total_observations} observations`;
+    }
+
+    alert(msg);
+
+    // Reset
+    selectedBulkFiles = [];
+    document.getElementById('bulk-file-list').innerHTML = '';
+    document.getElementById('bulkFileInput').value = '';
+
+    setTimeout(() => {
+      progress.classList.add('hidden');
+      loadStatus();
+      loadHistory();
+    }, 1500);
+
+  } catch(e) {
+    showError(`Bulk upload failed: ${e.message}`);
+    progress.classList.add('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Normalize All →';
+  }
+}
+
 function summariseRaw(raw) {
   if (!raw) return 'empty';
   if (raw.full_text) return `${raw.full_text.length} chars text, ${(raw.tables||[]).length} tables`;
@@ -817,6 +1074,53 @@ function extractHeaders(raw, ext) {
 }
 
 // ── Render sheet ────────────────────────────────────────────────
+function refreshIngredientsTable(d) {
+  /**
+   * Refresh only the ingredients table without switching tabs.
+   * Used for local updates (feedback, deletion) without full re-render.
+   */
+  const tbody = document.getElementById('ingredients-body');
+  tbody.innerHTML = '';
+  const maxCost = Math.max(...(d.ingredients || []).map(i => i.line_cost || 0), 0.01);
+  const activeIngredients = (d.ingredients || []).filter(ing => !ing._marked_for_deletion);
+  activeIngredients.forEach((ing, idx) => {
+    const pct = Math.round(((ing.line_cost || 0) / maxCost) * 100);
+    const tr = document.createElement('tr');
+    tr.id = `ing-row-${idx}`;
+    tr.dataset.ingIndex = idx;
+    // Default to "good" feedback - only show "bad" if explicitly marked
+    const feedback = ing._ml_feedback || 'good';
+    const feedbackColor = feedback === 'good' ? 'var(--green)' : 'var(--red)';
+    const isNew = ing._is_new ? 'opacity-60' : '';
+    tr.className = isNew;
+    tr.innerHTML = `
+      <td class="text-right" style="color:var(--muted)">${ing.line_number || idx+1}</td>
+      <td class="font-medium cursor-pointer hover:opacity-70" onclick="editIngredientName(${idx})" title="Click to edit">
+        <span id="ing-name-${idx}">${esc(ing.product_name)}</span>
+        <span style="color:var(--accent);margin-left:4px">✎</span>
+      </td>
+      <td class="text-right">${ing.quantity}</td>
+      <td><span class="badge badge-blue">${esc(ing.unit)}</span></td>
+      <td class="text-right" style="color:var(--muted)">€${(ing.unit_price||0).toFixed(4)}</td>
+      <td class="text-right font-bold" style="color:var(--purple)">€${(ing.line_cost||0).toFixed(4)}</td>
+      <td style="width:80px"><div class="cost-bar"><div class="cost-bar-fill" style="width:${pct}%"></div></div></td>
+      <td style="color:var(--muted)">${esc(ing.observations||'')}</td>
+      <td style="text-align:center;color:${feedbackColor}">
+        <button onclick="tagIngredientFeedback(${idx}, 'good')" title="Correct detection (default)" class="px-1 py-0" style="cursor:pointer;border:none;background:none;font-size:1rem">${feedback === 'good' ? '👍' : '👏'}</button>
+        <button onclick="tagIngredientFeedback(${idx}, 'bad')" title="Incorrect detection - click to mark as wrong" class="px-1 py-0" style="cursor:pointer;border:none;background:none;font-size:1rem">${feedback === 'bad' ? '👎' : '❌'}</button>
+      </td>
+      <td style="text-align:center">
+        <button onclick="deleteIngredientRow(${idx})" title="Remove ingredient" class="px-1 py-0" style="cursor:pointer;border:none;background:none;color:var(--red);font-size:1rem">🗑</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+  if (activeIngredients.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4" style="color:var(--muted)">${t('steps.empty')}</td></tr>`;
+  }
+  document.getElementById('total-cost-disp').textContent = `€${(d.total_cost||0).toFixed(4)}`;
+  document.getElementById('cost-per-serving-disp').textContent = `€${(d.cost_per_serving||0).toFixed(4)}`;
+}
+
 function renderSheet(d, colMap) {
   document.getElementById('summary-strip').classList.remove('hidden');
   document.getElementById('results-card').classList.remove('hidden');
@@ -1188,6 +1492,8 @@ async function loadSheet(id) {
     const r = await fetch(`${API}/api/v1/sheets/${id}`);
     const d = await r.json();
     currentSheet = d;
+    // Ensure original is backed up before renderSheet modifies state
+    currentSheetOriginal = JSON.parse(JSON.stringify(d));
     renderSheet(d, []);
     resetPipeline();
     ['parse','restaurant','classify','extract','build'].forEach(s => setPipeStep(s, 'done'));
@@ -1207,11 +1513,13 @@ function confidenceBadge(score) {
 function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  const idx = ['allergens','ingredients','steps','raw','columns','json','patterns','learning'].indexOf(name);
+  const idx = ['allergens','ingredients','steps','raw','columns','json','patterns','learning','semantic','tokenization'].indexOf(name);
   document.querySelectorAll('.tab-btn')[idx].classList.add('active');
   document.getElementById(`tab-${name}`).classList.add('active');
   if (name === 'patterns') loadPatterns('synonyms');
   if (name === 'learning') loadLearningStatus();
+  if (name === 'semantic') loadSemanticStatus();
+  if (name === 'tokenization') loadTokenizationActivity();
 }
 
 async function loadLearningStatus() {
@@ -1264,6 +1572,160 @@ async function loadLearningStatus() {
     }
   } catch(e) {
     console.log('Learning status fetch error:', e);
+  }
+}
+
+async function loadSemanticStatus() {
+  try {
+    // Fetch semantic correlations
+    const res = await fetch(`${API}/api/v1/semantic/correlations`);
+    if (!res.ok) return;
+    const data = await res.json();
+
+    // Update semantic status badge
+    const badge = document.getElementById('semantic-status-badge');
+    const detail = document.getElementById('semantic-status-detail');
+    const stats = data.graph_statistics || {};
+
+    if (stats.total_tokens > 0) {
+      badge.className = 'badge badge-blue';
+      badge.textContent = 'ACTIVE';
+      detail.style.color = 'var(--teal)';
+      detail.textContent = `${stats.total_tokens} tokens learned • ${stats.total_relationships} relationships mapped`;
+    }
+
+    // Graph statistics table
+    const statsTable = document.getElementById('semantic-stats');
+    statsTable.innerHTML = `
+      <tr><td style="color:var(--muted)">Total Tokens</td><td class="text-right font-bold">${stats.total_tokens || 0}</td></tr>
+      <tr><td style="color:var(--muted)">Ingredients</td><td class="text-right font-bold">${stats.ingredients || 0}</td></tr>
+      <tr><td style="color:var(--muted)">Allergens</td><td class="text-right font-bold">${stats.allergens || 0}</td></tr>
+      <tr><td style="color:var(--muted)">Relationships</td><td class="text-right font-bold">${stats.total_relationships || 0}</td></tr>
+      <tr><td style="color:var(--muted)">Avg Strength</td><td class="text-right font-bold">${((stats.avg_relationship_strength || 0) * 100).toFixed(0)}%</td></tr>
+    `;
+
+    // Ingredient families
+    const families = data.ingredient_families || {};
+    const familiesDiv = document.getElementById('ingredient-families');
+    if (Object.keys(families).length > 0) {
+      familiesDiv.innerHTML = Object.entries(families).slice(0, 10).map(([fam, ings]) => `
+        <div class="rounded p-2" style="background:var(--surface2)">
+          <div style="color:var(--accent);font-size:0.75rem;font-weight:600">${fam.replace('family_','').toUpperCase()}</div>
+          <div style="color:var(--muted);font-size:0.7rem">${ings.join(', ')}</div>
+        </div>
+      `).join('');
+    } else {
+      familiesDiv.innerHTML = '<div style="color:var(--muted)">No ingredient families detected yet</div>';
+    }
+
+    // Allergen correlations
+    const correlations = data.allergen_correlations || {};
+    const corrDiv = document.getElementById('allergen-correlations');
+    if (Object.keys(correlations).length > 0) {
+      corrDiv.innerHTML = Object.entries(correlations).slice(0, 10).map(([allergen, ings]) => `
+        <div class="rounded p-2" style="background:var(--surface2)">
+          <div style="color:var(--red);font-weight:600">${allergen.toUpperCase()}</div>
+          <div style="color:var(--muted);font-size:0.7rem">${
+            ings.slice(0, 3).map(i => `${i.ingredient} (${(i.strength*100).toFixed(0)}%)`).join(' • ')
+          }${ings.length > 3 ? ` +${ings.length-3} more` : ''}</div>
+        </div>
+      `).join('');
+    } else {
+      corrDiv.innerHTML = '<div style="color:var(--muted)">No correlations detected yet</div>';
+    }
+
+    // Current dish semantic profile
+    if (currentSheet) {
+      try {
+        const dishRes = await fetch(`${API}/api/v1/semantic/${encodeURIComponent(currentSheet.name)}`);
+        if (dishRes.ok) {
+          const dishData = await dishRes.json();
+          const profileDiv = document.getElementById('dish-semantic-profile');
+          profileDiv.innerHTML = `
+            <div class="rounded p-2" style="background:var(--surface2)">
+              <div style="color:var(--accent);font-weight:600">${currentSheet.name}</div>
+              <div style="color:var(--muted);font-size:0.7rem">
+                Allergens: ${dishData.profile?.allergens?.slice(0,5).join(', ') || 'none'}<br/>
+                Related: ${dishData.profile?.related_ingredients?.join(', ') || 'none'}
+              </div>
+            </div>
+          `;
+        }
+      } catch(e) {
+        // Silently fail if dish profile not available
+      }
+    }
+  } catch(e) {
+    console.log('Semantic status fetch error:', e);
+  }
+}
+
+async function loadTokenizationActivity() {
+  try {
+    const res = await fetch(`${API}/api/v1/tokenization-activity`);
+    if (!res.ok) return;
+    const data = await res.json();
+
+    // Status
+    const status = document.getElementById('tokenization-status');
+    const snapshot = data.graph_snapshot || {};
+    status.innerHTML = `
+      <span style="color:var(--teal)">${snapshot.total_tokens || 0} tokens</span> •
+      <span style="color:var(--accent)">${snapshot.total_relationships || 0} relationships</span>
+    `;
+
+    // Recent tokens
+    const tokensList = document.getElementById('recent-tokens');
+    const recentTokens = data.recent_tokens || [];
+    if (recentTokens.length > 0) {
+      tokensList.innerHTML = recentTokens.reverse().map(t => `
+        <div class="rounded px-2 py-1" style="background:var(--surface2);border-left:2px solid var(--accent)">
+          <div style="color:var(--teal);font-weight:600">${t.value}</div>
+          <div style="color:var(--muted);font-size:0.65rem">${t.type} · ${new Date(t.timestamp).toLocaleTimeString()}</div>
+        </div>
+      `).join('');
+    } else {
+      tokensList.innerHTML = '<div style="color:var(--muted)">No tokens created yet</div>';
+    }
+
+    // Recent relationships
+    const relsList = document.getElementById('recent-relationships');
+    const recentRels = data.recent_relationships || [];
+    if (recentRels.length > 0) {
+      relsList.innerHTML = recentRels.reverse().map(r => `
+        <div class="rounded px-2 py-1" style="background:var(--surface2);border-left:2px solid ${r.strength > 0.7 ? 'var(--green)' : 'var(--yellow)'}">
+          <div style="color:var(--accent);font-size:0.75rem">
+            <span style="color:var(--teal)">${r.source}</span>
+            <span style="color:var(--muted)">→[${r.type}]→</span>
+            <span style="color:var(--teal)">${r.target}</span>
+          </div>
+          <div style="color:var(--muted);font-size:0.65rem">
+            Strength: ${(r.strength*100).toFixed(0)}% · ${new Date(r.timestamp).toLocaleTimeString()}
+          </div>
+        </div>
+      `).join('');
+    } else {
+      relsList.innerHTML = '<div style="color:var(--muted)">No relationships created yet</div>';
+    }
+
+    // Strongest relationships
+    const strongRels = (snapshot.strongest_relationships || []).slice(0, 8);
+    const strongTable = document.getElementById('strongest-relationships');
+    if (strongRels.length > 0) {
+      strongTable.innerHTML = strongRels.map(r => `
+        <tr>
+          <td style="color:var(--teal)">${r.source}</td>
+          <td style="color:var(--muted)">→</td>
+          <td style="color:var(--teal)">${r.target}</td>
+          <td style="color:var(--muted)">${r.type}</td>
+          <td style="text-align:right;color:${r.strength > 0.8 ? 'var(--green)' : 'var(--yellow)'};font-weight:600">${(r.strength*100).toFixed(0)}%</td>
+        </tr>
+      `).join('');
+    } else {
+      strongTable.innerHTML = '<tr><td colspan="5" style="color:var(--muted);text-align:center">No relationships yet</td></tr>';
+    }
+  } catch(e) {
+    console.log('Tokenization activity fetch error:', e);
   }
 }
 
@@ -1391,10 +1853,10 @@ function addIngredientRow() {
   currentSheet.ingredients.push(newIng);
   recalculateAllergenSummary(currentSheet);
   enableCorrectionSubmit();
-  // Refresh the display
+  // Refresh the display (stay in same tab)
   const tab = document.getElementById('tab-ingredients');
   if (tab && tab.classList.contains('active')) {
-    loadSheet(currentSheet);
+    refreshIngredientsTable(currentSheet);
   }
 }
 
@@ -1407,10 +1869,10 @@ function deleteIngredientRow(idx) {
   recalculateAllergenSummary(currentSheet);
   enableCorrectionSubmit();
 
-  // Refresh the display
+  // Refresh the display (stay in same tab)
   const tab = document.getElementById('tab-ingredients');
   if (tab && tab.classList.contains('active')) {
-    loadSheet(currentSheet);
+    refreshIngredientsTable(currentSheet);
   }
 }
 
@@ -1429,10 +1891,10 @@ function tagIngredientFeedback(idx, feedback) {
   recalculateAllergenSummary(currentSheet);
   enableCorrectionSubmit();
 
-  // Refresh the display
+  // Refresh the display (stay in same tab)
   const tab = document.getElementById('tab-ingredients');
   if (tab && tab.classList.contains('active')) {
-    loadSheet(currentSheet);
+    refreshIngredientsTable(currentSheet);
   }
 }
 
@@ -1444,9 +1906,14 @@ function enableCorrectionSubmit() {
 }
 
 async function submitCorrections() {
-  if (!currentSheet || !currentSheetOriginal) {
+  if (!currentSheet) {
     alert('No sheet loaded');
     return;
+  }
+
+  // Safety: ensure currentSheetOriginal is set (fallback to currentSheet if needed)
+  if (!currentSheetOriginal) {
+    currentSheetOriginal = JSON.parse(JSON.stringify(currentSheet));
   }
 
   const btn = document.getElementById('btn-submit-corrections');

@@ -1,0 +1,128 @@
+{
+  "id": "test_bulk2",
+  "name": "Unknown",
+  "category": "Other",
+  "country": null,
+  "region": null,
+  "continent": null,
+  "prep_time_minutes": null,
+  "cooking_time_minutes": null,
+  "servings": 1,
+  "ingredients": [
+    {
+      "line_number": 1,
+      "product_name": "Chicken breast",
+      "quantity": 0.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 2,
+      "product_name": "Olive oil",
+      "quantity": 0.0,
+      "unit": "ML",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 3,
+      "product_name": "Garlic",
+      "quantity": 0.0,
+      "unit": "CLOVES",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [],
+      "allergen_risk": "none",
+      "allergen_confidence": 1.0,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    },
+    {
+      "line_number": 4,
+      "product_name": "Shellfish",
+      "quantity": 0.0,
+      "unit": "G",
+      "unit_price": 0.0,
+      "line_cost": 0.0,
+      "observations": null,
+      "allergens": [
+        "shellfish"
+      ],
+      "allergen_risk": "medium",
+      "allergen_confidence": 0.7,
+      "producer": null,
+      "origin": null,
+      "storage_conditions": null
+    }
+  ],
+  "steps": [],
+  "total_cost": 0.0,
+  "cost_per_serving": 0.0,
+  "source_file": "test_bulk2.csv",
+  "source_format": "csv",
+  "normalized_at": "2026-04-14T15:46:22.307901",
+  "confidence_score": 0.0,
+  "raw_extraction": {
+    "headers": [
+      "Product",
+      "Quantity",
+      "Unit",
+      "Allergens"
+    ],
+    "rows": [
+      {
+        "Product": "Chicken breast",
+        "Quantity": "300",
+        "Unit": "g",
+        "Allergens": ""
+      },
+      {
+        "Product": "Olive oil",
+        "Quantity": "30",
+        "Unit": "ml",
+        "Allergens": ""
+      },
+      {
+        "Product": "Garlic",
+        "Quantity": "3",
+        "Unit": "cloves",
+        "Allergens": ""
+      },
+      {
+        "Product": "Shellfish",
+        "Quantity": "200",
+        "Unit": "g",
+        "Allergens": "shellfish"
+      }
+    ],
+    "raw_text": "Product,Quantity,Unit,Allergens\nChicken breast,300,g,\nOlive oil,30,ml,\nGarlic,3,cloves,\nShellfish,200,g,shellfish\n",
+    "row_count": 4,
+    "encoding_detected": "ascii"
+  },
+  "all_allergens": [
+    "shellfish"
+  ],
+  "critical_allergens": [
+    "shellfish"
+  ],
+  "allergen_ingredients_count": 1,
+  "has_critical_allergen": true,
+  "allergen_risk_level": "critical"
+}
